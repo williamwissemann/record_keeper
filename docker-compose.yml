@@ -1,20 +1,3 @@
-# --- Readme -------------------------------------------------------------------
-# 
-# docker-compose build [--no-cache]
-# 
-# to start
-# docker-compose up -d
-# docker-compose up -d --build
-# docker-compose run record_keeper
-#
-# to stop
-# docker-compose down  
-# 
-# to check running process 
-# docker-compose ps
-
-# --- end readme -------------------------------------------------------------------
-
 version: '3.7'
 
 services:

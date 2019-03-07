@@ -1,6 +1,6 @@
 {
     "settings":{
-        "environment": "development",
+        "environment": "production",
         "discord_token": "< discord_token_api_token >"
     },
     "production":{
