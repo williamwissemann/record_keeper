@@ -1,8 +1,9 @@
 # record-keeper
 A discord bot to keep record of Pokemon Go medals, types, best raid times, pvp (win/lose, elo) and trade preferences  
 
-The !help page with all features:
-#---Command List---
+- The !help page with all features:
+```
+---Command List---
 TRADE BOARD
 Add a pokmeon to the trade board
     !want <pokemon name>
@@ -47,32 +48,39 @@ To get a list of medals
     !medals 
 To get a list of raid bosses
     !raid
+```
 
-#Installing:
-To build the project your going to need to run this from the root directoy
+## Installing:
+- To build the project your going to need to run this from the root directoy
+    ```
     cp ./discord_bot/RecordKeeperBot.json.template to ./discord_bot/RecordKeeperBot.json
-Then trackdown the relevant information following information on the links
-    discord_token_api_token : https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token
-    discord_channel : the name of the channel you would like the bot to interact with
-    google_api_token : https://developers.google.com/sheets/api/guides/authorizing
+    ```
+- Then trackdown the relevant information following information on the links
+    * discord_token_api_token : https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token
+    * discord_channel : the name of the channel you would like the bot to interact with
+    * google_api_token : https://developers.google.com/sheets/api/guides/authorizing
 
-Once you have the json file configured you can build the project with:
+- Once you have the json file configured you can build the project with:
+    ```
     docker-compose build
-
-To start the bot run:
+    ```
+    
+- To start the bot run:
+    ```
     docker-compose up -d
-
-To make changed and rebuild:
+    ```
+- To make changed and rebuild:
+    ```
     docker-compose down  
     docker-compose build
     docker-compose up -d
+    ```
 
-You can check that the bot is running with:
+- You can check that the bot is running with:
+    ```
     docker-compose ps
+    ```
 Look for RecordKeeperBot.sh being in state up
-
-Once you have the bot running will kick off 
-
 
 
 
