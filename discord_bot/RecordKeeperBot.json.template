@@ -1,0 +1,24 @@
+{
+    "settings":{
+        "environment": "development",
+        "discord_token": "< discord_token_api_token >"
+    },
+    "production":{
+        "database": "production.db",
+        "discord_channel": "< discord_channel >",
+        "google_sheet": {
+            "active": true,
+            "spreadsheet_id": "< google_api_token >",
+            "path_to_token": "./google-sheets-creds/token.json"
+        }
+    },
+    "development": {
+        "database": "development.db",
+        "discord_channel": "testing",
+        "google_sheet": {
+            "active": false,
+            "spreadsheet_id": "< google_api_token >",
+            "path_to_token": "./google-sheets-creds/token.json"
+        }
+    } 
+}
