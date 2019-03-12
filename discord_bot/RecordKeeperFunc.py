@@ -251,7 +251,6 @@ class RecordKeeper:
                 raise ValueError("There was an issue listing the stat")
             if (len(msg) > 1 and msg[1] in self.usdb.pokemonByName):
                 user = message.author
-                print(PokemonNumber, PokemonName, user)
                 note = ""
                 for el in msg:
                     if "note:" in el:
@@ -289,8 +288,8 @@ class RecordKeeper:
             msg_dict["value"],
             msg_dict["date"],
             msg_dict["note"])
-    
-        if  msg_dict["user"] != message.author:
+
+        if msg_dict["user"] != message.author:
             bm = user + " stats were updated by " + str(message.author)
             return bm
         else:

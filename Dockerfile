@@ -21,7 +21,7 @@ RUN set -ex \
 
 # --- copy over files ----------------------------------------------------------
 
-#COPY discord_bot /usr/src/RecordKeeperBot/discord_bot
+COPY discord_bot /usr/src/RecordKeeperBot/discord_bot
 WORKDIR /usr/src/RecordKeeperBot/discord_bot
 
 # --- run script ---------------------------------------------------------------
