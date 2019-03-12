@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.3'
 
 services:
   record_keeper:
@@ -7,4 +7,4 @@ services:
     restart: unless-stopped
     volumes: 
       - "./Database/:/usr/src/RecordKeeperBot/database/"
-
+      - "./discord_bot:/usr/src/RecordKeeperBot/discord_bot/" 

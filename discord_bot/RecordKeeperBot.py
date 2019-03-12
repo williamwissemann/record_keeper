@@ -44,6 +44,7 @@ async def on_message(message):
 
     expected_channel = environment['discord_channel']
     if expected_channel == dev_environment['discord_channel']:
+        print (str(message.channel),  str(expected_channel))
         if str(message.channel) != expected_channel:
             print("testing-bot ignore " + str(message.channel))
             return False
@@ -61,7 +62,7 @@ async def on_message(message):
             bot_msg = keeper.help()
         elif message.content.startswith('!medals'):
             # creates the medal list help page"
-            bot_msg = keeper.medals(message)
+            bot_msg = keeper.medals()
         elif message.content.startswith('!raid'):
             # generate the raid list help page"
             bot_msg = keeper.raid(message)

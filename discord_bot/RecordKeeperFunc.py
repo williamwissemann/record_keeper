@@ -279,7 +279,7 @@ class RecordKeeper:
             print(err.args)
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
-        if not self.usdb.gamertag_exists(user):
+        if not self.usdb.gamertag_exists(str(msg_dict["user"])):
             # XXX: phase 2 add "did you mean?"
             return "user not found"
 
@@ -289,7 +289,8 @@ class RecordKeeper:
             msg_dict["value"],
             msg_dict["date"],
             msg_dict["note"])
-        if user != message.author:
+    
+        if  msg_dict["user"] != message.author:
             bm = user + " stats were updated by " + str(message.author)
             return bm
         else:
