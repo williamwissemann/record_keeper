@@ -55,7 +55,7 @@ async def on_message(message):
 
     if message.content.startswith('!'):
         update_message = await client.send_message(message.channel, 'updating....')
-        bot_msg = "oops, that shouln't have happened"
+        bot_msg = None
         if message.content.startswith('!help'):
             # creates the help page"
             bot_msg = keeper.help()
@@ -116,9 +116,10 @@ async def on_message(message):
         else:
             await client.edit_message(
                 update_message,
-                "Bidoof, sorry, something went wrong, try !help for more info"
-            )
-        await client.edit_message(update_message, bot_msg)
+                "Bidoof, sorry, something went wrong, try !help for more info")
+
+        if bot_msg:
+            await client.edit_message(update_message, bot_msg)
 
 # starts bot
 if __name__ == "__main__":

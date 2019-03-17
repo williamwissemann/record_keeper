@@ -134,6 +134,10 @@ class RecordKeeper:
         msg_dic = {}
         msg = message.content.split()
         msg[0] = msg[0].lower()
+
+        if not self.usdb.gamertag_exists(str(message.author)):
+            self.usdb.add_gamertag(str(message.author))
+
         try:
             if not (msg[0] == "!pvp" or msg[0] == "!tbu" or msg[0] == "!tbs" or msg[0] == "!tbp"):
                 for accepted in self.usdb.accepted_tables:
@@ -158,12 +162,12 @@ class RecordKeeper:
                 raise ValueError("There was an issue updating that stat")
             # value to add
             value = str(msg[2])
+            user = message.author
             for el in msg:
                 # user to update
                 if "user:" in el:
                     user = el.replace("user:", "")
-                else:
-                    user = message.author
+
                 # parse the note
                 if "note:" in el:
                     note = el.replace("note:", "")
@@ -282,6 +286,12 @@ class RecordKeeper:
             # XXX: phase 2 add "did you mean?"
             return "user not found"
 
+        try:
+            float(msg_dict["value"])
+            msg_dict["value"] = msg_dict["value"].replace(",", "")
+        except:
+            return "Bidoof, sorry, something went wrong, try !help for more info"
+
         uuid = self.usdb.update_medal(
             msg_dict["medal"],
             msg_dict["user"],
@@ -290,7 +300,7 @@ class RecordKeeper:
             msg_dict["note"])
 
         if msg_dict["user"] != message.author:
-            bm = user + " stats were updated by " + str(message.author)
+            bm = msg_dict["user"] + " stats were updated by " + str(message.author)
             return bm
         else:
             bm = bot_message.create_recent5(self.usdb, msg_dict["medal"], msg_dict["user"])
