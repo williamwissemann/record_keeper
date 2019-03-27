@@ -100,39 +100,42 @@ def build_tables(array):
     global x_offset
     for el in array:
         board = usdb.get_leaders(el)
-        max_val = board[0][3]
-        cnt = 1
-        table = [[el, "", "", "", "Average per day"],
-                 ["Rank", "Gamertag", "Value", "", "Past Week", "Past Month", "Past 90 Days"]]
-        for player in board[0:10]:
-            array = []
-            val = player[3]
-            try:
-                diff = val / max_val
-            except:
-                diff = 0
-            gt = player[2]
+        try:
+            max_val = board[0][3]
+            cnt = 1
+            table = [[el, "", "", "", "Average per day"],
+                    ["Rank", "Gamertag", "Value", "", "Past Week", "Past Month", "Past 90 Days"]]
+            for player in board[0:10]:
+                array = []
+                val = player[3]
+                try:
+                    diff = val / max_val
+                except:
+                    diff = 0
+                gt = player[2]
 
-            array.append(cnt)
-            array.append(str(gt).split('#')[0])
-            array.append(val)
-            array.append(diff)
-            array.append(usdb.get_day_avg(el, gt, 7))
-            array.append(usdb.get_day_avg(el, gt, 30))
-            array.append(usdb.get_day_avg(el, gt, 90))
-            cnt += 1
-            table.append(array)
-        for row in table:
-            print(row)
-        update_speadsheet(table)
-        time.sleep(3)
+                array.append(cnt)
+                array.append(str(gt).split('#')[0])
+                array.append(val)
+                array.append(diff)
+                array.append(usdb.get_day_avg(el, gt, 7))
+                array.append(usdb.get_day_avg(el, gt, 30))
+                array.append(usdb.get_day_avg(el, gt, 90))
+                cnt += 1
+                table.append(array)
+            for row in table:
+                print(row)
+            update_speadsheet(table)
+            time.sleep(3)
+        except:
+            print(str(array))
 
 
 def build_tables_raids(array):
     global y_offset
     global x_offset
     for el in array:
-        board = db.get_leaders(el)
+        board = usdb.get_leaders(el)
         print(board)
         try:
             max_val = board[0][3]
@@ -172,7 +175,7 @@ x_offset = 0
 label("Badges")
 build_tables(usdb.badge_tables)
 
-y_offset += 12 + 2
+y_offset += 1
 x_offset = 0
 label("Types")
 build_tables(usdb.type_tables)
@@ -182,7 +185,7 @@ x_offset = 0
 label("Custom")
 build_tables(usdb.custom_tables)
 
-y_offset += 1
+y_offset += 12 + 2
 x_offset = 0
 label("Raids")
 build_tables_raids(usdb.raid_tables)

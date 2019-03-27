@@ -182,6 +182,7 @@ class UserStats:
 
     @update_decorator
     def update_medal(self, table, gamertag, value, update_at, notes=""):
+        float(value)
         update_at.replace(" ", "T")
         id = uuid.uuid4()
         sql = str(
