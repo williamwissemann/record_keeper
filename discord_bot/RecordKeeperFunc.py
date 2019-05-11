@@ -10,6 +10,7 @@ import math
 import time
 import sys
 import os
+import re
 
 
 class RecordKeeper:
@@ -95,9 +96,8 @@ class RecordKeeper:
     def raid(self, message):
         entry_per = (15 * 4)
         max_pages = str(math.ceil(len(self.usdb.raid_tables) / (entry_per)))
-        msg = message.content.split()
         try:
-            offset = int(msg[1])
+            offset = int(message["args"][0])
         except:
             offset = 1
         if offset > int(max_pages):
@@ -130,323 +130,269 @@ class RecordKeeper:
             return "ERROR: message too long"
         return msg
 
-    def stat_message_parse(self, message):
-        msg_dic = {}
-        msg = message.content.split()
-        msg[0] = msg[0].lower()
-
-        if not self.usdb.gamertag_exists(str(message.author)):
-            self.usdb.add_gamertag(str(message.author))
-
-        try:
-            if not (msg[0] == "!pvp" or msg[0] == "!tbu" or msg[0] == "!tbs" or msg[0] == "!tbp"):
-                for accepted in self.usdb.accepted_tables:
-                    if accepted.lower() == msg[1].lower():
-                        msg[1] = accepted
-                        break
-            if (msg[0] == "!ls" or
-                    msg[0] == "!del" or
-                    msg[0] == "!lb" or
-                    msg[0] == "!uuid" or
-                    msg[0] == "!pvp"):
-                for accepted in self.usdb.pvp_leagues:
-                    if accepted.lower() == msg[1].lower():
-                        msg[1] = accepted
-                        break
-        except:
-            raise ValueError("issue matching accepted_tables")
-        if msg[0] == "!up" or msg[0] == "!del":
-            if len(msg) > 2 and msg[1] in self.usdb.accepted_tables:
-                medal = str(msg[1])
-            else:
-                raise ValueError("There was an issue updating that stat")
-            # value to add
-            value = str(msg[2])
-            user = message.author
-            for el in msg:
-                # user to update
-                if "user:" in el:
-                    user = el.replace("user:", "")
-
-                # parse the note
-                if "note:" in el:
-                    note = el.replace("note:", "")
-                else:
-                    note = ""
-                # handles back dating a stat
-                if "date:" in el and "-" in el:
-                    try:
-                        y, m, d = el.replace("date:", "").split("-")
-                        date = str(datetime.datetime(int(y), int(m), int(d)).isoformat(' '))
-                    except:
-                        raise ValueError("not an accepted date format")
-                else:
-                    date = datetime.datetime.now().isoformat()
-            return {"medal": medal, "value": value, "user": user, "date": date, "note": note}
-        elif msg[0] == "!ls" or msg[0] == "!uuid" or msg[0] == "!lb":
-            if (len(msg) > 1 and (msg[1] in self.usdb.accepted_tables or msg[1] in self.usdb.pvp_leagues)):
-                medal = str(msg[1])
-            else:
-                raise ValueError("There was an issue listing the stat")
-            if len(msg) < 3:
-                user = message.author
-            elif len(msg) >= 3:
-                user = discord.utils.find(lambda m: msg[2].lower() in m.name.lower(), message.server.members)
-                if user is None:
-                    if self.usdb.gamertag_exists(msg[2]):
-                        user = msg[2]
-            return {"medal": medal, "user": user}
-        elif msg[0] == "!pvp":
-            if (len(msg) > 2 and
-                msg[1] in self.usdb.pvp_leagues and
-                ("w:" in message.content.lower() or
-                 "l:" in message.content.lower())):
-                medal = str(msg[1])
-                user = message.author
-                date = datetime.datetime.now().isoformat()
-                note = ""
-                loser = None
-                winner = None
-                for el in msg:
-                    el = el.replace("W:", "w:")
-                    el = el.replace("L:", "l:")
-                    if "w:" in el.lower():
-                        winner = el.replace("w:", "")
-                        winner = discord.utils.find(lambda m: winner.lower() in m.name.lower(), message.server.members)
-                        if winner is None:
-                            if not self.usdb.gamertag_exists(el.replace("w:", "")):
-                                raise ValueError("There was an issue listing the stat")
-                            else:
-                                winner = str(el.replace("w:", ""))
-
-                    if "l:" in el.lower():
-                        loser = el.replace("l:", "")
-                        loser = discord.utils.find(lambda m: loser.lower() in m.name.lower(), message.server.members)
-                        if loser is None:
-                            if not self.usdb.gamertag_exists(el.replace("l:", "")):
-                                raise ValueError("There was an issue listing the stat")
-                            else:
-                                loser = str(el.replace("l:", ""))
-
-                    if "note:" in el:
-                        note = el.replace("note:", "")
-                if loser is None:
-                    loser = user
-                if winner is None:
-                    winner = user
-                if loser == winner:
-                    raise ValueError("loser == winner")
-                return {"medal": medal, "user": user, "winner": winner, "loser": loser, "date": date, "note": note}
-        elif msg[0] == "!want" or msg[0] == "!unwant" or msg[0] == "!tbp":
-            try:
-                for x in self.usdb.pokemonByNumber:
-                    if x.lower() == msg[1].lower():
-                        PokemonNumber = x
-                        PokemonName = self.usdb.pokemonByNumber[x]
-                        msg[1] = PokemonName
-                        break
-                for x in self.usdb.pokemonByName:
-                    if x.lower() == msg[1].lower():
-                        PokemonName = x
-                        PokemonNumber = self.usdb.pokemonByName[x]
-                        msg[1] = PokemonName
-                        break
-            except:
-                raise ValueError("There was an issue listing the stat")
-            if (len(msg) > 1 and msg[1] in self.usdb.pokemonByName):
-                user = message.author
-                note = ""
-                for el in msg:
-                    if "note:" in el:
-                        note = el.replace("note:", "")
-                return {"PokemonNumber": PokemonNumber, "PokemonName": PokemonName, "user": user, "note": note}
-        elif msg[0] == "!tbu" or "!tbs":
-            if len(msg) <= 1:
-                user = message.author
-            elif len(msg) > 1:
-                user = discord.utils.find(lambda m: msg[1].lower() in m.name.lower(), message.server.members)
-            print(user)
-            return {"user": user}
-        elif msg[0] == "!tbp":
-            if len(msg) <= 1:
-                user = message.author
-            elif len(msg) > 1:
-                user = discord.utils.find(lambda m: msg[1].lower() in m.name.lower(), message.server.members)
-            return {"user": user}
+    def find_table_name(self, name):
+        for accepted in self.usdb.accepted_tables:
+            if accepted.lower() == name.lower():
+                return accepted
+        for accepted in self.usdb.pvp_leagues:
+            if accepted.lower() == name.lower():
+                return accepted
+        return None
 
     def up(self, message):
-        try:
-            msg_dict = self.stat_message_parse(message)
-        except ValueError as err:
-            # XXX: phase 2 add error handling
-            print(err.args)
-            return "Bidoof, sorry, something went wrong, try !help for more info"
-
-        if not self.usdb.gamertag_exists(str(msg_dict["user"])):
-            # XXX: phase 2 add "did you mean?"
-            return "user not found"
+        user = message['user'] if 'user' in message else message["raw_msg"].author
+        if not self.usdb.gamertag_exists(str(user)):
+            return user + " not found"
 
         try:
-            float(msg_dict["value"])
-            msg_dict["value"] = msg_dict["value"].replace(",", "")
+            medal = self.find_table_name(message["args"][0])
+            value = message["args"][1]
+            value = value.replace(",", "")
+            note = message['note'] if 'note' in message else ""
         except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
-        uuid = self.usdb.update_medal(
-            msg_dict["medal"],
-            msg_dict["user"],
-            msg_dict["value"],
-            msg_dict["date"],
-            msg_dict["note"])
+        if medal not in self.usdb.accepted_tables:
+            return "Bidoof, " + message["args"][0] + " can not be found"
 
-        if msg_dict["user"] != message.author:
-            bm = msg_dict["user"] + " stats were updated by " + str(message.author)
+        uuid = self.usdb.update_medal(medal, user, value, message["date"], note)
+
+        if user != message["raw_msg"].author:
+            bm = message["user"] + " stats were updated by " + str(message["raw_msg"].author)
             return bm
         else:
-            bm = bot_message.create_recent5(self.usdb, msg_dict["medal"], msg_dict["user"])
-            bm += bot_message.create_stats(self.usdb, msg_dict["medal"], msg_dict["user"])
+            bm = bot_message.create_recent5(self.usdb, medal, user)
+            bm += bot_message.create_stats(self.usdb, medal, user)
             return bm
 
     def ls(self, message):
         try:
-            msg_dict = self.stat_message_parse(message)
-        except ValueError as err:
-            # XXX: phase 2 add error handling
-            print(err.args)
+            medal = self.find_table_name(message["args"][0])
+            if len(message["args"]) > 1:
+                user = message["args"][1]
+                for server in message["client"].servers:
+                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), server.members)
+            else:
+                user = message["raw_msg"].author
+        except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
-        if msg_dict["medal"] in self.usdb.pvp_leagues:
-            bm = bot_message.create_recent_pvp10(self.usdb, msg_dict["medal"], msg_dict["user"])
-            bm += bot_message.create_stats(self.usdb, msg_dict["medal"], msg_dict["user"])
+        if not (medal in self.usdb.accepted_tables or medal in self.usdb.pvp_leagues):
+            return "There was an issue listing the stat for " + message["args"][0]
+        if not self.usdb.gamertag_exists(str(user)):
+            return user + " not found"
+
+        if medal in self.usdb.pvp_leagues:
+            bm = bot_message.create_recent_pvp10(self.usdb, medal, user)
+            bm += bot_message.create_stats(self.usdb, medal, user)
         else:
-            bm = bot_message.create_recent5(self.usdb, msg_dict["medal"], msg_dict["user"])
-            bm += bot_message.create_stats(self.usdb, msg_dict["medal"], msg_dict["user"])
+            bm = bot_message.create_recent5(self.usdb, medal, user)
+            bm += bot_message.create_stats(self.usdb, medal, user)
         return bm
 
     def uuid(self, message):
         try:
-            msg_dict = self.stat_message_parse(message)
-        except ValueError as err:
-            # XXX: phase 2 add error handling
-            print(err.args)
+            medal = self.find_table_name(message["args"][0])
+            if len(message["args"]) > 1:
+                user = message["args"][1]
+                for server in message["client"].servers:
+                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), server.members)
+            else:
+                user = message["raw_msg"].author
+        except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
-        if msg_dict["medal"] in self.usdb.pvp_leagues:
-            bm = bot_message.create_uuid_table_pvp(self.usdb, msg_dict["medal"], msg_dict["user"])
+        if not (medal in self.usdb.accepted_tables or medal in self.usdb.pvp_leagues):
+            return "There was an issue listing the stat for " + message["args"][0]
+        if not self.usdb.gamertag_exists(str(user)):
+            return user + " not found"
+
+        if medal in self.usdb.pvp_leagues:
+            bm = bot_message.create_uuid_table_pvp(self.usdb, medal, user)
         else:
-            bm = bot_message.create_uuid_table(self.usdb, msg_dict["medal"], msg_dict["user"])
+            bm = bot_message.create_uuid_table(self.usdb, medal, user)
         return bm
 
     def lb(self, message):
         try:
-            msg_dict = self.stat_message_parse(message)
-        except ValueError as err:
-            # XXX: phase 2 add error handling
-            print(err.args)
+            medal = self.find_table_name(message["args"][0])
+        except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
-        if msg_dict["medal"] in self.usdb.pvp_leagues:
-            bm = bot_message.create_elo10(self.usdb, msg_dict["medal"])
+        if not (medal in self.usdb.accepted_tables or medal in self.usdb.pvp_leagues):
+            return "There was an issue listing the stat for " + message["args"][0]
+
+        if medal in self.usdb.pvp_leagues:
+            bm = bot_message.create_elo10(self.usdb, medal)
         else:
-            bm = bot_message.create_leaderboard10(self.usdb, msg_dict["medal"])
+            bm = bot_message.create_leaderboard10(self.usdb, medal)
         return bm
 
     def delete(self, message):
+        user = message['user'] if 'user' in message else message["raw_msg"].author
+        if not self.usdb.gamertag_exists(str(user)):
+            return user + " not found"
+
         try:
-            msg_dict = self.stat_message_parse(message)
-        except ValueError as err:
-            # XXX: phase 2 add error handling
-            print(err.args)
+            medal = self.find_table_name(message["args"][0])
+            value = message["args"][1]
+            value = value.replace(",", "")
+        except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
-        self.usdb.delete_row(msg_dict["medal"], msg_dict["user"], msg_dict["value"])
-        if msg_dict["medal"] in self.usdb.pvp_leagues:
-            bm = bot_message.create_recent_pvp10(self.usdb, msg_dict["medal"], msg_dict["user"])
+        if not medal:
+            return "Bidoof, " + message["args"][0] + " can not be found"
+
+        self.usdb.delete_row(medal, user, value)
+        if medal in self.usdb.pvp_leagues:
+            bm = bot_message.create_recent_pvp10(self.usdb, medal, user)
         else:
-            bm = bot_message.create_recent5(self.usdb, msg_dict["medal"], msg_dict["user"])
+            bm = bot_message.create_recent5(self.usdb, medal, user)
         return bm
 
     def add_player(self, message):
         try:
-            msg = message.content.split()
-            if not self.usdb.gamertag_exists(str(msg[1])):
-                self.usdb.add_gamertag(str(msg[1]))
-                return "player " + msg[1] + " added"
+            player = message["args"][0]
+            if not self.usdb.gamertag_exists(player):
+                self.usdb.add_gamertag(player)
+                return "player " + player + " added"
             else:
-                return "player " + msg[1] + " already added"
+                return "player " + player + " already added"
         except:
                 return "Bidoof, sorry, something went wrong, try !help for more info"
 
     def pvp(self, message):
         try:
-            msg_dict = self.stat_message_parse(message)
-        except ValueError as err:
-            # XXX: phase 2 add error handling
-            print(err.args)
+            medal = self.find_table_name(message["args"][0])
+            if 'w' in message:
+                for server in message["client"].servers:
+                    winner = discord.utils.find(
+                        lambda m: message['w'].lower() in m.name.lower(), server.members)
+            else:
+                winner = message["raw_msg"].author
+            if 'l' in message:
+                for server in message["client"].servers:
+                    loser = discord.utils.find(
+                        lambda m: message['l'].lower() in m.name.lower(), server.members)
+            else:
+                loser = message["raw_msg"].author
+            assert not loser == winner
+            note = message['note'] if 'note' in message else ""
+        except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
+        if medal not in self.usdb.pvp_leagues:
+            return "Bidoof, " + message["args"][0] + " can not be found"
+
         self.usdb.update_pvp(
-            msg_dict["medal"], msg_dict["user"], msg_dict["winner"],
-            msg_dict["loser"], msg_dict['date'], msg_dict["note"])
-        if msg_dict["medal"] in self.usdb.pvp_leagues:
-            bm = bot_message.create_recent_pvp10(self.usdb, msg_dict["medal"], msg_dict["user"])
-            bm += bot_message.create_stats(self.usdb, msg_dict["medal"], msg_dict["user"])
+            medal, message["raw_msg"].author, winner, loser, message["date"], note)
+        if medal in self.usdb.pvp_leagues:
+            bm = bot_message.create_recent_pvp10(self.usdb, medal, message["raw_msg"].author)
+            bm += bot_message.create_stats(self.usdb, medal, message["raw_msg"].author)
         else:
             return "Bidoof, sorry, something went wrong, try !help for more info"
         return bm
 
     def want(self, message):
         try:
-            msg_dict = self.stat_message_parse(message)
-        except ValueError as err:
-            # XXX: phase 2 add error handling
-            print(err.args)
+            note = message['note'] if 'note' in message else ""
+        except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
-        self.usdb.update_trade_board(
-            msg_dict["PokemonNumber"], msg_dict["PokemonName"], msg_dict["user"], msg_dict["note"])
-        bm = "Added " + msg_dict["PokemonNumber"] + " (" + msg_dict["PokemonName"] + ") to the trade board!"
-        bm += bot_message.create_pokemon_trade_table(self.usdb, msg_dict["user"])
-        bm += bot_message.create_search_string_table(self.usdb, msg_dict["user"])
+        
+        try:
+            PokemonName = None
+            for x in self.usdb.pokemonByNumber:
+                if x.lower() == message["args"][0].lower():
+                    PokemonNumber = x
+                    PokemonName = self.usdb.pokemonByNumber[x]
+                    break
+            for x in self.usdb.pokemonByName:
+                if x.lower() == message["args"][0].lower():
+                    PokemonName = x
+                    PokemonNumber = self.usdb.pokemonByName[x]
+                    break
+        except:
+            return "Bidoof, sorry, something went wrong, try !help for more info"
+
+        if not PokemonName:
+            return "There was an issue adding " + message["args"][0]
+
+        self.usdb.update_trade_board(PokemonNumber, PokemonName, message["raw_msg"].author, note)
+        bm = "Added " + PokemonName + " (" + PokemonNumber + ") to the trade board!"
+        bm += bot_message.create_pokemon_trade_table(self.usdb, message["raw_msg"].author)
+        bm += bot_message.create_search_string_table(self.usdb, message["raw_msg"].author)
         return bm
 
     def unwant(self, message):
         try:
-            msg_dict = self.stat_message_parse(message)
-        except ValueError as err:
-            # XXX: phase 2 add error handling
-            print(err.args)
+            PokemonName = None
+            for x in self.usdb.pokemonByNumber:
+                if x.lower() == message["args"][0].lower():
+                    PokemonNumber = x
+                    PokemonName = self.usdb.pokemonByNumber[x]
+                    break
+            for x in self.usdb.pokemonByName:
+                if x.lower() == message["args"][0].lower():
+                    PokemonName = x
+                    PokemonNumber = self.usdb.pokemonByName[x]
+                    break
+        except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
-        self.usdb.delete_from_trade_board(msg_dict["PokemonName"], msg_dict["user"])
-        bm = "Removed " + msg_dict["PokemonName"] + " (" + msg_dict["PokemonNumber"] + ") from the trade board!"
+
+        if not PokemonName:
+            return "There was an issue removing " + message["args"][0]
+
+        self.usdb.delete_from_trade_board(PokemonName, message["raw_msg"].author)
+        bm = "Removed " + PokemonName + " (" + PokemonNumber + ") from the trade board!"
         return bm
 
     def tbu(self, message):
         try:
-            msg_dict = self.stat_message_parse(message)
-        except ValueError as err:
-            # XXX: phase 2 add error handling
-            print(err.args)
+            if len(message["args"]) > 0:
+                user = message["args"][0]
+                for server in message["client"].servers:
+                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), server.members)
+            else:
+                user = message["raw_msg"].author
+        except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
-        bm = bot_message.create_pokemon_trade_table(self.usdb, msg_dict["user"])
-        bm += bot_message.create_search_string_table(self.usdb, msg_dict["user"])
+
+        bm = bot_message.create_pokemon_trade_table(self.usdb, user)
+        bm += bot_message.create_search_string_table(self.usdb, user)
         return bm
 
     def tbs(self, message):
         try:
-            msg_dict = self.stat_message_parse(message)
-        except ValueError as err:
-            # XXX: phase 2 add error handling
-            print(err.args)
+            if len(message["args"]) > 0:
+                user = message["args"][0]
+                for server in message["client"].servers:
+                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), server.members)
+            else:
+                user = message["raw_msg"].author
+        except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
-        bm = bot_message.create_search_string(self.usdb, msg_dict["user"])
+
+        bm = bot_message.create_search_string(self.usdb, user)
         return bm
 
     def tbp(self, message):
         try:
-            msg_dict = self.stat_message_parse(message)
-        except ValueError as err:
-            # XXX: phase 2 add error handling
-            print(err.args)
+            PokemonName = None
+            for x in self.usdb.pokemonByNumber:
+                if x.lower() == message["args"][0].lower():
+                    PokemonNumber = x
+                    PokemonName = self.usdb.pokemonByNumber[x]
+                    break
+            for x in self.usdb.pokemonByName:
+                if x.lower() == message["args"][0].lower():
+                    PokemonName = x
+                    PokemonNumber = self.usdb.pokemonByName[x]
+                    break
+        except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
-        bm = bot_message.create_per_pokemon_trade_table(self.usdb, msg_dict["PokemonName"])
+
+        if not PokemonName:
+            return "There was an issue finding " + message["args"][0]
+
+        bm = bot_message.create_per_pokemon_trade_table(self.usdb, PokemonName)
         return bm

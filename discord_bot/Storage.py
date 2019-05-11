@@ -12,6 +12,7 @@ class UserStats:
     """
     def __init__(self, database_name="test.db"):
         # setup table catagories
+        print("loading_database...")
         self.accepted_tables = []
         self.basic_tables = []
         self.badge_tables = []
@@ -49,6 +50,7 @@ class UserStats:
         self.conn = sqlite3.connect(database_name)
         self.c = self.conn.cursor()
         self.init_table(data["tables"])
+        print("loading complete")
 
     def init_table(self, tables):
         """
