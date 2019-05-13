@@ -1,7 +1,7 @@
 {
     "settings":{
         "environment": "production",
-        "discord_token": "< discord_token_api_token >"
+        "discord_token": "< discord_token_api_token >",
         "help": true,
         "record-keeping": true,
         "elo": true,
@@ -12,7 +12,7 @@
         "database": "production.db",
         "discord_channel": "< discord_channel >",
         "google_sheet": {
-            "active": true,
+            "active": false,
             "spreadsheet_id": "< google_api_token >",
             "path_to_token": "./google-sheets-creds/token.json"
         }
