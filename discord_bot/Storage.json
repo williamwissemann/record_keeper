@@ -158,6 +158,28 @@
                     "accepted": false
                 }
             }
+        },
+        "friend_board": {
+            "table_names": {
+                "FRIEND_BOARD": "FRIEND_BOARD"
+            },
+            "table": {
+                "init": {
+                    "sql": "(uuid text, gamertag1 text, gamertag2 text, gamertag2id text, PRIMARY KEY (gamertag1, gamertag2) )",
+                    "accepted": false
+                }
+            }
+        },
+        "active_board": {
+            "table_names": {
+                "ACTIVE_BOARD": "ACTIVE_BOARD"
+            },
+            "table": {
+                "init": {
+                    "sql": "(uuid text, gamertag text, status text, PRIMARY KEY (gamertag) )",
+                    "accepted": false
+                }
+            }
         }
     },
     "pokemon":{

@@ -337,6 +337,64 @@ class UserStats:
             return float(sum(average_increase)) / day_diff
         return 0.0
 
+    @update_decorator
+    def update_friend_board(self, gamertag1, gamertag2, gamertag2id):
+        id = uuid.uuid4()
+        sql = str(
+            "INSERT OR REPLACE INTO FRIEND_BOARD" +
+            " VALUES( " +
+            "'" + str(id) + "'," +
+            "'" + str(gamertag1) + "'," +
+            "'" + str(gamertag2) + "'," +
+            "'" + str(gamertag2id) + "')")
+        return sql
+
+    @update_decorator
+    def delete_from_friend_board(self, gamertag1, gamertag2):
+        sql = str(
+            "DELETE FROM FRIEND_BOARD" +
+            " WHERE gamertag1 = '" + str(gamertag1) + "' AND" +
+            " gamertag2 = '" + str(gamertag2) + "'")
+        return sql
+
+    @get_decorator
+    def get_friends(self, gamertag, limit=50):
+        sql = str(
+            "SELECT gamertag1, gamertag2, gamertag2id, gamertag, IFNULL(status, 'Offline') " +
+            " FROM FRIEND_BOARD " +
+            " LEFT JOIN ACTIVE_BOARD " +
+            " ON gamertag2 = gamertag " +
+            " WHERE gamertag1 = '" + str(gamertag) + "'" +
+            " ORDER BY status DESC, gamertag2 ASC" +
+            " LIMIT " + str(limit))
+        print(sql)
+        return sql
+
+    @get_decorator
+    def get_online_friends(self, gamertag, limit=50):
+        sql = str(
+            "SELECT gamertag1, gamertag2, gamertag2id, gamertag, IFNULL(status, 'Offline') as status " +
+            " FROM FRIEND_BOARD " +
+            " LEFT JOIN ACTIVE_BOARD " +
+            " ON gamertag2 = gamertag " +
+            " WHERE gamertag1 = '" + str(gamertag) + "'" +
+            " AND status = 'Online' " +
+            " ORDER BY status DESC, gamertag2 ASC" +
+            " LIMIT " + str(limit))
+        print(sql)
+        return sql
+
+    @update_decorator
+    def update_active_board(self, gamertag, status):
+        id = uuid.uuid4()
+        sql = str(
+            "INSERT OR REPLACE INTO ACTIVE_BOARD" +
+            " VALUES( " +
+            "'" + str(id) + "'," +
+            "'" + str(gamertag) + "'," +
+            "'" + str(status) + "')")
+        return sql
+
 if __name__ == "__main__":
     # XXX Phase 2
     # replacing this junk with some Unit testing
@@ -357,3 +415,4 @@ if __name__ == "__main__":
     print()
     for x in d.get_recent("DepotAgent", "test_account"):
         print(x)
+

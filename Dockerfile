@@ -14,7 +14,7 @@ RUN set -ex \
     && apt-get install python3-pip -y -q \
     && apt-get install cron \
     # discord.py
-    && pip3 install discord.py==0.16.12 \
+    && pip3 install discord.py==1.* \
     # google api
     && pip3 install --upgrade google-api-python-client \
     && pip3 install --upgrade oauth2client

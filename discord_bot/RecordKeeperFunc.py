@@ -170,8 +170,10 @@ class RecordKeeper:
             medal = self.find_table_name(message["args"][0])
             if len(message["args"]) > 1:
                 user = message["args"][1]
-                for server in message["client"].servers:
-                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), server.members)
+                for guild in message["client"].guilds:
+                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), guild.members)
+                    if user:
+                        break
             else:
                 user = message["raw_msg"].author
         except:
@@ -195,8 +197,10 @@ class RecordKeeper:
             medal = self.find_table_name(message["args"][0])
             if len(message["args"]) > 1:
                 user = message["args"][1]
-                for server in message["client"].servers:
-                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), server.members)
+                for guild in message["client"].guilds:
+                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), guild.members)
+                    if user:
+                        break
             else:
                 user = message["raw_msg"].author
         except:
@@ -265,15 +269,17 @@ class RecordKeeper:
         try:
             medal = self.find_table_name(message["args"][0])
             if 'w' in message:
-                for server in message["client"].servers:
-                    winner = discord.utils.find(
-                        lambda m: message['w'].lower() in m.name.lower(), server.members)
+                for guild in message["client"].guilds:
+                    winner = discord.utils.find(lambda m: message['w'].lower() in m.name.lower(), guild.members)
+                    if winner:
+                        break
             else:
                 winner = message["raw_msg"].author
             if 'l' in message:
-                for server in message["client"].servers:
-                    loser = discord.utils.find(
-                        lambda m: message['l'].lower() in m.name.lower(), server.members)
+                for guild in message["client"].guilds:
+                    loser = discord.utils.find(lambda m: message['l'].lower() in m.name.lower(), guild.members)
+                    if looser:
+                        break
             else:
                 loser = message["raw_msg"].author
             assert not loser == winner
@@ -350,8 +356,10 @@ class RecordKeeper:
         try:
             if len(message["args"]) > 0:
                 user = message["args"][0]
-                for server in message["client"].servers:
-                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), server.members)
+                for guild in message["client"].guilds:
+                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), guild.members)
+                    if user:
+                        break
             else:
                 user = message["raw_msg"].author
         except:
@@ -365,8 +373,10 @@ class RecordKeeper:
         try:
             if len(message["args"]) > 0:
                 user = message["args"][0]
-                for server in message["client"].servers:
-                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), server.members)
+                for guild in message["client"].guilds:
+                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), guild.members)
+                    if user:
+                        break
             else:
                 user = message["raw_msg"].author
         except:
@@ -396,3 +406,128 @@ class RecordKeeper:
 
         bm = bot_message.create_per_pokemon_trade_table(self.usdb, PokemonName)
         return bm
+
+    def tbp(self, message):
+        try:
+            PokemonName = None
+            for x in self.usdb.pokemonByNumber:
+                if x.lower() == message["args"][0].lower():
+                    PokemonNumber = x
+                    PokemonName = self.usdb.pokemonByNumber[x]
+                    break
+            for x in self.usdb.pokemonByName:
+                if x.lower() == message["args"][0].lower():
+                    PokemonName = x
+                    PokemonNumber = self.usdb.pokemonByName[x]
+                    break
+        except:
+            return "Bidoof, sorry, something went wrong, try !help for more info"
+
+        if not PokemonName:
+            return "There was an issue finding " + message["args"][0]
+
+        bm = bot_message.create_per_pokemon_trade_table(self.usdb, PokemonName)
+        return bm
+
+    def addfriend(self, message):
+        try:
+            user = message["args"][0]
+            for guild in message["client"].guilds:
+                print(guild)
+                found_user = discord.utils.find(
+                    lambda m: user.lower() in m.name.lower() or
+                    (user.lower() in str(m.nick).lower() and m.nick),
+                    guild.members)
+                if found_user:
+                    break
+        except:
+            return "Bidoof, sorry, something went wrong"
+
+        author = "<@!" + str(message["raw_msg"].author.id) + ">"
+        if found_user:
+            gt1 = message["raw_msg"].author.name + "#" + message["raw_msg"].author.discriminator
+            gt2 = found_user.name + "#" + found_user.discriminator
+            if gt1 == gt2:
+                return "can't add yourself as a friend"
+            self.usdb.update_friend_board(gt1, gt2, found_user.id)
+            self.usdb.update_friend_board(gt2, gt1, message["raw_msg"].author.id)
+            friend = "<@!" + str(found_user.id) + ">"
+            return author + ", " + friend + " was added to your ultra friend list!"
+        return author + " could not find a user containing " + user
+
+    def removefriend(self, message):
+        try:
+            user = message["args"][0]
+            for guild in message["client"].guilds:
+                print(guild)
+                found_user = discord.utils.find(
+                    lambda m: user.lower() in m.name.lower() or
+                    (user.lower() in str(m.nick).lower() and m.nick),
+                    guild.members)
+                if found_user:
+                    break
+        except:
+            return "Bidoof, sorry, something went wrong"
+
+        author = "<@!" + str(message["raw_msg"].author.id) + ">"
+        if found_user:
+            gt1 = message["raw_msg"].author.name + "#" + message["raw_msg"].author.discriminator
+            gt2 = found_user.name + "#" + found_user.discriminator
+            print(gt1, gt2)
+            self.usdb.delete_from_friend_board(gt1, gt2)
+            self.usdb.delete_from_friend_board(gt2, gt1)
+            friend = "<@!" + str(found_user.id) + ">"
+            return author + ", " + friend + " was removed to your ultra friend list!"
+        return author + " could not find a user containing " + user
+
+    def list_friends(self, message):
+        try:
+            if len(message["args"]) > 0:
+                user = message["args"][0]
+                for guild in message["client"].guilds:
+                    found_user = discord.utils.find(
+                        lambda m: user.lower() in m.name.lower() or
+                        (user.lower() in str(m.nick).lower() and m.nick),
+                        guild.members)
+                    if found_user:
+                        break
+                if found_user.nick:
+                    display_name = found_user.nick
+                else:
+                    display_name = found_user.name
+            else:
+                found_user = message["raw_msg"].author.name + "#" + message["raw_msg"].author.discriminator
+                if message["raw_msg"].author.nick:
+                    display_name = message["raw_msg"].author.nick
+                else:
+                    display_name = message["raw_msg"].author.name
+        except:
+            return "Bidoof, sorry, something went wrong"
+
+        rm = bot_message.create_friends_table(self.usdb, found_user, display_name, message["client"])
+        return rm
+
+    def ping_friends(self, message):
+        try:
+            found_user = message["raw_msg"].author.name + "#" + message["raw_msg"].author.discriminator
+            if message["raw_msg"].author.nick:
+                display_name = message["raw_msg"].author.nick
+            else:
+                display_name = message["raw_msg"].author.name
+        except:
+            return "Bidoof, sorry, something went wrong"
+
+        rm = bot_message.create_ping_table(self.usdb, found_user, display_name)
+        return rm
+
+    def online(self, message):
+        author = "<@!" + str(message["raw_msg"].author.id) + ">"
+        gt = message["raw_msg"].author.name + "#" + message["raw_msg"].author.discriminator
+        self.usdb.update_active_board(gt, "Online")
+        return author + " you are now online & accepting invites! (ง'̀-'́)ง"
+
+    def offline(self, message):
+        author = "<@!" + str(message["raw_msg"].author.id) + ">"
+        gt = message["raw_msg"].author.name + "#" + message["raw_msg"].author.discriminator
+        self.usdb.update_active_board(gt, "Offline")
+        return author + " you are now offline & no longer accepting invites"
