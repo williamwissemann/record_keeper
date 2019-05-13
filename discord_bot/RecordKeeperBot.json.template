@@ -2,6 +2,11 @@
     "settings":{
         "environment": "production",
         "discord_token": "< discord_token_api_token >"
+        "help": true,
+        "record-keeping": true,
+        "elo": true,
+        "trading": true,
+        "matchmaking": true
     },
     "production":{
         "database": "production.db",

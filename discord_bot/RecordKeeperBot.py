@@ -81,62 +81,65 @@ async def on_message(message):
         bot_msg = None
 
         print(user_msg)
-        if user_msg["cmd"].lower() == 'help':
+        if user_msg["cmd"].lower() == 'help' and settings["settings"]["help"]:
             # creates the help page
             bot_msg = keeper.help()
-        elif user_msg["cmd"].lower() == 'medals':
+        elif user_msg["cmd"].lower() == 'medals' and settings["settings"]["help"]:
             # creates the medal list help page
             bot_msg = keeper.medals()
-        elif user_msg["cmd"].lower() == 'raid':
+        elif user_msg["cmd"].lower() == 'raid' and settings["settings"]["help"]:
             # generate the raid list help page
             bot_msg = keeper.raid(user_msg)
-        elif user_msg["cmd"].lower() == 'up':
+        elif user_msg["cmd"].lower() == 'up' and settings["settings"]["record-keeping"]:
             # updates a given stat
             bot_msg = keeper.up(user_msg)
-        elif user_msg["cmd"].lower() == 'ls':
+        elif user_msg["cmd"].lower() == 'ls' and settings["settings"]["record-keeping"]:
             # lists stats for a given user
             bot_msg = keeper.ls(user_msg)
-        elif user_msg["cmd"].lower() == 'lb':
+        elif user_msg["cmd"].lower() == 'lb' and settings["settings"]["record-keeping"]:
             # creates a leaderboard for a given stat
             bot_msg = keeper.lb(user_msg)
-        elif user_msg["cmd"].lower() == 'add-player':
+        elif user_msg["cmd"].lower() == 'add-player' and settings["settings"]["elo"]:
             # manually add player to track player outside discord
             bot_msg = keeper.add_player(user_msg)
-        elif user_msg["cmd"].lower() == 'uuid':
+        elif user_msg["cmd"].lower() == 'uuid' and settings["settings"]["record-keeping"]:
             # generate uuid(s) table
             bot_msg = keeper.uuid(user_msg)
-        elif user_msg["cmd"].lower() == 'del':
+        elif user_msg["cmd"].lower() == 'del' and settings["settings"]["record-keeping"]:
             # delete a data point based a (medal, uuid) pair
             bot_msg = keeper.delete(user_msg)
-        elif user_msg["cmd"].lower() == 'pvp':
+        elif user_msg["cmd"].lower() == 'pvp' and settings["settings"]["elo"]:
             # handles pvp win / lose
             bot_msg = keeper.pvp(user_msg)
-        elif user_msg["cmd"].lower() == 'want':
+        elif user_msg["cmd"].lower() == 'want' and settings["settings"]["trading"]:
             # adds wanted pokemon to tradeboard
             bot_msg = keeper.want(user_msg)
-        elif user_msg["cmd"].lower() == 'unwant':
+        elif user_msg["cmd"].lower() == 'unwant' and settings["settings"]["trading"]:
             # delete unwanted pokemon from tradeboard
             bot_msg = keeper.unwant(user_msg)
-        elif user_msg["cmd"].lower() == 'tbu':
+        elif user_msg["cmd"].lower() == 'tbu' and settings["settings"]["trading"]:
             # list tradeboard by user
             bot_msg = keeper.tbu(user_msg)
-        elif user_msg["cmd"].lower() == 'tbs':
+        elif user_msg["cmd"].lower() == 'tbs' and settings["settings"]["trading"]:
             # generates a search string for a user
             bot_msg = keeper.tbs(user_msg)
-        elif user_msg["cmd"].lower() == 'tbp':
+        elif user_msg["cmd"].lower() == 'tbp' and settings["settings"]["trading"]:
             # generates a tradeboard for a given pokemon
             bot_msg = keeper.tbp(user_msg)
-        elif user_msg["cmd"].lower() == 'add-friend' or user_msg["cmd"].lower() == 'auf':
+        elif ((user_msg["cmd"].lower() == 'add-friend' or user_msg["cmd"].lower() == 'auf') and
+              settings["settings"]["matchmaking"]):
             bot_msg = keeper.addfriend(user_msg)
-        elif user_msg["cmd"].lower() == 'remove-friend' or user_msg["cmd"].lower() == 'ruf':
+        elif ((user_msg["cmd"].lower() == 'remove-friend' or user_msg["cmd"].lower() == 'ruf') and
+              settings["settings"]["matchmaking"]):
             bot_msg = keeper.removefriend(user_msg)
-        elif user_msg["cmd"].lower() == "friends":
+        elif user_msg["cmd"].lower() == "friends" and settings["settings"]["matchmaking"]:
             bot_msg = keeper.list_friends(user_msg)
-        elif user_msg["cmd"].lower() == 'online':
+        elif user_msg["cmd"].lower() == 'online' and settings["settings"]["matchmaking"]:
             bot_msg = keeper.online(user_msg)
-        elif user_msg["cmd"].lower() == 'offline':
+        elif user_msg["cmd"].lower() == 'offline' and settings["settings"]["matchmaking"]:
             bot_msg = keeper.offline(user_msg)
-        elif user_msg["cmd"].lower() == 'ping-friends' or user_msg["cmd"].lower() == 'ltb':
+        elif ((user_msg["cmd"].lower() == 'ping-friends' or user_msg["cmd"].lower() == 'ltb') and
+                settings["settings"]["matchmaking"]):
             await update_message.delete()
             await message.channel.send(keeper.ping_friends(user_msg))
             delete_msg = True
