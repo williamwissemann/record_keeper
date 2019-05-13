@@ -34,7 +34,7 @@ async def on_ready():
     try:
         """ print bot information """
         print("> signed in as: " + client.user.name)
-        print("> with client id: " + client.user.id)
+        print("> with client id: " + str(client.user.id))
         print('> Discord.py Version: {}'.format(discord.__version__))
     except Exception as e:
         print(e)
@@ -45,12 +45,14 @@ async def on_message(message):
     """ on new message """
     # restrict DMs to bot members
     member_found = False
-    for server in client.servers:
-        member_found = message.author in server.members
+    for guild in client.guilds:
+        member_found = message.author in guild.members
+        if member_found:
+            break
 
     # lock to specified channels
     on_bot_channel = True
-    if message.server:
+    if message.guild:
         if (not str(message.channel) == settings["production"]["discord_channel"] and
                 not str(message.channel) == settings["development"]["discord_channel"]):
             on_bot_channel = False
@@ -65,7 +67,7 @@ async def on_message(message):
     # setup prod-bot to ignore testing channels
     if (str(message.channel) == dev_environment['discord_channel'] and
             expected_channel != dev_environment['discord_channel']):
-        print(prod_channel + " stay away")
+        print("prod-bot stay away")
         return False
 
     user_msg = message_parser(message.content)
@@ -74,7 +76,8 @@ async def on_message(message):
     user_msg["raw_msg"] = message
     user_msg["client"] = client
     if user_msg and member_found and on_bot_channel:
-        update_message = await client.send_message(message.channel, 'updating....')
+        delete_msg = False
+        update_message = await message.channel.send('updating....')
         bot_msg = None
 
         print(user_msg)
@@ -123,21 +126,40 @@ async def on_message(message):
         elif user_msg["cmd"].lower() == 'tbp':
             # generates a tradeboard for a given pokemon
             bot_msg = keeper.tbp(user_msg)
+        elif user_msg["cmd"].lower() == 'add-friend' or user_msg["cmd"].lower() == 'auf':
+            bot_msg = keeper.addfriend(user_msg)
+        elif user_msg["cmd"].lower() == 'remove-friend' or user_msg["cmd"].lower() == 'ruf':
+            bot_msg = keeper.removefriend(user_msg)
+        elif user_msg["cmd"].lower() == "friends":
+            bot_msg = keeper.list_friends(user_msg)
+        elif user_msg["cmd"].lower() == 'online':
+            bot_msg = keeper.online(user_msg)
+        elif user_msg["cmd"].lower() == 'offline':
+            bot_msg = keeper.offline(user_msg)
+        elif user_msg["cmd"].lower() == 'ping-friends' or user_msg["cmd"].lower() == 'ltb':
+            await update_message.delete()
+            await message.channel.send(keeper.ping_friends(user_msg))
+            delete_msg = True
         elif user_msg["cmd"].lower() == 'roll' or user_msg["cmd"].lower() == 'd20':
-            # allow for global server commands
+            # allow for global guild commands
             pass
         else:
-            await client.edit_message(
-                update_message,
-                "Bidoof, sorry, something went wrong, try !help for more info")
+            await update_message.edit(
+                content="Bidoof, sorry, something went wrong, try !help for more info")
 
         if bot_msg:
-            await client.edit_message(update_message, bot_msg)
+            if delete_msg:
+                pass
+            else:
+                await update_message.edit(content=bot_msg)
 
     # global_command
     if user_msg["cmd"].lower() == 'roll' or user_msg["cmd"].lower() == 'd20':
+        try:
+            await update_message.edit(content="rolling...")
+        except:
+            update_message = await message.channel.send("rolling...")
         # dice rolls d6
-        await client.edit_message(update_message, "rolling...")
         await asyncio.sleep(2)
         if len(user_msg["args"]) > 0:
             counter = random.randint(1, int(user_msg["args"][0]))
@@ -146,7 +168,7 @@ async def on_message(message):
         else:
             counter = random.randint(1, 6)
         bot_msg = '{} rolled a {}'.format(message.author.name, counter)
-        await client.edit_message(update_message, bot_msg)
+        await update_message.edit(content=bot_msg)
 
 # starts bot
 if __name__ == "__main__":

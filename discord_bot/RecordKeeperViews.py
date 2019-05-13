@@ -386,3 +386,92 @@ def create_uuid_table_pvp(usdb, medal, gamertag):
             return "Bidoof, nothing to see here"
     else:
         return "Bidoof"
+
+
+def create_per_pokemon_trade_table(usdb, pokemon):
+    """
+    Creates a most recent 5 for a medal, gamertag
+    """
+    list = usdb.get_trade_board_by_pokemon(str(pokemon))
+    if len(list) > 0:
+        msg = "```"
+        msg += "Pokemon      |Note   \n"
+        msg += "-------------+-------------\n"
+        for el in list:
+            u, g, p, num, n = el
+            n = n[0:10]
+            while len(n) < 12:
+                n += " "
+            g = g.split("#")[0][0:12]
+            while len(g) < 12:
+                g += " "
+            msg += str(g) + " | " + str(n) + "\n"
+        msg += "```"
+        return msg
+    else:
+        return "Bidoof, nothing to see here"
+
+
+def create_friends_table(usdb, gamertag, display_name, client):
+    """
+    Creates a most recent 5 for a medal, gamertag
+    """
+    list = usdb.get_friends(str(gamertag))
+    print(list)
+    if len(list) > 0:
+        try:
+            name = gamertag.name
+        except:
+            name = gamertag
+
+        g1, g2, gt2id, gt, status = list[0]
+        gamertag = g1.split("#")[0]
+        msg = str(display_name) + "'s friend list \n```"
+        msg += "Friends                | Status \n"
+        msg += "-----------------------+------- \n"
+        for el in list[0:25]:
+            g1, g2, gt2id, gt, status = el
+            g = g2.split("#")[0][0:15]
+            try:
+                for guild in client.guilds:
+                    found_user = discord.utils.find(
+                        lambda m: g.lower() in m.name.lower(),
+                        guild.members)
+                    if found_user:
+                        break
+                if found_user.nick:
+                    g = found_user.nick
+                else:
+                    g = found_user.name
+            except:
+                pass
+            while len(g) < 22:
+                g += " "
+            msg += str(g) + " | " + status + "\n"
+        msg += "```"
+        return msg
+    else:
+        return "Your friend's list is empty"
+
+
+def create_ping_table(usdb, gamertag, display_name):
+    """
+    Creates a most recent 5 for a medal, gamertag
+    """
+    list = usdb.get_online_friends(str(gamertag))
+    print(list)
+    if len(list) > 0:
+        msg = str(display_name) + " is looking to battle! \n"
+
+        friends = False
+        for cnt in range(0, min(3, len(list))):
+            randomint = random.randint(0, len(list) - 1)
+            g1, g2, gt2id, gt, status = list.pop(randomint)
+            msg += "<@!" + gt2id + "> "
+            friends = True
+
+        if not friends:
+            return str(display_name) + " you have no friends online"
+        return msg
+    else:
+        return str(display_name) + " you have no friends online or your friend's list is empty"
