@@ -304,7 +304,7 @@ class RecordKeeper:
             note = message['note'] if 'note' in message else ""
         except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
-        
+
         try:
             PokemonName = None
             for x in self.usdb.pokemonByNumber:

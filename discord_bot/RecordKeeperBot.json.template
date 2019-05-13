@@ -6,7 +6,9 @@
         "record-keeping": true,
         "elo": true,
         "trading": true,
-        "matchmaking": true
+        "matchmaking": true,
+        "global_commands": true,
+        "try_help_message": true
     },
     "production":{
         "database": "production.db",
