@@ -137,7 +137,7 @@ async def on_message(message):
             await update_message.edit(content=keeper.removefriend(user_msg))
         elif user_msg["cmd"].lower() == "friends" and settings["settings"]["matchmaking"]:
             # list friends friends list
-            await message.channel.list_friends(keeper.list_friends(user_msg))
+            await message.channel.send(keeper.list_friends(user_msg))
         elif user_msg["cmd"].lower() == 'online' and settings["settings"]["matchmaking"]:
             # set status to online
             await message.channel.send(keeper.online(user_msg))
