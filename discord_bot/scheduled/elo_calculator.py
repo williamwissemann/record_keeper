@@ -21,6 +21,9 @@ def EloRating(Ra, Rb, K, d):
     if (d == 1):
         Ra = Ra + K * (1 - Pa)
         Rb = Rb + K * (0 - Pb)
+    elif (d == 0.5):
+        Ra = Ra + K * (0.5 - Pa)
+        Rb = Rb + K * (0.5 - Pb)
     else:
         Ra = Ra + K * (0 - Pa)
         Rb = Rb + K * (1 - Pb)

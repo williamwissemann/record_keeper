@@ -270,15 +270,21 @@ class RecordKeeper:
             medal = self.find_table_name(message["args"][0])
             if 'w' in message:
                 for guild in message["client"].guilds:
-                    winner = discord.utils.find(lambda m: message['w'].lower() in m.name.lower(), guild.members)
+                    winner = discord.utils.find(
+                        lambda m: message['w'].lower() in m.name.lower() or
+                        (message['w'].lower() in str(m.nick).lower() and m.nick),
+                        guild.members)
                     if winner:
                         break
             else:
                 winner = message["raw_msg"].author
             if 'l' in message:
                 for guild in message["client"].guilds:
-                    loser = discord.utils.find(lambda m: message['l'].lower() in m.name.lower(), guild.members)
-                    if looser:
+                    loser = discord.utils.find(
+                        lambda m: message['l'].lower() in m.name.lower() or
+                        (message['l'].lower() in str(m.nick).lower() and m.nick),
+                        guild.members)
+                    if loser:
                         break
             else:
                 loser = message["raw_msg"].author
@@ -304,7 +310,7 @@ class RecordKeeper:
             note = message['note'] if 'note' in message else ""
         except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
-
+              
         try:
             PokemonName = None
             for x in self.usdb.pokemonByNumber:
