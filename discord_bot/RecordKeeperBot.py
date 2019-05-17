@@ -79,7 +79,7 @@ async def on_message(message):
         delete_msg = False
         bot_msg = None
 
-        print(user_msg)
+        print(str(user_msg).encode('utf-8'))
         if user_msg["cmd"].lower() == 'help' and settings["settings"]["help"]:
             # creates the help page
             await message.channel.send(keeper.help())

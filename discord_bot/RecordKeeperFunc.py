@@ -1,4 +1,5 @@
 from Storage import UserStats
+from RecordKeeperUtils import get_discord_id
 
 import RecordKeeperViews as bot_message
 
@@ -140,9 +141,12 @@ class RecordKeeper:
         return None
 
     def up(self, message):
-        user = message['user'] if 'user' in message else message["raw_msg"].author
-        if not self.usdb.gamertag_exists(str(user)):
-            return user + " not found"
+        if 'user' in message:
+            identifier = get_discord_id(message, message['user'])
+        else:
+            identifier = message["raw_msg"].author.id
+        if not identifier:
+            return "Bidoof, cannot find user"
 
         try:
             medal = self.find_table_name(message["args"][0])
@@ -155,66 +159,63 @@ class RecordKeeper:
         if medal not in self.usdb.accepted_tables:
             return "Bidoof, " + message["args"][0] + " can not be found"
 
-        uuid = self.usdb.update_medal(medal, user, value, message["date"], note)
+        try:
+            uuid = self.usdb.update_medal(medal, str(identifier), value, message["date"], note)
+        except:
+            return "Bidoof, " + value + " can not be found"
 
-        if user != message["raw_msg"].author:
-            bm = message["user"] + " stats were updated by " + str(message["raw_msg"].author)
+        if identifier != str(message["raw_msg"].author.id):
+            bm = "<@!" + str(identifier) + "> stats were updated by " + "<@!" + str(message["raw_msg"].author.id) + ">"
             return bm
         else:
-            bm = bot_message.create_recent5(self.usdb, medal, user)
-            bm += bot_message.create_stats(self.usdb, medal, user)
+            bm = bot_message.create_recent5(self.usdb, medal, str(identifier))
+            bm += bot_message.create_stats(self.usdb, medal, str(identifier))
             return bm
 
     def ls(self, message):
         try:
             medal = self.find_table_name(message["args"][0])
-            if len(message["args"]) > 1:
-                user = message["args"][1]
-                for guild in message["client"].guilds:
-                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), guild.members)
-                    if user:
-                        break
-            else:
-                user = message["raw_msg"].author
         except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
+        if len(message["args"]) > 1:
+            search_term = message["args"][1]
+            identifier = get_discord_id(message, search_term)
+        else:
+            identifier = message["raw_msg"].author.id
+        if not identifier:
+            return "Bidoof, cannot find user"
 
         if not (medal in self.usdb.accepted_tables or medal in self.usdb.pvp_leagues):
             return "There was an issue listing the stat for " + message["args"][0]
-        if not self.usdb.gamertag_exists(str(user)):
-            return user + " not found"
 
         if medal in self.usdb.pvp_leagues:
-            bm = bot_message.create_recent_pvp10(self.usdb, medal, user)
-            bm += bot_message.create_stats(self.usdb, medal, user)
+            bm = bot_message.create_recent_pvp10(self.usdb, medal, identifier)
+            bm += bot_message.create_stats(self.usdb, medal, identifier)
         else:
-            bm = bot_message.create_recent5(self.usdb, medal, user)
-            bm += bot_message.create_stats(self.usdb, medal, user)
+            bm = bot_message.create_recent5(self.usdb, medal, identifier)
+            bm += bot_message.create_stats(self.usdb, medal, identifier)
         return bm
 
     def uuid(self, message):
         try:
             medal = self.find_table_name(message["args"][0])
-            if len(message["args"]) > 1:
-                user = message["args"][1]
-                for guild in message["client"].guilds:
-                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), guild.members)
-                    if user:
-                        break
-            else:
-                user = message["raw_msg"].author
         except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
+        if len(message["args"]) > 1:
+            search_term = message["args"][1]
+            identifier = get_discord_id(message, search_term)
+        else:
+            identifier = message["raw_msg"].author.id
+        if not identifier:
+            return "Bidoof, cannot find user"
 
         if not (medal in self.usdb.accepted_tables or medal in self.usdb.pvp_leagues):
             return "There was an issue listing the stat for " + message["args"][0]
-        if not self.usdb.gamertag_exists(str(user)):
-            return user + " not found"
 
         if medal in self.usdb.pvp_leagues:
-            bm = bot_message.create_uuid_table_pvp(self.usdb, medal, user)
+            bm = bot_message.create_uuid_table_pvp(self.usdb, medal, identifier)
         else:
-            bm = bot_message.create_uuid_table(self.usdb, medal, user)
+            bm = bot_message.create_uuid_table(self.usdb, medal, identifier)
         return bm
 
     def lb(self, message):
@@ -227,15 +228,18 @@ class RecordKeeper:
             return "There was an issue listing the stat for " + message["args"][0]
 
         if medal in self.usdb.pvp_leagues:
-            bm = bot_message.create_elo10(self.usdb, medal)
+            bm = bot_message.create_elo10(self.usdb, medal, message)
         else:
-            bm = bot_message.create_leaderboard10(self.usdb, medal)
+            bm = bot_message.create_leaderboard10(self.usdb, medal, message)
         return bm
 
     def delete(self, message):
-        user = message['user'] if 'user' in message else message["raw_msg"].author
-        if not self.usdb.gamertag_exists(str(user)):
-            return user + " not found"
+        if 'user' in message:
+            identifier = get_discord_id(message, message['user'])
+        else:
+            identifier = message["raw_msg"].author.id
+        if not identifier:
+            return "Bidoof, cannot find user"
 
         try:
             medal = self.find_table_name(message["args"][0])
@@ -247,11 +251,11 @@ class RecordKeeper:
         if not medal:
             return "Bidoof, " + message["args"][0] + " can not be found"
 
-        self.usdb.delete_row(medal, user, value)
+        self.usdb.delete_row(medal, identifier, value)
         if medal in self.usdb.pvp_leagues:
-            bm = bot_message.create_recent_pvp10(self.usdb, medal, user)
+            bm = bot_message.create_recent_pvp10(self.usdb, medal, identifier)
         else:
-            bm = bot_message.create_recent5(self.usdb, medal, user)
+            bm = bot_message.create_recent5(self.usdb, medal, identifier)
         return bm
 
     def add_player(self, message):
@@ -268,27 +272,26 @@ class RecordKeeper:
     def pvp(self, message):
         try:
             medal = self.find_table_name(message["args"][0])
+
+            """ XXX sort this out, add a tie
+            if 't' in message:
+                tied = get_discord_id(message, message['t'])
+            else:
+            """"
             if 'w' in message:
-                for guild in message["client"].guilds:
-                    winner = discord.utils.find(
-                        lambda m: message['w'].lower() in m.name.lower() or
-                        (message['w'].lower() in str(m.nick).lower() and m.nick),
-                        guild.members)
-                    if winner:
-                        break
+                winner = get_discord_id(message, message['w']).id
             else:
-                winner = message["raw_msg"].author
+                winner = message["raw_msg"].author.id
+
             if 'l' in message:
-                for guild in message["client"].guilds:
-                    loser = discord.utils.find(
-                        lambda m: message['l'].lower() in m.name.lower() or
-                        (message['l'].lower() in str(m.nick).lower() and m.nick),
-                        guild.members)
-                    if loser:
-                        break
+                loser = get_discord_id(message, message['l']).id
             else:
-                loser = message["raw_msg"].author
+                loser = message["raw_msg"].author.id
+
             assert not loser == winner
+            assert loser
+            assert winner
+
             note = message['note'] if 'note' in message else ""
         except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
