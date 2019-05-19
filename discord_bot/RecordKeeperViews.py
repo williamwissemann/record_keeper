@@ -227,8 +227,8 @@ def create_recent_pvp10(usdb, message, medal, gamertag):
     if len(list) > 0:
         last_u, d, _, gw, _, _, gl, _, _, t, n = list[0]
         msg = "<@!" + str(gamertag) + "> 's last 10 entries for " + medal + "\n" + "```"
-        msg += "Note     | outcome      \n"
-        msg += "---------+------------------------\n"
+        msg += "Battle Log      \n"
+        msg += "----------------------------------\n"
         for el in list[0:10]:
             u, d, _, gw, _, _, gl, _, _, t, n = el
             d = d.split(".")[0]
@@ -252,9 +252,9 @@ def create_recent_pvp10(usdb, message, medal, gamertag):
             gw = gw.split("#")[0][0:10]
             gl = gl.split("#")[0][0:10]
             if int(t):
-                msg += str(n) + " | " + str(gw) + " tied " + str(gl) + "\n"
+                msg += str(gw) + " tied " + str(gl) + "\n"
             else:
-                msg += str(n) + " | " + str(gw) + " beat " + str(gl) + "\n"
+                msg += str(gw) + " beat " + str(gl) + "\n"
         msg += "```"
         return msg
     else:
