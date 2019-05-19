@@ -164,7 +164,7 @@ class RecordKeeper:
         except:
             return "Bidoof, " + value + " can not be found"
 
-        if identifier != str(message["raw_msg"].author.id):
+        if str(identifier) != str(message["raw_msg"].author.id):
             bm = "<@!" + str(identifier) + "> stats were updated by " + "<@!" + str(message["raw_msg"].author.id) + ">"
             return bm
         else:
@@ -189,11 +189,13 @@ class RecordKeeper:
             return "There was an issue listing the stat for " + message["args"][0]
 
         if medal in self.usdb.pvp_leagues:
-            bm = bot_message.create_recent_pvp10(self.usdb, medal, identifier)
-            bm += bot_message.create_stats(self.usdb, medal, identifier)
+            bm = bot_message.create_recent_pvp10(self.usdb, message, medal, identifier)
+            if "Bidoof" not in bm:
+                bm += bot_message.create_stats(self.usdb, medal, identifier)
         else:
             bm = bot_message.create_recent5(self.usdb, medal, identifier)
-            bm += bot_message.create_stats(self.usdb, medal, identifier)
+            if "Bidoof" not in bm:
+                bm += bot_message.create_stats(self.usdb, medal, identifier)
         return bm
 
     def uuid(self, message):
@@ -213,7 +215,7 @@ class RecordKeeper:
             return "There was an issue listing the stat for " + message["args"][0]
 
         if medal in self.usdb.pvp_leagues:
-            bm = bot_message.create_uuid_table_pvp(self.usdb, medal, identifier)
+            bm = bot_message.create_uuid_table_pvp(self.usdb, message, medal, identifier)
         else:
             bm = bot_message.create_uuid_table(self.usdb, medal, identifier)
         return bm
@@ -253,7 +255,7 @@ class RecordKeeper:
 
         self.usdb.delete_row(medal, identifier, value)
         if medal in self.usdb.pvp_leagues:
-            bm = bot_message.create_recent_pvp10(self.usdb, medal, identifier)
+            bm = bot_message.create_recent_pvp10(self.usdb, message, medal, identifier)
         else:
             bm = bot_message.create_recent5(self.usdb, medal, identifier)
         return bm
@@ -272,38 +274,49 @@ class RecordKeeper:
     def pvp(self, message):
         try:
             medal = self.find_table_name(message["args"][0])
-
-            """ XXX sort this out, add a tie
-            if 't' in message:
-                tied = get_discord_id(message, message['t'])
-            else:
-            """"
-            if 'w' in message:
-                winner = get_discord_id(message, message['w']).id
-            else:
-                winner = message["raw_msg"].author.id
-
-            if 'l' in message:
-                loser = get_discord_id(message, message['l']).id
-            else:
-                loser = message["raw_msg"].author.id
-
-            assert not loser == winner
-            assert loser
-            assert winner
-
             note = message['note'] if 'note' in message else ""
+
+            if medal not in self.usdb.pvp_leagues:
+                return "Bidoof, " + message["args"][0] + " can not be found"
+
+            if 't' in message:
+                winner = get_discord_id(message, message['t'])
+                if len(message["args"]) > 1:
+                    search_term = message["args"][1]
+                    loser = get_discord_id(message, search_term)
+                else:
+                    loser = message["raw_msg"].author.id
+                try:
+                    assert loser and winner and not str(loser) == str(winner)
+                except:
+                    return "You can't beat yourself"
+
+                self.usdb.update_pvp(
+                    medal, message["raw_msg"].author.id,
+                    winner, loser, message["date"], 1, note)
+            else:
+                if 'w' in message:
+                    winner = get_discord_id(message, message['w'])
+                else:
+                    winner = message["raw_msg"].author.id
+                if 'l' in message:
+                    loser = get_discord_id(message, message['l'])
+                else:
+                    loser = message["raw_msg"].author.id
+                try:
+                    assert loser and winner and not str(loser) == str(winner)
+                except:
+                    return "You can't beat yourself"
+
+                self.usdb.update_pvp(
+                    medal, message["raw_msg"].author.id,
+                    winner, loser, message["date"], 0, note)
         except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
-        if medal not in self.usdb.pvp_leagues:
-            return "Bidoof, " + message["args"][0] + " can not be found"
-
-        self.usdb.update_pvp(
-            medal, message["raw_msg"].author, winner, loser, message["date"], note)
         if medal in self.usdb.pvp_leagues:
-            bm = bot_message.create_recent_pvp10(self.usdb, medal, message["raw_msg"].author)
-            bm += bot_message.create_stats(self.usdb, medal, message["raw_msg"].author)
+            bm = bot_message.create_recent_pvp10(self.usdb, message, medal, winner)
+            bm += bot_message.create_stats(self.usdb, medal, winner)
         else:
             return "Bidoof, sorry, something went wrong, try !help for more info"
         return bm
@@ -313,7 +326,7 @@ class RecordKeeper:
             note = message['note'] if 'note' in message else ""
         except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
-              
+
         try:
             PokemonName = None
             for x in self.usdb.pokemonByNumber:
@@ -332,10 +345,10 @@ class RecordKeeper:
         if not PokemonName:
             return "There was an issue adding " + message["args"][0]
 
-        self.usdb.update_trade_board(PokemonNumber, PokemonName, message["raw_msg"].author, note)
+        self.usdb.update_trade_board(PokemonNumber, PokemonName, str(message["raw_msg"].author.id), note)
         bm = "Added " + PokemonName + " (" + PokemonNumber + ") to the trade board!"
-        bm += bot_message.create_pokemon_trade_table(self.usdb, message["raw_msg"].author)
-        bm += bot_message.create_search_string_table(self.usdb, message["raw_msg"].author)
+        bm += bot_message.create_pokemon_trade_table(self.usdb, str(message["raw_msg"].author.id))
+        bm += bot_message.create_search_string_table(self.usdb, str(message["raw_msg"].author.id))
         return bm
 
     def unwant(self, message):
@@ -357,41 +370,33 @@ class RecordKeeper:
         if not PokemonName:
             return "There was an issue removing " + message["args"][0]
 
-        self.usdb.delete_from_trade_board(PokemonName, message["raw_msg"].author)
+        self.usdb.delete_from_trade_board(PokemonName, str(message["raw_msg"].author.id))
         bm = "Removed " + PokemonName + " (" + PokemonNumber + ") from the trade board!"
         return bm
 
     def tbu(self, message):
-        try:
-            if len(message["args"]) > 0:
-                user = message["args"][0]
-                for guild in message["client"].guilds:
-                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), guild.members)
-                    if user:
-                        break
-            else:
-                user = message["raw_msg"].author
-        except:
-            return "Bidoof, sorry, something went wrong, try !help for more info"
+        if len(message["args"]) > 0:
+            search_term = message["args"][0]
+            identifier = get_discord_id(message, search_term)
+        else:
+            identifier = message["raw_msg"].author.id
+        if not identifier:
+            return "Bidoof, cannot find user"
 
-        bm = bot_message.create_pokemon_trade_table(self.usdb, user)
-        bm += bot_message.create_search_string_table(self.usdb, user)
+        bm = bot_message.create_pokemon_trade_table(self.usdb, identifier)
+        if "Bidoof" not in bm:
+            bm += bot_message.create_search_string_table(self.usdb, identifier)
         return bm
 
     def tbs(self, message):
-        try:
-            if len(message["args"]) > 0:
-                user = message["args"][0]
-                for guild in message["client"].guilds:
-                    user = discord.utils.find(lambda m: user.lower() in m.name.lower(), guild.members)
-                    if user:
-                        break
-            else:
-                user = message["raw_msg"].author
-        except:
-            return "Bidoof, sorry, something went wrong, try !help for more info"
+        if len(message["args"]) > 0:
+            identifier = get_discord_id(message, message["args"][0])
+        else:
+            identifier = message["raw_msg"].author.id
+        if not identifier:
+            return "Bidoof, cannot find user"
 
-        bm = bot_message.create_search_string(self.usdb, user)
+        bm = bot_message.create_search_string(self.usdb, identifier)
         return bm
 
     def tbp(self, message):
@@ -413,130 +418,67 @@ class RecordKeeper:
         if not PokemonName:
             return "There was an issue finding " + message["args"][0]
 
-        bm = bot_message.create_per_pokemon_trade_table(self.usdb, PokemonName)
-        return bm
-
-    def tbp(self, message):
-        try:
-            PokemonName = None
-            for x in self.usdb.pokemonByNumber:
-                if x.lower() == message["args"][0].lower():
-                    PokemonNumber = x
-                    PokemonName = self.usdb.pokemonByNumber[x]
-                    break
-            for x in self.usdb.pokemonByName:
-                if x.lower() == message["args"][0].lower():
-                    PokemonName = x
-                    PokemonNumber = self.usdb.pokemonByName[x]
-                    break
-        except:
-            return "Bidoof, sorry, something went wrong, try !help for more info"
-
-        if not PokemonName:
-            return "There was an issue finding " + message["args"][0]
-
-        bm = bot_message.create_per_pokemon_trade_table(self.usdb, PokemonName)
+        bm = bot_message.create_per_pokemon_trade_table(self.usdb, PokemonName, message)
         return bm
 
     def addfriend(self, message):
-        try:
-            user = message["args"][0]
-            for guild in message["client"].guilds:
-                print(guild)
-                found_user = discord.utils.find(
-                    lambda m: user.lower() in m.name.lower() or
-                    (user.lower() in str(m.nick).lower() and m.nick),
-                    guild.members)
-                if found_user:
-                    break
-        except:
-            return "Bidoof, sorry, something went wrong"
+        if len(message["args"]) > 0:
+            identifier = get_discord_id(message, message["args"][0])
+        else:
+            identifier = message["raw_msg"].author.id
+        if not identifier:
+            return "Bidoof, cannot find user"
 
-        author = "<@!" + str(message["raw_msg"].author.id) + ">"
-        if found_user:
-            gt1 = message["raw_msg"].author.name + "#" + message["raw_msg"].author.discriminator
-            gt2 = found_user.name + "#" + found_user.discriminator
-            if gt1 == gt2:
-                return "can't add yourself as a friend"
-            self.usdb.update_friend_board(gt1, gt2, found_user.id)
-            self.usdb.update_friend_board(gt2, gt1, message["raw_msg"].author.id)
-            friend = "<@!" + str(found_user.id) + ">"
-            return author + ", " + friend + " was added to your ultra friend list!"
-        return author + " could not find a user containing " + user
+        author = message["raw_msg"].author.id
+        if identifier == author:
+            return "can't add yourself as a friend"
+        self.usdb.update_friend_board(identifier, author)
+        self.usdb.update_friend_board(author, identifier)
+        return "<@!" + str(author) + ">" + ", <@!" + str(identifier) + "> was added to your ultra friend list!"
 
     def removefriend(self, message):
-        try:
-            user = message["args"][0]
-            for guild in message["client"].guilds:
-                print(guild)
-                found_user = discord.utils.find(
-                    lambda m: user.lower() in m.name.lower() or
-                    (user.lower() in str(m.nick).lower() and m.nick),
-                    guild.members)
-                if found_user:
-                    break
-        except:
-            return "Bidoof, sorry, something went wrong"
+        if len(message["args"]) > 0:
+            identifier = get_discord_id(message, message["args"][0])
+        else:
+            identifier = message["raw_msg"].author.id
+        if not identifier:
+            return "Bidoof, cannot find user"
 
-        author = "<@!" + str(message["raw_msg"].author.id) + ">"
-        if found_user:
-            gt1 = message["raw_msg"].author.name + "#" + message["raw_msg"].author.discriminator
-            gt2 = found_user.name + "#" + found_user.discriminator
-            print(gt1, gt2)
-            self.usdb.delete_from_friend_board(gt1, gt2)
-            self.usdb.delete_from_friend_board(gt2, gt1)
-            friend = "<@!" + str(found_user.id) + ">"
-            return author + ", " + friend + " was removed to your ultra friend list!"
-        return author + " could not find a user containing " + user
+        author = message["raw_msg"].author.id
+        if identifier == author:
+            return "can't add yourself as a friend"
+        self.usdb.delete_from_friend_board(identifier, author)
+        self.usdb.delete_from_friend_board(author, identifier)
+        return "<@!" + str(author) + ">" + ", <@!" + str(identifier) + "> was removed to your ultra friend list!"
 
     def list_friends(self, message):
-        try:
-            if len(message["args"]) > 0:
-                user = message["args"][0]
-                for guild in message["client"].guilds:
-                    found_user = discord.utils.find(
-                        lambda m: user.lower() in m.name.lower() or
-                        (user.lower() in str(m.nick).lower() and m.nick),
-                        guild.members)
-                    if found_user:
-                        break
-                if found_user.nick:
-                    display_name = found_user.nick
-                else:
-                    display_name = found_user.name
-            else:
-                found_user = message["raw_msg"].author.name + "#" + message["raw_msg"].author.discriminator
-                if message["raw_msg"].author.nick:
-                    display_name = message["raw_msg"].author.nick
-                else:
-                    display_name = message["raw_msg"].author.name
-        except:
-            return "Bidoof, sorry, something went wrong"
+        if len(message["args"]) > 0:
+            identifier = get_discord_id(message, message["args"][0])
+        else:
+            identifier = message["raw_msg"].author.id
+        if not identifier:
+            return "Bidoof, cannot find user"
 
-        rm = bot_message.create_friends_table(self.usdb, found_user, display_name, message["client"])
+        rm = bot_message.create_friends_table(self.usdb, message, identifier)
         return rm
 
     def ping_friends(self, message):
-        try:
-            found_user = message["raw_msg"].author.name + "#" + message["raw_msg"].author.discriminator
-            if message["raw_msg"].author.nick:
-                display_name = message["raw_msg"].author.nick
-            else:
-                display_name = message["raw_msg"].author.name
-        except:
-            return "Bidoof, sorry, something went wrong"
+        if len(message["args"]) > 0:
+            identifier = get_discord_id(message, message["args"][0])
+        else:
+            identifier = message["raw_msg"].author.id
+        if not identifier:
+            return "Bidoof, cannot find user"
 
-        rm = bot_message.create_ping_table(self.usdb, found_user, display_name)
+        rm = bot_message.create_ping_table(self.usdb, message, identifier)
         return rm
 
     def online(self, message):
         author = "<@!" + str(message["raw_msg"].author.id) + ">"
-        gt = message["raw_msg"].author.name + "#" + message["raw_msg"].author.discriminator
-        self.usdb.update_active_board(gt, "Online")
+        self.usdb.update_active_board(message["raw_msg"].author.id, "Online")
         return author + " you are now online & accepting invites! (ง'̀-'́)ง"
 
     def offline(self, message):
         author = "<@!" + str(message["raw_msg"].author.id) + ">"
-        gt = message["raw_msg"].author.name + "#" + message["raw_msg"].author.discriminator
-        self.usdb.update_active_board(gt, "Offline")
+        self.usdb.update_active_board(message["raw_msg"].author.id, "Offline")
         return author + " you are now offline & no longer accepting invites"

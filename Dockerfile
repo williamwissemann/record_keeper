@@ -17,7 +17,7 @@ RUN set -ex \
     && pip3 install discord.py==1.* \
     # google api
     && pip3 install --upgrade google-api-python-client \
-    && pip3 install --upgrade oauth2client
+    && pip3 install --upgrade oauth2client 
 
 # --- copy over files ----------------------------------------------------------
 

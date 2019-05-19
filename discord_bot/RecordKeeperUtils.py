@@ -11,11 +11,14 @@ def message_parser(message):
     else:
         return None
 
-    special = re.findall('\w*:[^ ]+', message)
+    special = re.findall('\w*:\s?[^ ]+', message)
     for s in special:
-        key, value = s.split(":")
+        try:
+            key, value = s.split(":")
+        except:
+            return "spacing issue"
         if key not in value:
-            msg[key.lower()] = value
+            msg[key.lower()] = value.lstrip(" ")
         message = re.sub(s, '', message)
 
     msg["args"] = re.findall('([^ ]+)', message)
@@ -34,7 +37,7 @@ def message_parser(message):
 
 def get_discord_id(message, search_term):
     if '<@' in search_term:
-        identifier = str(search_term.lstrip("<@").rstrip(">"))
+        identifier = str(search_term.lstrip("<@!").rstrip(">"))
     else:
         for guild in message["client"].guilds:
             user = discord.utils.find(lambda m:
