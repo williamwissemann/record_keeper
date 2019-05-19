@@ -38,7 +38,7 @@ if __name__ == "__main__":
     for table in usdb.pvp_leagues:
         dict_elo = {}
         for (uuid, update_at, gamertag, gamertag_winner, elo_winner, elo_winner_change,
-                gamertag_loser, elo_loser, elo_loser_change, note) in usdb.get_recent_pvp_no_limit(table):
+                gamertag_loser, elo_loser, elo_loser_change, tie, note) in usdb.get_recent_pvp_no_limit(table):
 
             if gamertag_winner not in dict_elo:
                 dict_elo[gamertag_winner] = 1200.0
@@ -47,7 +47,10 @@ if __name__ == "__main__":
 
             Ra = dict_elo[gamertag_winner]
             Rb = dict_elo[gamertag_loser]
-            Ra, Rb = EloRating(Ra, Rb, 30, 1)
+            if tie:
+                Ra, Rb = EloRating(Ra, Ra, 30, .5)
+            else:
+                Ra, Rb = EloRating(Ra, Rb, 30, 1)
             elo_winner = Ra
             elo_winner_change = Ra - dict_elo[gamertag_winner]
             elo_loser = Rb

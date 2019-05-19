@@ -129,7 +129,7 @@
             },
             "table": {
                 "init": {
-                    "sql": "(uuid text, update_at text, gamertag text, gamertag_winner text, elo_winner real, elo_winner_change real, gamertag_loser text, elo_loser real, elo_loser_change real, note text)",
+                    "sql": "(uuid text, update_at text, gamertag text, gamertag_winner text, elo_winner real, elo_winner_change real, gamertag_loser text, elo_loser real, elo_loser_change real, tie integer, note text)",
                     "accepted": false
                 },
                 "init_elo": {
@@ -165,7 +165,7 @@
             },
             "table": {
                 "init": {
-                    "sql": "(uuid text, gamertag1 text, gamertag2 text, gamertag2id text, PRIMARY KEY (gamertag1, gamertag2) )",
+                    "sql": "(uuid text, gamertag1 text, gamertag2 text, PRIMARY KEY (gamertag1, gamertag2) )",
                     "accepted": false
                 }
             }

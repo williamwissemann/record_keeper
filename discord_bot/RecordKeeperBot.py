@@ -71,6 +71,9 @@ async def on_message(message):
         return False
 
     user_msg = message_parser(message.content)
+    if user_msg == "spacing issue":
+        await message.channel.send("You're missing a space somewhere in the command")
+        return True
     if not user_msg:
         return True
     user_msg["raw_msg"] = message
@@ -79,7 +82,7 @@ async def on_message(message):
         delete_msg = False
         bot_msg = None
 
-        print(user_msg)
+        print(str(user_msg).encode('utf-8'))
         if user_msg["cmd"].lower() == 'help' and settings["settings"]["help"]:
             # creates the help page
             await message.channel.send(keeper.help())
@@ -92,10 +95,12 @@ async def on_message(message):
         elif user_msg["cmd"].lower() == 'up' and settings["settings"]["record-keeping"]:
             # updates a given stat
             await message.channel.send(keeper.up(user_msg))
-        elif user_msg["cmd"].lower() == 'ls' and settings["settings"]["record-keeping"]:
+        elif (user_msg["cmd"].lower() == 'ls' and
+              (settings["settings"]["record-keeping"] or settings["settings"]["elo"])):
             # lists stats for a given user
             await message.channel.send(keeper.ls(user_msg))
-        elif user_msg["cmd"].lower() == 'lb' and settings["settings"]["record-keeping"]:
+        elif (user_msg["cmd"].lower() == 'lb' and
+              (settings["settings"]["record-keeping"] or settings["settings"]["elo"])):
             # creates a leaderboard for a given stat
             await message.channel.send(keeper.lb(user_msg))
         elif user_msg["cmd"].lower() == 'add-player' and settings["settings"]["elo"]:

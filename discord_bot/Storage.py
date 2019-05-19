@@ -74,7 +74,7 @@ class UserStats:
                         self.custom_tables.append(name)
                     if category == "raid_tables":
                         self.raid_tables.append(name)
-                    if category == "pvp_leagues" and "_elo" not in (name):
+                    if category == "pvp_leagues" and "_elo" not in name and "_ties" not in name:
                         self.pvp_leagues.append(name)
                     self.c.execute("CREATE TABLE IF NOT EXISTS " + name + " " + sql)
 
@@ -218,7 +218,7 @@ class UserStats:
         return sql
 
     @update_decorator
-    def update_pvp(self, table, gamertag, gamertag_winner, gamertag_loser, update_at, notes=""):
+    def update_pvp(self, table, gamertag, gamertag_winner, gamertag_loser, update_at, tie, notes=""):
         update_at.replace(" ", "T")
         id = uuid.uuid4()
         sql = str(
@@ -233,6 +233,7 @@ class UserStats:
             "'" + str(gamertag_loser) + "'," +
             "'" + str(-1) + "'," +
             "'" + str(-1) + "'," +
+            "'" + str(tie) + "'," +
             "'" + str(notes) + "')")
         return sql
 
@@ -299,6 +300,7 @@ class UserStats:
             " WHERE gamertag_winner = '" + str(user) + "'" +
             " AND update_at >= date('now', '-" + str(days) + " days')" +
             " AND update_at <=  date('now','+1 day')" +
+            " AND tie == 0" +
             " ORDER BY update_at ASC")
         for row in self.c.execute(sql):
             wins = row[0]
@@ -338,15 +340,14 @@ class UserStats:
         return 0.0
 
     @update_decorator
-    def update_friend_board(self, gamertag1, gamertag2, gamertag2id):
+    def update_friend_board(self, gamertag1, gamertag2):
         id = uuid.uuid4()
         sql = str(
             "INSERT OR REPLACE INTO FRIEND_BOARD" +
             " VALUES( " +
             "'" + str(id) + "'," +
             "'" + str(gamertag1) + "'," +
-            "'" + str(gamertag2) + "'," +
-            "'" + str(gamertag2id) + "')")
+            "'" + str(gamertag2) + "')")
         return sql
 
     @update_decorator
@@ -360,7 +361,7 @@ class UserStats:
     @get_decorator
     def get_friends(self, gamertag, limit=50):
         sql = str(
-            "SELECT gamertag1, gamertag2, gamertag2id, gamertag, IFNULL(status, 'Offline') " +
+            "SELECT gamertag1, gamertag2, gamertag, IFNULL(status, 'Offline') " +
             " FROM FRIEND_BOARD " +
             " LEFT JOIN ACTIVE_BOARD " +
             " ON gamertag2 = gamertag " +
@@ -373,7 +374,7 @@ class UserStats:
     @get_decorator
     def get_online_friends(self, gamertag, limit=50):
         sql = str(
-            "SELECT gamertag1, gamertag2, gamertag2id, gamertag, IFNULL(status, 'Offline') as status " +
+            "SELECT gamertag1, gamertag2, gamertag, IFNULL(status, 'Offline') as status " +
             " FROM FRIEND_BOARD " +
             " LEFT JOIN ACTIVE_BOARD " +
             " ON gamertag2 = gamertag " +
@@ -415,4 +416,3 @@ if __name__ == "__main__":
     print()
     for x in d.get_recent("DepotAgent", "test_account"):
         print(x)
-
