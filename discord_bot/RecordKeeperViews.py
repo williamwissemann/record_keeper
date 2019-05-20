@@ -2,7 +2,6 @@ from Storage import UserStats
 from RecordKeeperUtils import get_discord_name
 
 import discord
-import grapheme
 import asyncio
 import random
 import datetime
@@ -10,7 +9,6 @@ import math
 import time
 import sys
 import os
-import unicodedata
 
 
 def create_elo10(usdb, medal, message):
