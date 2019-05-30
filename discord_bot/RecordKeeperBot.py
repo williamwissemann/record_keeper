@@ -153,6 +153,10 @@ async def on_message(message):
                 settings["settings"]["matchmaking"]):
             # ping friends user is looking for match
             await message.channel.send(keeper.ping_friends(user_msg))
+        elif ((user_msg["cmd"].lower() == 'rank') and
+                settings["settings"]["matchmaking"]):
+            # ping friends user is looking for match
+            await message.channel.send(keeper.rank(user_msg))
         elif user_msg["cmd"].lower() == 'roll' or user_msg["cmd"].lower() == 'd20':
             # allow for global commands
             pass

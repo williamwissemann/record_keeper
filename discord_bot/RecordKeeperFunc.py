@@ -482,3 +482,32 @@ class RecordKeeper:
         author = "<@!" + str(message["raw_msg"].author.id) + ">"
         self.usdb.update_active_board(message["raw_msg"].author.id, "Offline")
         return author + " you are now offline & no longer accepting invites"
+
+    def rank(self, message):
+        try:
+            int(message["args"][0])
+            PokemonName = None
+            for x in self.usdb.pokemonByNumber:
+                if x.lower() == message["args"][0].lower():
+                    PokemonNumber = x
+                    PokemonName = self.usdb.pokemonByNumber[x]
+                    break
+            for x in self.usdb.pokemonByName:
+                if x.lower() == message["args"][0].lower():
+                    PokemonName = x
+                    PokemonNumber = self.usdb.pokemonByName[x]
+                    break
+            message["args"][0] = PokemonName
+        except:
+            pass
+
+        try:
+            if len(message["args"]) > 1:
+                bm = bot_message.create_rank_table(message)
+                bm += bot_message.create_rank_top10_table(message)
+                return bm
+            else:
+                bm = bot_message.create_rank_top10_table(message)
+                return bm
+        except:
+            return "Bidoof, something went wrong!"

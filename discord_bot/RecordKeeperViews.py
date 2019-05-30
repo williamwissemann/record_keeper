@@ -1,5 +1,6 @@
 from Storage import UserStats
 from RecordKeeperUtils import get_discord_name
+from pvp_iv.pvp_iv_util import find_combo, find_top_5
 
 import discord
 import asyncio
@@ -430,3 +431,37 @@ def create_ping_table(usdb, message, gamertag):
         return msg
     else:
         return "<@!" + str(gamertag) + "> you have no ultra friends online"
+
+
+def create_rank_table(message):
+    result, perfect = find_combo(message["args"][0], message["args"][1], message["args"][2], message["args"][3])
+    result = result.replace("\r\n", " ").split(",")
+    perfect = perfect.replace("\r\n", " ").split(",")
+    outstring = "**RANK:\t** " + result[0] + " (" + result[11] + ")\n"
+    outstring += "**CP:\t\t   ** " + result[5] + "\n"
+    outstring += "**LVL:\t\t** " + result[6] + "  (" + str(round(float(result[6]) - float(perfect[6]), 2)) + ") \n"
+    outstring += "**ATK:\t\t** " + result[7] + "  (" + str(round(float(result[7]) - float(perfect[7]), 2)) + ") \n"
+    outstring += "**DEF:\t\t ** " + result[8] + "  (" + str(round(float(result[8]) - float(perfect[8]), 2)) + ") \n"
+    outstring += "**HP:\t\t   ** " + result[9] + "  (" + str(round(float(result[9]) - float(perfect[9]), 2)) + ")  "
+
+    return outstring
+
+
+def create_rank_top10_table(message):
+    msg = "```"
+    msg += " |ATK|DEF|HP |CP   |LVL  \n"
+    msg += "-+---+---+---+-----+-----\n"
+    for line in find_top_5(message["args"][0]):
+        rank, ATK, DEF, HP, IV_P, CP, LVL, ref_ATK, ref_DEF, ref_HP, SP, P = line.split(",")
+        while len(ATK) < 2:
+            ATK = " " + ATK
+        while len(DEF) < 2:
+            DEF = " " + DEF
+        while len(HP) < 2:
+            HP = " " + HP
+        while len(CP) < 4:
+            CP += " "
+        msg += rank + "|" + str(ATK) + " |" + str(DEF) + " |" + str(HP) + " |" + str(CP) + " |" + str(LVL) + "\n"
+
+    msg += "```"
+    return msg
