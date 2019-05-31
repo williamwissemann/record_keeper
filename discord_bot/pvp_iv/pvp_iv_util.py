@@ -12,9 +12,9 @@ def find_combo(pokemon, ATK_IV, DEF_IV, HP_IV):
             perfect = ""
             cnt = 0
             with gzip.open(infile, 'rb') as f:
-                for line in f.readlines()[2:]:
+                for line in f.readlines()[1:]:
                     line = (line.decode())
-                    if cnt == 2:
+                    if cnt == 1:
                         perfect = line
                     try:
                         rank, ATK, DEF, HP, IV_P, CP, LVL, ref_ATK, ref_DEF, ref_HP, SP, P = line.split(",")
