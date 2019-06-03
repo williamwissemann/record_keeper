@@ -168,7 +168,7 @@ async def on_message(message):
                     await message.channel.send(x, delete_after=300)
             else:
                 await message.channel.send(view, delete_after=300)
-                await message.delete()
+            await message.delete()
         elif ((user_msg["cmd"].lower() == 'rank') and
                 settings["settings"]["iv_rank"]):
             # ping looks up pokemons pvp rank
