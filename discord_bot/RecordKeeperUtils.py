@@ -69,13 +69,17 @@ def get_discord_name(message, identifier):
         found = False
         for guild in message["client"].guilds:
             for member in guild.members:
-                if int(identifier) == member.id:
-                    if member.nick and message["raw_msg"].guild.id == guild.id:
-                        display_name = member.nick
-                    else:
-                        display_name = member.name
-                    found = True
-                    break
+                try:
+                    if str(identifier) == str(member.id):
+                        if member.nick and message["raw_msg"].guild.id == guild.id:
+                            display_name = member.nick.encode('utf8').decode('utf8')
+                        else:
+                            display_name = member.name.encode('utf8').decode('utf8')
+                        found = True
+                        break
+                except Exception as e:
+                    print(e)
+
         assert found
     except:
         return None
