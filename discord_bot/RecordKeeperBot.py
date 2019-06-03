@@ -134,27 +134,43 @@ async def on_message(message):
               settings["settings"]["matchmaking"]):
             # add friend to friends list
             update_message = await message.channel.send("updating...")
-            await update_message.edit(content=keeper.addfriend(user_msg))
+            await update_message.edit(content=keeper.addfriend(user_msg),
+                                      delete_after=90)
+            await message.delete()
         elif ((user_msg["cmd"].lower() == 'remove-friend' or user_msg["cmd"].lower() == 'ruf') and
               settings["settings"]["matchmaking"]):
             # remove friend from friends list
             update_message = await message.channel.send("updating...")
-            await update_message.edit(content=keeper.removefriend(user_msg))
+            await update_message.edit(content=keeper.removefriend(user_msg),
+                                      delete_after=90)
+            await message.delete()
         elif user_msg["cmd"].lower() == "friends" and settings["settings"]["matchmaking"]:
             # list friends friends list
-            await message.channel.send(keeper.list_friends(user_msg))
+            await message.channel.send(keeper.list_friends(user_msg),
+                                       delete_after=15)
+            await message.delete()
         elif user_msg["cmd"].lower() == 'online' and settings["settings"]["matchmaking"]:
             # set status to online
-            await message.channel.send(keeper.online(user_msg))
+            await message.channel.send(keeper.online(user_msg),
+                                       delete_after=30)
+            await message.delete()
         elif user_msg["cmd"].lower() == 'offline' and settings["settings"]["matchmaking"]:
             # set status to offline
-            await message.channel.send(keeper.offline(user_msg))
+            await message.channel.send(keeper.offline(user_msg),
+                                       delete_after=30)
+            await message.delete()
         elif ((user_msg["cmd"].lower() == 'ping-friends' or user_msg["cmd"].lower() == 'ltb') and
                 settings["settings"]["matchmaking"]):
             # ping friends user is looking for match
-            await message.channel.send(keeper.ping_friends(user_msg))
+            view = keeper.ping_friends(user_msg)
+            if isinstance(view, list):
+                for x in view:
+                    await message.channel.send(x, delete_after=300)
+            else:
+                await message.channel.send(view, delete_after=300)
+                await message.delete()
         elif ((user_msg["cmd"].lower() == 'rank') and
-                settings["settings"]["matchmaking"]):
+                settings["settings"]["iv_rank"]):
             # ping looks up pokemons pvp rank
             await message.channel.send(keeper.rank(user_msg))
         elif user_msg["cmd"].lower() == 'roll' or user_msg["cmd"].lower() == 'd20':
@@ -164,9 +180,12 @@ async def on_message(message):
             if settings["settings"]["try_help_message"]:
                 try:
                     await update_message.edit(
-                        content="Bidoof, sorry, something went wrong, try !help for more info")
+                        content="Bidoof, sorry, something went wrong, try !help for more info", delete_after=30)
                 except:
-                    await message.channel.send("Bidoof, sorry, something went wrong, try !help for more info")
+                    await message.channel.send("Bidoof, sorry, something went wrong, try !help for more info",
+                                               delete_after=30)
+            if settings["settings"]["delete_message"]:
+                await message.delete()
 
     # global_command
     if ((user_msg["cmd"].lower() == 'roll' or user_msg["cmd"].lower() == 'd20') and

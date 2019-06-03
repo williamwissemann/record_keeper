@@ -502,12 +502,14 @@ class RecordKeeper:
             pass
 
         try:
-            if len(message["args"]) > 1:
-                bm = bot_message.create_rank_table(message)
+            if len(message["args"]) > 3:
+                bm = bot_message.create_rank_header(message)
+                bm += bot_message.create_rank_table(message)
                 bm += bot_message.create_rank_top10_table(message)
                 return bm
             else:
-                bm = bot_message.create_rank_top10_table(message)
+                bm = bot_message.create_rank_header(message)
+                bm += bot_message.create_rank_top10_table(message)
                 return bm
         except:
-            return "Bidoof, something went wrong!"
+            return "Bidoof, something went wrong, double check your IVs"

@@ -1,6 +1,6 @@
 from Storage import UserStats
 from RecordKeeperUtils import get_discord_name
-from pvp_iv.pvp_iv_util import find_combo, find_top_5
+from pvp_iv.pvp_iv_util import find_combo, find_top_5, get_csv_header
 
 import discord
 import asyncio
@@ -416,42 +416,74 @@ def create_ping_table(usdb, message, gamertag):
     Creates a most recent 5 for a medal, gamertag
     """
     list = usdb.get_online_friends(gamertag)
+    messages = []
     if len(list) > 0:
         msg = "<@!" + str(gamertag) + "> is looking to battle! \n"
 
         friends = False
-        for cnt in range(0, min(5, len(list))):
-            randomint = random.randint(0, len(list) - 1)
-            _, g, _, status = list.pop(randomint)
+        cnt = 0
+        for idx in list:
+            if cnt == 20 or len(msg) > 1500:
+                messages.append(msg)
+                msg = "<@!" + str(gamertag) + "> is looking to battle! \n"
+                cnt = 0
+            _, g, _, status = idx
             msg += "<@!" + str(g) + "> "
             friends = True
+            cnt += 1
+
+        messages.append(msg)
 
         if not friends:
             return "<@!" + str(gamertag) + "> you have no ultra friends online"
-        return msg
+        return messages
     else:
         return "<@!" + str(gamertag) + "> you have no ultra friends online"
 
 
+def create_rank_header(message):
+    if len(message["args"]) == 5:
+        folder = message["args"][4]
+    elif len(message["args"]) == 2:
+        folder = message["args"][1].lower()
+    else:
+        folder = "wild"
+    return str(get_csv_header(message["args"][0], folder)) + " filtered by *" + folder + "* \n"
+
+
 def create_rank_table(message):
-    result, perfect = find_combo(message["args"][0], message["args"][1], message["args"][2], message["args"][3])
+    if len(message["args"]) == 5:
+        folder = message["args"][4]
+    else:
+        folder = "wild"
+    result, perfect = find_combo(message["args"][0], message["args"][1], message["args"][2], message["args"][3], folder)
     result = result.replace("\r\n", " ").split(",")
     perfect = perfect.replace("\r\n", " ").split(",")
-    outstring = "**RANK:\t** " + result[0] + " (" + result[11] + ")\n"
-    outstring += "**CP:\t\t   ** " + result[5] + "\n"
-    outstring += "**LVL:\t\t** " + result[6] + "  (" + str(round(float(result[6]) - float(perfect[6]), 2)) + ") \n"
-    outstring += "**ATK:\t\t** " + result[7] + "  (" + str(round(float(result[7]) - float(perfect[7]), 2)) + ") \n"
-    outstring += "**DEF:\t\t ** " + result[8] + "  (" + str(round(float(result[8]) - float(perfect[8]), 2)) + ") \n"
-    outstring += "**HP:\t\t   ** " + result[9] + "  (" + str(round(float(result[9]) - float(perfect[9]), 2)) + ")  "
+    print(result)
+    print(perfect)
+
+    outstring = "```"
+    outstring += "RANK:  " + result[0] + " (" + result[11] + ")\n"
+    outstring += "CP:    " + result[5] + "\n"
+    outstring += "LVL:   " + result[6] + "  (" + str(round(float(result[6]) - float(perfect[6]), 2)) + ") \n"
+    outstring += "ATK:   " + result[7] + " (" + str(round(float(result[7]) - float(perfect[7]), 2)) + ") \n"
+    outstring += "DEF:   " + result[8] + " (" + str(round(float(result[8]) - float(perfect[8]), 2)) + ") \n"
+    outstring += "HP:    " + result[9] + " (" + str(round(float(result[9]) - float(perfect[9]), 2)) + ")```"
 
     return outstring
 
 
 def create_rank_top10_table(message):
+    if len(message["args"]) == 5:
+        folder = message["args"][4]
+    elif len(message["args"]) == 2:
+        folder = message["args"][1].lower()
+    else:
+        folder = "wild"
     msg = "```"
     msg += " |ATK|DEF|HP |CP   |LVL  \n"
     msg += "-+---+---+---+-----+-----\n"
-    for line in find_top_5(message["args"][0]):
+    for line in find_top_5(message["args"][0], folder):
         rank, ATK, DEF, HP, IV_P, CP, LVL, ref_ATK, ref_DEF, ref_HP, SP, P = line.split(",")
         while len(ATK) < 2:
             ATK = " " + ATK
@@ -462,6 +494,5 @@ def create_rank_top10_table(message):
         while len(CP) < 4:
             CP += " "
         msg += rank + "|" + str(ATK) + " |" + str(DEF) + " |" + str(HP) + " |" + str(CP) + " |" + str(LVL) + "\n"
-
     msg += "```"
     return msg
