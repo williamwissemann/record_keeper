@@ -147,7 +147,7 @@ async def on_message(message):
         elif user_msg["cmd"].lower() == "friends" and settings["settings"]["matchmaking"]:
             # list friends friends list
             await message.channel.send(keeper.list_friends(user_msg),
-                                       delete_after=15)
+                                       delete_after=30)
             await message.delete()
         elif user_msg["cmd"].lower() == 'online' and settings["settings"]["matchmaking"]:
             # set status to online
@@ -165,9 +165,9 @@ async def on_message(message):
             view = keeper.ping_friends(user_msg)
             if isinstance(view, list):
                 for x in view:
-                    await message.channel.send(x, delete_after=300)
+                    await message.channel.send(x, delete_after=900)
             else:
-                await message.channel.send(view, delete_after=300)
+                await message.channel.send(view, delete_after=900)
             await message.delete()
         elif ((user_msg["cmd"].lower() == 'rank') and
                 settings["settings"]["iv_rank"]):
