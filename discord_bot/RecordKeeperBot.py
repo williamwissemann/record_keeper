@@ -165,9 +165,9 @@ async def on_message(message):
             view = keeper.ping_friends(user_msg)
             if isinstance(view, list):
                 for x in view:
-                    await message.channel.send(x, delete_after=900)
+                    await message.channel.send(x, delete_after=1600)
             else:
-                await message.channel.send(view, delete_after=900)
+                await message.channel.send(view, delete_after=1600)
             await message.delete()
         elif ((user_msg["cmd"].lower() == 'rank') and
                 settings["settings"]["iv_rank"]):
