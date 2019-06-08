@@ -2,9 +2,10 @@ import gzip
 import shutil
 import os
 
-def find_combo(pokemon, ATK_IV, DEF_IV, HP_IV, folder):
+
+def find_combo(pokemon, ATK_IV, DEF_IV, HP_IV, folder, league):
     os.chdir(os.path.abspath(__file__).replace("pvp_iv_util.py", ""))
-    path = "./compressed_iv_data/" + folder + "/"
+    path = "./compressed_iv_data/%s/%s/" % (league, folder)
     items = os.listdir(path)
     for files in items:
         if pokemon.lower() == files.replace(".csv.gz", "").lower():
@@ -25,13 +26,14 @@ def find_combo(pokemon, ATK_IV, DEF_IV, HP_IV, folder):
                     cnt += 1
 
 
-def find_top_5(pokemon, folder):
+def find_top_5(pokemon, folder, league):
     os.chdir(os.path.abspath(__file__).replace("pvp_iv_util.py", ""))
-    path = "./compressed_iv_data/" + folder + "/"
+    path = "./compressed_iv_data/%s/%s/" % (league, folder)
     items = os.listdir(path)
     for files in items:
         if pokemon.lower() == files.replace(".csv.gz", "").lower():
             infile = path + files
+            print(path)
             array = []
             with gzip.open(infile, 'rb') as f:
                 for line in f.readlines()[2:7]:
@@ -40,13 +42,14 @@ def find_top_5(pokemon, folder):
                 return array
 
 
-def get_csv_header(pokemon, folder):
+def get_csv_header(pokemon, folder, league):
     os.chdir(os.path.abspath(__file__).replace("pvp_iv_util.py", ""))
-    path = "./compressed_iv_data/" + folder + "/"
+    path = "./compressed_iv_data/%s/%s/" % (league, folder)
     items = os.listdir(path)
     for files in items:
         if pokemon.lower() == files.replace(".csv.gz", "").lower():
             infile = path + files
+            print(path)
             array = []
             with gzip.open(infile, 'rb') as f:
                 for line in f.readlines()[0:2]:

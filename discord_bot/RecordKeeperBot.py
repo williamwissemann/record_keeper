@@ -169,10 +169,18 @@ async def on_message(message):
             else:
                 await message.channel.send(view, delete_after=1600)
             await message.delete()
-        elif ((user_msg["cmd"].lower() == 'rank') and
-                settings["settings"]["iv_rank"]):
+        elif ((user_msg["cmd"].lower() == 'rankgreat' or user_msg["cmd"].lower() == 'rank' or
+               user_msg["cmd"].lower() == 'rankg') and settings["settings"]["iv_rank"]):
             # ping looks up pokemons pvp rank
-            await message.channel.send(keeper.rank(user_msg))
+            await message.channel.send(keeper.rank(user_msg, "great"))
+        elif ((user_msg["cmd"].lower() == 'rankultra' or
+               user_msg["cmd"].lower() == 'ranku') and settings["settings"]["iv_rank"]):
+            # ping looks up pokemons pvp rank
+            await message.channel.send(keeper.rank(user_msg, "ultra"))
+        elif ((user_msg["cmd"].lower() == 'rankmaster' or
+               user_msg["cmd"].lower() == 'rankm') and settings["settings"]["iv_rank"]):
+            # ping looks up pokemons pvp rank
+            await message.channel.send(keeper.rank(user_msg, "master"))
         elif user_msg["cmd"].lower() == 'roll' or user_msg["cmd"].lower() == 'd20':
             # allow for global commands
             pass
