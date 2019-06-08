@@ -483,7 +483,7 @@ class RecordKeeper:
         self.usdb.update_active_board(message["raw_msg"].author.id, "Offline")
         return author + " you are now offline & no longer accepting invites"
 
-    def rank(self, message):
+    def rank(self, message, league):
         try:
             int(message["args"][0])
             PokemonName = None
@@ -503,13 +503,13 @@ class RecordKeeper:
 
         try:
             if len(message["args"]) > 3:
-                bm = bot_message.create_rank_header(message)
-                bm += bot_message.create_rank_table(message)
-                bm += bot_message.create_rank_top10_table(message)
+                bm = bot_message.create_rank_header(message, league)
+                bm += bot_message.create_rank_table(message, league)
+                bm += bot_message.create_rank_top10_table(message, league)
                 return bm
             else:
-                bm = bot_message.create_rank_header(message)
-                bm += bot_message.create_rank_top10_table(message)
+                bm = bot_message.create_rank_header(message, league)
+                bm += bot_message.create_rank_top10_table(message, league)
                 return bm
         except:
             return "Bidoof, something went wrong, double check your IVs"

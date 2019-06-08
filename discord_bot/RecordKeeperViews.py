@@ -441,22 +441,23 @@ def create_ping_table(usdb, message, gamertag):
         return "<@!" + str(gamertag) + "> you have no ultra friends online"
 
 
-def create_rank_header(message):
+def create_rank_header(message, league):
     if len(message["args"]) == 5:
         folder = message["args"][4]
     elif len(message["args"]) == 2:
         folder = message["args"][1].lower()
     else:
         folder = "wild"
-    return str(get_csv_header(message["args"][0], folder)) + " filtered by *" + folder + "* \n"
+    return "%s filtered by *%s*  in *%s*\n" % (str(get_csv_header(message["args"][0], folder, league)), folder, league)
 
 
-def create_rank_table(message):
+def create_rank_table(message, league):
     if len(message["args"]) == 5:
         folder = message["args"][4]
     else:
         folder = "wild"
-    result, perfect = find_combo(message["args"][0], message["args"][1], message["args"][2], message["args"][3], folder)
+    result, perfect = find_combo(message["args"][0], message["args"][1],
+                                 message["args"][2], message["args"][3], folder, league)
     result = result.replace("\r\n", " ").split(",")
     perfect = perfect.replace("\r\n", " ").split(",")
     print(result)
@@ -473,7 +474,7 @@ def create_rank_table(message):
     return outstring
 
 
-def create_rank_top10_table(message):
+def create_rank_top10_table(message, league):
     if len(message["args"]) == 5:
         folder = message["args"][4]
     elif len(message["args"]) == 2:
@@ -483,7 +484,7 @@ def create_rank_top10_table(message):
     msg = "```"
     msg += " |ATK|DEF|HP |CP   |LVL  \n"
     msg += "-+---+---+---+-----+-----\n"
-    for line in find_top_5(message["args"][0], folder):
+    for line in find_top_5(message["args"][0], folder, league):
         rank, ATK, DEF, HP, IV_P, CP, LVL, ref_ATK, ref_DEF, ref_HP, SP, P = line.split(",")
         while len(ATK) < 2:
             ATK = " " + ATK
