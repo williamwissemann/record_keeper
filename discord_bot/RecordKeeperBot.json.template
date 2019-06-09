@@ -8,7 +8,9 @@
         "trading": true,
         "matchmaking": true,
         "global_commands": true,
-        "try_help_message": true
+        "iv_rank": true,
+        "try_help_message": true,
+        "delete_message": false
     },
     "production":{
         "database": "production.db",
