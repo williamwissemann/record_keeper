@@ -32,13 +32,21 @@ def EloRating(Ra, Rb, K, d):
 if __name__ == "__main__":
     with open("/usr/src/RecordKeeperBot/discord_bot/RecordKeeperBot.json") as f:
         settings = json.load(f)
-        environment = settings[settings["settings"]["environment"]]
+        bot_environment = settings["bot_settings"]["environment"]
+        # this logic needs fixing (via admin activate/deactiviate)
+        settings["bot_settings"][settings["bot_settings"]["environment"]]
 
-    usdb = UserStats("/usr/src/RecordKeeperBot/database/" + environment["database"])
+    db_path = "{}{}".format(
+        "/usr/src/RecordKeeperBot/database/",
+        settings["bot_settings"][bot_environment]["database"])
+    print(db_path)
+    usdb = UserStats(db_path, "IGNORE_VERSION")
+
     for table in usdb.pvp_leagues:
         dict_elo = {}
-        for (uuid, update_at, gamertag, gamertag_winner, elo_winner, elo_winner_change,
-                gamertag_loser, elo_loser, elo_loser_change, tie, note) in usdb.get_recent_pvp_no_limit(table):
+
+        for (uuid, server, update_at, gamertag, gamertag_winner, elo_winner, elo_winner_change,
+            gamertag_loser, elo_loser, elo_loser_change, tie, note) in usdb.get_recent_pvp_no_limit("ViaDirectMessage",  table):
 
             if gamertag_winner not in dict_elo:
                 dict_elo[gamertag_winner] = 1200.0
@@ -58,7 +66,7 @@ if __name__ == "__main__":
             dict_elo[gamertag_winner] = elo_winner
             dict_elo[gamertag_loser] = elo_loser
 
-            usdb.update_elo(table, uuid, elo_winner, elo_winner_change, elo_loser, elo_loser_change)
+            usdb.update_elo(server, table, uuid, elo_winner, elo_winner_change, elo_loser, elo_loser_change)
 
         for p in dict_elo:
             usdb.update_elo_player(table + "_elo", p, dict_elo[p])

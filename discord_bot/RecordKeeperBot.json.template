@@ -1,31 +1,22 @@
 {
-    "settings":{
-        "environment": "production",
-        "discord_token": "< discord_token_api_token >",
-        "help": true,
-        "record-keeping": true,
-        "elo": true,
-        "trading": true,
-        "matchmaking": true,
-        "global_commands": true,
-        "try_help_message": true
-    },
-    "production":{
-        "database": "production.db",
-        "discord_channel": "< discord_channel >",
-        "google_sheet": {
-            "active": false,
-            "spreadsheet_id": "< google_api_token >",
-            "path_to_token": "./google-sheets-creds/token.json"
+    "bot_settings": {
+        "environment": "development",
+        "production": {
+            "discord_token": "< discord_token_api_token >",
+            "database": "production.db"
+        },
+        "development": {
+            "discord_token": "< discord_token_api_token >",
+            "database": "development.db"
         }
     },
-    "development": {
-        "database": "development.db",
-        "discord_channel": "testing",
-        "google_sheet": {
-            "active": false,
-            "spreadsheet_id": "< google_api_token >",
-            "path_to_token": "./google-sheets-creds/token.json"
-        }
-    } 
+    "server_settings": {    
+        "< client_id >" : {
+            "google_sheet": {
+                "active": true,
+                "spreadsheet_id": " < google_spreadsheet_id > ",
+                "path_to_token": "./google-sheets-creds/token.json"
+            }
+        } 
+    }
 }

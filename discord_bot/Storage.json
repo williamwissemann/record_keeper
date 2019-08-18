@@ -1,15 +1,36 @@
 {
-    "tables":{
-        "gamertag":{
-            "table_names":{
+    "tables": {
+        "botinfo": {
+            "table_names": {
+                "botinfo": "botinfo"
+            },
+            "table": {
+                "init": {
+                    "sql": "(uuid text, field text, info text)",
+                    "accepted": false
+                }
+            }
+        },
+        "listener": {
+            "table_names": {
+                "listener": "listener"
+            },
+            "table": {
+                "init": {
+                    "sql": "(uuid text, server_id text, toggle text, active_channel text, PRIMARY KEY (active_channel, toggle, server_id))",
+                    "accepted": false
+                }
+            }
+        },
+        "gamertag": {
+            "table_names": {
                 "gamertag": "gamertag"
             },
             "table": {
-                "init": 
-                    { 
-                        "sql": "(gamertag text primary key)",
-                        "accepted": false
-                    }
+                "init": {
+                    "sql": "(gamertag text, server_id text, PRIMARY KEY (gamertag, server_id))",
+                    "accepted": false
+                }
             }
         },
         "basic_tables": {
@@ -22,12 +43,12 @@
             },
             "table": {
                 "init": {
-                    "sql": "(uuid text, update_at text, gamertag text, value real, note text)",
+                    "sql": "(uuid text, server_id text, update_at text, gamertag text, value real, note text)",
                     "accepted": true
                 }
             }
         },
-        "badge_tables":{
+        "badge_tables": {
             "table_names": {
                 "GLV": "Great League Veteran",
                 "ULV": "Ultra League Veteran",
@@ -55,21 +76,23 @@
                 "Champion": "Champion",
                 "BattleLegend": "Battle Legend",
                 "Unown": "Unown",
-                "Sinnoh": "Sinnoh"
+                "Sinnoh": "Sinnoh",
+                "Hero": "Hero",
+                "Purifier": "Purifier"
             },
             "table": {
                 "init": {
-                    "sql": "(uuid text, update_at text, gamertag text, value real, note text)",
+                    "sql": "(uuid text, server_id text, update_at text, gamertag text, value real, note text)",
                     "accepted": true
                 }
             }
         },
-        "type_tables":{
+        "type_tables": {
             "table_names": {
                 "Schoolkid": "Schoolkid",
                 "BlackBelt": "Black Belt",
                 "BirdKeeper": "Bird Keeper",
-                "PunkGirl":  "Punk Girl",
+                "PunkGirl": "Punk Girl",
                 "RuinManiac": "Ruin Maniac",
                 "Hiker": "Hiker",
                 "BugCatcher": "Bug Catcher",
@@ -87,14 +110,14 @@
             },
             "table": {
                 "init": {
-                    "sql": "(uuid text, update_at text, gamertag text, value real, note text)",
+                    "sql": "(uuid text, server_id text, update_at text, gamertag text, value real, note text)",
                     "accepted": true
                 }
             }
         },
-        "custom_tables":{
+        "custom_tables": {
             "table_names": {
-                "PidgeyCaught":"Pidgey Caught",
+                "PidgeyCaught": "Pidgey Caught",
                 "LickitungCaught": "Lickitung Caught",
                 "SentretCaught": "Sentret Caught",
                 "MiltankCaught": "Miltank Caught",
@@ -106,7 +129,7 @@
                 "UniqueHundo": "Unique Hundo",
                 "TotalHundo": "Total Hundo",
                 "ShinyHundo": "Shiny Hundo",
-                "LuckyHundo": "Lucky Hundo", 
+                "LuckyHundo": "Lucky Hundo",
                 "LuckyShinyHundo": "Lucky Shiny Hundo",
                 "Level40Pokemon": "Level 40 Pokemon",
                 "DittoSeen": "Ditto Seen",
@@ -115,10 +138,10 @@
             },
             "table": {
                 "init": {
-                    "sql": "(uuid text, update_at text, gamertag text, value real, note text)",
+                    "sql": "(uuid text, server_id text, update_at text, gamertag text, value real, note text)",
                     "accepted": true
                 }
-            } 
+            }
         },
         "pvp_leagues": {
             "table_names": {
@@ -129,21 +152,20 @@
             },
             "table": {
                 "init": {
-                    "sql": "(uuid text, update_at text, gamertag text, gamertag_winner text, elo_winner real, elo_winner_change real, gamertag_loser text, elo_loser real, elo_loser_change real, tie integer, note text)",
+                    "sql": "(uuid text, server_id text, update_at text, gamertag text, gamertag_winner text, elo_winner real, elo_winner_change real, gamertag_loser text, elo_loser real, elo_loser_change real, tie integer, note text)",
                     "accepted": false
                 },
                 "init_elo": {
-                    "sql": "(gamertag text PRIMARY KEY, elo real)",
+                    "sql": "(gamertag text, elo real, PRIMARY KEY(gamertag))",
                     "accepted": false
                 }
             }
         },
         "raid_tables": {
-            "table_names": {
-            },
+            "table_names": {},
             "table": {
                 "init": {
-                    "sql": "(uuid text, update_at text, gamertag text, value real, note text)",
+                    "sql": "(uuid text, server_id text, update_at text, gamertag text, value real, note text)",
                     "accepted": false
                 }
             }
@@ -154,7 +176,7 @@
             },
             "table": {
                 "init": {
-                    "sql": "(uuid text, gamertag text, pokemon text, number INTEGER, notes text, PRIMARY KEY (pokemon, gamertag) )",
+                    "sql": "(uuid text, server_id text, gamertag text, pokemon text, number INTEGER, notes text, PRIMARY KEY (pokemon, gamertag) )",
                     "accepted": false
                 }
             }
@@ -165,7 +187,7 @@
             },
             "table": {
                 "init": {
-                    "sql": "(uuid text, gamertag1 text, gamertag2 text, PRIMARY KEY (gamertag1, gamertag2) )",
+                    "sql": "(uuid text, server_id text, gamertag1 text, gamertag2 text, PRIMARY KEY (gamertag1, gamertag2, server_id) )",
                     "accepted": false
                 }
             }
@@ -182,10 +204,10 @@
             }
         }
     },
-    "pokemon":{
+    "pokemon": {
         "names": {
-            "Bulbasaur":  "1",
-            "Ivysaur":  "2",
+            "Bulbasaur": "1",
+            "Ivysaur": "2",
             "Venusaur": "3",
             "Charmander": "4",
             "Charmeleon": "5",
@@ -570,6 +592,7 @@
             "Rayquaza": "384",
             "Jirachi": "385",
             "Deoxys ": "386",
+            "DeoxysNormal ": "386",
             "Turtwig": "387",
             "Grotle": "388",
             "Torterra": "389",
@@ -681,7 +704,7 @@
             "Melmetal": "809"
         },
         "variants": {
-            "Alolan":{
+            "Alolan": {
                 "Rattata": "",
                 "Raticate": "",
                 "Raichu": "",
@@ -700,7 +723,7 @@
                 "Muk": "",
                 "Exeggutor": "",
                 "Marowak": ""
-            }       
+            }
         }
     }
 }

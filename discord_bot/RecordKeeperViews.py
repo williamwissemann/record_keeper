@@ -12,29 +12,31 @@ import sys
 import os
 
 
-def create_elo10(usdb, medal, message):
+def create_elo10(server, usdb, medal, message):
     """
     Creates the 10 leaderboards for a given medal
     """
-    list = usdb.get_elo_leaders(medal + "_elo")
+    list = usdb.get_elo_leaders(server, medal + "_elo")
     if len(list) > 0:
         msg = ("ELO Leaderboard for " + medal + "\n" + "```")
         msg += "   |Value      |Name\n"
         msg += "---+-----------+--------------\n"
         cnt = 0
-        for el in list[0:10]:
+        for el in list:
             cnt += 1
-            g, v = el
+            if cnt > 11:
+                break
+            g, v = el 
             v = str(round(v, 2))
             while len(v) < 10:
                 v += " "
             while len(v) < 10:
                 v += " "
             try:
-                g = get_discord_name(message, g)
+                g = get_discord_name(server, message, g)
                 assert g
             except:
-                g = "bidoof"
+                continue
             g = g.split("#")[0]
             g = g[0:15]
             c = str(cnt)
@@ -47,11 +49,11 @@ def create_elo10(usdb, medal, message):
         return "Bidoof, nothing to see here"
 
 
-def create_leaderboard10(usdb, medal, message):
+def create_leaderboard10(server, usdb, medal, message):
     """
     Creates the 10 leaderboards for a given medal
     """
-    list = usdb.get_leaders(medal)
+    list = usdb.get_leaders(server, medal)
     if len(list) > 0:
         msg = ("Leaderboard for " + medal + "\n" + "```")
         # build header
@@ -60,7 +62,7 @@ def create_leaderboard10(usdb, medal, message):
         cnt = 0
         for el in list[0:10]:
             cnt += 1
-            u, d, g, v, n = el
+            u, s, d, g, v, n = el
             d = d.split(".")[0]
             d = d.split(" ")[0]
             d = d.split("T")[0]
@@ -70,7 +72,7 @@ def create_leaderboard10(usdb, medal, message):
             while len(v) < 10:
                 v += " "
             try:
-                g = get_discord_name(message, g)
+                g = get_discord_name(server, message, g)
                 assert g
             except:
                 g = "bidoof"
@@ -89,11 +91,11 @@ def create_leaderboard10(usdb, medal, message):
         return "Bidoof, nothing to see here"
 
 
-def create_search_string(usdb, gamertag):
+def create_search_string(server, usdb, gamertag):
     """
     Creates a most recent 5 for a medal, gamertag
     """
-    list = usdb.get_trade_board_by_user(str(gamertag))
+    list = usdb.get_trade_board_by_user(server, str(gamertag))
     if len(list) > 0:
         msg = ""
         array = []
@@ -101,7 +103,7 @@ def create_search_string(usdb, gamertag):
         current = -1
         streak = False
         for el in list:
-            u, g, p, num, n = el
+            u, s, g, p, num, n = el
             if current + 1 == num:
                 current = num
                 streak = True
@@ -123,11 +125,11 @@ def create_search_string(usdb, gamertag):
         return "Bidoof, nothing to see here"
 
 
-def create_search_string_table(usdb, gamertag):
+def create_search_string_table(server, usdb, gamertag):
     """
     Creates a most recent 5 for a medal, gamertag
     """
-    list = usdb.get_trade_board_by_user(str(gamertag))
+    list = usdb.get_trade_board_by_user(server, str(gamertag))
     if len(list) > 0:
         msg = "search string:\n"
         msg += "```"
@@ -136,7 +138,7 @@ def create_search_string_table(usdb, gamertag):
         current = -1
         streak = False
         for el in list:
-            u, g, p, num, n = el
+            u, s, g, p, num, n = el
             if current + 1 == num:
                 current = num
                 streak = True
@@ -159,17 +161,17 @@ def create_search_string_table(usdb, gamertag):
         return "Bidoof, nothing to see here"
 
 
-def create_pokemon_trade_table(usdb, gamertag):
+def create_pokemon_trade_table(server, usdb, gamertag):
     """
     Creates a most recent 5 for a medal, gamertag
     """
-    list = usdb.get_trade_board_by_user(str(gamertag))
+    list = usdb.get_trade_board_by_user(server, str(gamertag))
     if len(list) > 0:
         msg = "```"
         msg += "Pokemon      |#    |Note   \n"
         msg += "-------------+-----+-------------\n"
         for el in list:
-            u, g, p, num, n = el
+            u, s, g, p, num, n = el
             p = p[0:12]
             while len(p) < 12:
                 p += " "
@@ -188,22 +190,22 @@ def create_pokemon_trade_table(usdb, gamertag):
         return "Bidoof, nothing to see here"
 
 
-def create_per_pokemon_trade_table(usdb, pokemon, message):
+def create_per_pokemon_trade_table(server, usdb, pokemon, message):
     """
     Creates a most recent 5 for a medal, gamertag
     """
-    list = usdb.get_trade_board_by_pokemon(str(pokemon))
+    list = usdb.get_trade_board_by_pokemon(server, str(pokemon))
     if len(list) > 0:
         msg = "```"
         msg += "Want         |Note   \n"
         msg += "-------------+-------------\n"
         for el in list:
-            u, g, p, num, n = el
+            u, s, g, p, num, n = el
             n = n[0:10]
             while len(n) < 12:
                 n += " "
             try:
-                g = get_discord_name(message, g)
+                g = get_discord_name(server, message, g)
                 assert g
             except:
                 g = "bidoof"
@@ -217,19 +219,19 @@ def create_per_pokemon_trade_table(usdb, pokemon, message):
         return "Bidoof, nothing to see here"
 
 
-def create_recent_pvp10(usdb, message, medal, gamertag):
+def create_recent_pvp10(server, usdb, message, medal, gamertag):
     """
     Creates a most recent 5 for a medal, gamertag
     """
-    list = usdb.get_recent_pvp(medal, str(gamertag))
+    list = usdb.get_recent_pvp(server, medal, str(gamertag))
 
     if len(list) > 0:
-        last_u, d, _, gw, _, _, gl, _, _, t, n = list[0]
+        last_u, s, d, _, gw, _, _, gl, _, _, t, n = list[0]
         msg = "<@!" + str(gamertag) + "> 's last 10 entries for " + medal + "\n" + "```"
         msg += "Battle Log      \n"
         msg += "----------------------------------\n"
         for el in list[0:10]:
-            u, d, _, gw, _, _, gl, _, _, t, n = el
+            u, s, d, _, gw, _, _, gl, _, _, t, n = el
             d = d.split(".")[0]
             d = d.split(" ")[0]
             d = d.split("T")[0]
@@ -239,12 +241,12 @@ def create_recent_pvp10(usdb, message, medal, gamertag):
             while len(n) < 8:
                 n += " "
             try:
-                gw = get_discord_name(message, gw)
+                gw = get_discord_name(server, message, gw)
                 assert gw
             except:
                 gw = "bidoof"
             try:
-                gl = get_discord_name(message, gl)
+                gl = get_discord_name(server, message, gl)
                 assert gl
             except:
                 gl = "bidoof"
@@ -260,19 +262,19 @@ def create_recent_pvp10(usdb, message, medal, gamertag):
         return "Bidoof, nothing to see here"
 
 
-def create_recent5(usdb, medal, gamertag):
+def create_recent5(server, usdb, medal, gamertag):
     """
     Creates a most recent 5 for a medal, gamertag
     """
-    list = usdb.get_recent(medal, str(gamertag))
+    list = usdb.get_recent(server, medal, str(gamertag))
     if len(list) > 0:
-        u, d, g, v, n = list[0]
+        u, s, d, g, v, n = list[0]
         msg = "<@!" + str(gamertag) + ">'s last 5 entries for " + medal + "\n" + "```"
         # build header
         msg += "Date       |Value      |Note \n"
         msg += "-----------+-----------+-----------\n"
         for el in list[0:5]:
-            u, d, g, v, n = el
+            u, s, d, g, v, n = el
             d = d.split(".")[0]
             d = d.split(" ")[0]
             d = d.split("T")[0]
@@ -289,18 +291,18 @@ def create_recent5(usdb, medal, gamertag):
         return "Bidoof, nothing to see here"
 
 
-def create_stats(usdb, medal, gamertag):
+def create_stats(server, usdb, medal, gamertag):
     """
     Creates a most recent 5 for a medal, gamertag
     """
     if medal in usdb.pvp_leagues:
-        day7 = usdb.get_day_wl_avg(medal, str(gamertag), 7)
-        day30 = usdb.get_day_wl_avg(medal, str(gamertag), 30)
-        day90 = usdb.get_day_wl_avg(medal, str(gamertag), 90)
+        day7 = usdb.get_day_wl_avg(server, medal, str(gamertag), 7)
+        day30 = usdb.get_day_wl_avg(server, medal, str(gamertag), 30)
+        day90 = usdb.get_day_wl_avg(server, medal, str(gamertag), 90)
     else:
-        day7 = usdb.get_day_avg(medal, str(gamertag), 7)
-        day30 = usdb.get_day_avg(medal, str(gamertag), 30)
-        day90 = usdb.get_day_avg(medal, str(gamertag), 90)
+        day7 = usdb.get_day_avg(server, medal, str(gamertag), 7)
+        day30 = usdb.get_day_avg(server, medal, str(gamertag), 30)
+        day90 = usdb.get_day_avg(server, medal, str(gamertag), 90)
 
     if medal in usdb.pvp_leagues:
         msg = "win rate\n"
@@ -326,19 +328,18 @@ def create_stats(usdb, medal, gamertag):
     return msg
 
 
-def create_uuid_table(usdb, medal, gamertag):
+def create_uuid_table(server, usdb, medal, gamertag):
     """
     Creates a most recent 5 for a medal, gamertag with uuid
     """
-    list = usdb.get_recent(medal, str(gamertag))
-
+    list = usdb.get_recent(server, medal, str(gamertag), uuid=True)
     if len(list) > 0:
-        u, d, g, v, n = list[0]
+        u, s, d, g, v, n = list[0]
         msg = "<@!" + str(gamertag) + ">'s last 5 entries for " + medal + "\n" + "```"
         msg += " uuid                                | value     \n"
         msg += "-------------------------------------+-----------\n"
         for el in list[0:5]:
-            u, d, g, v, n = el
+            u, s, d, g, v, n = el
             v = str(v).split(".")[0]
             while len(v) < 10:
                 v += " "
@@ -350,30 +351,30 @@ def create_uuid_table(usdb, medal, gamertag):
         return "Bidoof, nothing to see here"
 
 
-def create_uuid_table_pvp(usdb, message, medal, gamertag):
+def create_uuid_table_pvp(server, usdb, message, medal, gamertag):
     """
     Creates a most recent 5 for a medal, gamertag with uuid
     """
-    list = usdb.get_recent(medal, str(gamertag))
+    list = usdb.get_recent(server, medal, str(gamertag))
     if len(list) > 0:
-        u, d, _, gw, _, _, gl, _, _, _, n = list[0]
+        u, s, d, _, gw, _, _, gl, _, _, _, n = list[0]
         msg = "<@!" + str(gamertag) + ">'s last 5 entries for " + medal + "\n" + "```"
         # build header
         msg += " uuid                                | results     \n"
         msg += "-------------------------------------+-----------\n"
         for el in list[0:5]:
-            u, d, _, gw, _, _, gl, _, _, _, n = el
+            u, s, d, _, gw, _, _, gl, _, _, _, n = el
 
             while len(gl) < 10:
                 gl += " "
             n = n[0:10]
             try:
-                gw = get_discord_name(message, gw)
+                gw = get_discord_name(server, message, gw)
                 assert gw
             except:
                 gw = "bidoof"
             try:
-                gl = get_discord_name(message, gl)
+                gl = get_discord_name(server, message, gl)
                 assert gl
             except:
                 gl = "bidoof"
@@ -386,48 +387,76 @@ def create_uuid_table_pvp(usdb, message, medal, gamertag):
         return "Bidoof, nothing to see here"
 
 
-def create_friends_table(usdb, message, gamertag):
+def create_friends_table(server, usdb, message, gamertag):
     """
     Creates a most recent 5 for a medal, gamertag
     """
-    list = usdb.get_friends(str(gamertag))
+    list = usdb.get_friends(server, str(gamertag))
+    messages = []
     if len(list) > 0:
         msg = "<@!" + str(gamertag) + ">'s ultra friend list \n```"
         msg += "Status  | Friends\n"
         msg += "--------+--------------------- \n"
-        for el in list[0:25]:
-            _, g, _, status = el
+        cnt = 0
+        for el in list:
+            g, status = el
+            if cnt == 15 or len(msg) > 1500:
+                msg += "```"
+                messages.append(msg)
+                msg = "<@!" + str(gamertag) + ">'s ultra friend list continued \n```"
+                cnt = 0
             try:
-                g = get_discord_name(message, g)
-                assert g
+                discord_name = get_discord_name(server, message, g)
+                assert discord_name
             except:
-                g = "bidoof"
+                if server == "ViaDirectMessage":
+                    discord_name = g
+                else:
+                    continue
+
             while len(status) < 7:
                 status += " "
-            msg += status + " | " + str(g) + "\n"
+            msg += status + " | " + str(discord_name) + "\n"
+            cnt += 1
+
         msg += "```"
-        return msg
+        messages.append(msg)
+        return messages
     else:
         return "Your ultra friend's list is empty"
 
 
-def create_ping_table(usdb, message, gamertag):
+def create_ping_table(server, usdb, message, gamertag):
     """
     Creates a most recent 5 for a medal, gamertag
     """
-    list = usdb.get_online_friends(gamertag)
+    list = usdb.get_online_friends(server, gamertag)
+
     messages = []
     if len(list) > 0:
-        msg = "<@!" + str(gamertag) + "> is looking to battle! \n"
+        if len(message["args"]) > 0: 
+           formated = str(message["args"]).replace("[","").replace("]","").replace(",","").replace("'","")
+           msg = "<@!" + str(gamertag) + "> is looking to battle in {}!\n".format(formated)
+        else:
+           msg = "<@!" + str(gamertag) + "> is looking to battle!\n"
 
         friends = False
         cnt = 0
-        for idx in list:
+        for g, idx in list:
             if cnt == 20 or len(msg) > 1500:
                 messages.append(msg)
-                msg = "<@!" + str(gamertag) + "> is looking to battle! \n"
+                if (message["args"]) > 0: 
+                    formated = str(message["args"]).replace("[","").replace("]","").replace(",","").replace("'","")
+                    msg = "<@!" + str(gamertag) + "> is looking to battle in {}!\n".format(formated)
+                else:
+                    msg = "<@!" + str(gamertag) + "> is looking to battle!\n"
                 cnt = 0
-            _, g, _, status = idx
+            try:
+                discord_name = get_discord_name(server, message, g)
+                assert discord_name
+            except:
+                if server != "ViaDirectMessage":
+                    continue           
             msg += "<@!" + str(g) + "> "
             friends = True
             cnt += 1
@@ -460,8 +489,6 @@ def create_rank_table(message, league):
                                  message["args"][2], message["args"][3], folder, league)
     result = result.replace("\r\n", " ").split(",")
     perfect = perfect.replace("\r\n", " ").split(",")
-    print(result)
-    print(perfect)
 
     outstring = "```"
     outstring += "RANK:  " + result[0] + " (" + result[11] + ")\n"

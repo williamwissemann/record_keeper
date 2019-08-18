@@ -185,7 +185,6 @@ for itemTemplates in data["itemTemplates"]:
                     content += str(value).replace(" ", "").lstrip("[").rstrip("]") + "\r\n"
                     rank += 1
 
-                #print(content)
                 with gzip.open(base_dir + "/" + league + "/" + floor + "/" + pFormClean.lower() + '.csv.gz', 'wb') as f:
                     f.write(content.encode())
                 f.close()
