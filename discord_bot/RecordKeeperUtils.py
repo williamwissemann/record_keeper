@@ -36,6 +36,7 @@ def message_parser(message):
 
 
 def get_discord_id(message, search_term):
+    identifier = None
     if '<@' in search_term:
         identifier = str(search_term.lstrip("<@!").rstrip(">"))
     else:
@@ -48,40 +49,27 @@ def get_discord_id(message, search_term):
             if user:
                     identifier = user.id
                     break
-    try:
-        found = False
-        for guild in message["client"].guilds:
-            for member in guild.members:
-                if int(identifier) == member.id:
-                    found = True
-                    break
-            if found:
-                break
-        assert found
-    except:
-        return None
-
+    
+    if not identifier:
+        try:
+            int(search_term)
+            identifier = search_term
+        except:
+            return None
     return identifier
 
 
-def get_discord_name(message, identifier):
-    try:
-        found = False
-        for guild in message["client"].guilds:
-            for member in guild.members:
-                try:
-                    if str(identifier) == str(member.id):
-                        if member.nick and message["raw_msg"].guild.id == guild.id:
-                            display_name = member.nick.encode('utf8').decode('utf8')
-                        else:
-                            display_name = member.name.encode('utf8').decode('utf8')
-                        found = True
-                        break
-                except Exception as e:
-                    print(e)
-
-        assert found
-    except:
-        return None
-
+def get_discord_name(server, message, identifier):
+    found = False
+    for guild in message["client"].guilds:
+        if guild.id != server and server != "ViaDirectMessage" :
+            continue
+        for member in guild.members:
+            if str(identifier) == str(member.id):
+                if member.nick and message["raw_msg"].guild.id == guild.id:
+                    display_name = member.nick.encode('utf8').decode('utf8')
+                else:
+                    display_name = member.name.encode('utf8').decode('utf8')
+                found = True
+                break
     return display_name

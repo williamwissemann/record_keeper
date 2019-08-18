@@ -1,11 +1,14 @@
 from __future__ import print_function
 
 from Storage import UserStats
+from RecordKeeperUtils import get_discord_name
+
 
 from googleapiclient.discovery import build
 from oauth2client import file, client, tools
 from datetime import datetime, date, timedelta
 from httplib2 import Http
+import discord
 
 import time
 # import requests
@@ -18,22 +21,46 @@ import os
 
 os.chdir(os.path.abspath(__file__).replace("toSheets.py", ""))
 
+server = "487986792868478987"
+client = discord.Client()
+
+
 with open("/usr/src/RecordKeeperBot/discord_bot/RecordKeeperBot.json") as f:
     settings = json.load(f)
-    environment = settings[settings["settings"]["environment"]]
+    bot_environment = settings["bot_settings"]["environment"]
+    # this logic needs fixing (via admin activate/deactiviate)
+    settings["bot_settings"][settings["bot_settings"]["environment"]]
 
-usdb = UserStats("/usr/src/RecordKeeperBot/database/" + environment["database"])
+db_path = "{}{}".format(
+    "/usr/src/RecordKeeperBot/database/",
+    settings["bot_settings"][bot_environment]["database"])
+print(db_path)
+usdb = UserStats(db_path, "IGNORE_VERSION")
 
-if not environment["google_sheet"]["active"]:
+if server not in settings["server_settings"]:
     print("google sheets is off")
     sys.exit()
 
+members = {}
+
+@client.event
+async def on_ready():
+    print("> signed in as: " + client.user.name)
+    print("> with client id: " + str(client.user.id))
+    print('> Discord.py Version: {}'.format(discord.__version__))
+
+    for member in client.get_all_members():
+        members[str(member.id)]=str(member)
+
+    await client.close()
+client.run(settings["bot_settings"][bot_environment]["discord_token"])
+
 # If modifying these scopes, delete the file token.json.
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
-SPREADSHEET_ID = environment["google_sheet"]["spreadsheet_id"]
+SPREADSHEET_ID = settings["server_settings"][server]["google_sheet"]["spreadsheet_id"]
 
 # login to google drive, and grant permissions for this script
-store = file.Storage(environment["google_sheet"]["path_to_token"])
+store = file.Storage(settings["server_settings"][server]["google_sheet"]["path_to_token"])
 creds = store.get()
 
 if not creds or creds.invalid:
@@ -44,7 +71,6 @@ service = build('sheets', 'v4', http=creds.authorize(Http()))
 y_offset = 1
 x_list = ["A", "I", "Q"]
 x_offset = 0
-
 
 def label(text):
     global y_offset
@@ -99,46 +125,46 @@ def build_tables(array):
     global y_offset
     global x_offset
     for el in array:
-        board = usdb.get_leaders(el)
         try:
-            max_val = board[0][3]
+            board = usdb.get_leaders(server, el)
+            max_val = board[0][4]
             cnt = 1
             table = [[el, "", "", "", "Average per day"],
                     ["Rank", "Gamertag", "Value", "", "Past Week", "Past Month", "Past 90 Days"]]
             for player in board[0:10]:
                 array = []
-                val = player[3]
+                val = player[4]
+                #print(player)
                 try:
                     diff = val / max_val
                 except:
                     diff = 0
-                gt = player[2]
+                gt = player[3]
 
                 array.append(cnt)
-                array.append(str(gt).split('#')[0])
+                #print(gt, members[gt])
+            
+                array.append((str(members[gt]).split('#')[0]))
                 array.append(val)
                 array.append(diff)
-                array.append(usdb.get_day_avg(el, gt, 7))
-                array.append(usdb.get_day_avg(el, gt, 30))
-                array.append(usdb.get_day_avg(el, gt, 90))
+                array.append(usdb.get_day_avg(server, el, gt, 7))
+                array.append(usdb.get_day_avg(server, el, gt, 30))
+                array.append(usdb.get_day_avg(server, el, gt, 90))
                 cnt += 1
                 table.append(array)
-            for row in table:
-                print(row)
-            update_speadsheet(table)
-            time.sleep(3)
         except:
-            print(str(array))
-
+            continue
+        update_speadsheet(table)
+        time.sleep(3)
 
 def build_tables_raids(array):
     global y_offset
     global x_offset
     for el in array:
-        board = usdb.get_leaders(el)
+        board = usdb.get_leaders(server, el)
         print(board)
         try:
-            max_val = board[0][3]
+            max_val = board[0][4]
         except:
             max_value = 1
         cnt = 1
@@ -151,8 +177,8 @@ def build_tables_raids(array):
                 diff = val / max_val
             except:
                 diff = 0
-            gt = player[2]
-            note = player[4]
+            gt = player[3]
+            note = player[5]
 
             array.append(cnt)
             array.append(str(gt).split('#')[0])
@@ -175,7 +201,7 @@ x_offset = 0
 label("Badges")
 build_tables(usdb.badge_tables)
 
-y_offset += 1
+y_offset += 12 + 2
 x_offset = 0
 label("Types")
 build_tables(usdb.type_tables)
@@ -187,5 +213,5 @@ build_tables(usdb.custom_tables)
 
 y_offset += 12 + 2
 x_offset = 0
-label("Raids")
-build_tables_raids(usdb.raid_tables)
+#label("Raids")
+#build_tables_raids(usdb.raid_tables)
