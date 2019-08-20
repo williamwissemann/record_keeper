@@ -103,8 +103,8 @@ FRIEND-KEEPER
     List friends
         !friends
     Notify friends
-        !ping-friends
-        !ltb
+        !ping-friends <message>
+        !ltb <message>
     toggle status
         !online
         !offline
