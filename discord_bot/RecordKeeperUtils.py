@@ -63,7 +63,6 @@ def get_discord_name(server, message, identifier):
     found = False
     display_name = None
     for guild in message["client"].guilds:
-        dicta[guild.id] = None
         if guild.id != server and server != "ViaDirectMessage" :
             continue
         for member in guild.members:
