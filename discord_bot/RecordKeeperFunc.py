@@ -137,7 +137,9 @@ class RecordKeeper:
             else:
                 messages.append(msg)
                 msg = add_msg
-        if self.has_listener(user_msg, "iv-ranker"):
+        if (self.has_listener(user_msg, "iv-ranker") and 
+                (str(user_msg['client'].user.id) == '588364227396239361' or 
+                str(user_msg['client'].user.id) == '491321676835848203')):
             add_msg = self.helpIVRanker()
             if (len(add_msg) + len(msg) <= 2000):
                 msg += add_msg
@@ -734,7 +736,10 @@ class RecordKeeper:
             server = message["raw_msg"].guild.id
         except:
             server = "ViaDirectMessage"
-        identifier = message["raw_msg"].author.id
+        if len(message["user"]) > 0:
+            identifier = message["user"]
+        else:
+            identifier = message["raw_msg"].author.id
         if not identifier:
             return "Bidoof, cannot find user"
 
@@ -790,4 +795,3 @@ class RecordKeeper:
                 return bm
         except:
             return "Bidoof, something went wrong, double check your IVs"
-
