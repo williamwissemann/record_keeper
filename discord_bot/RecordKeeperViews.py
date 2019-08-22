@@ -456,7 +456,7 @@ def create_ping_table(server, usdb, message, gamertag):
                 assert discord_name
             except:
                 if server != "ViaDirectMessage":
-                    continue           
+                    continue       
             msg += "<@!" + str(g) + "> "
             friends = True
             cnt += 1
