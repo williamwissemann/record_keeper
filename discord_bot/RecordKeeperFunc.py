@@ -736,7 +736,7 @@ class RecordKeeper:
             server = message["raw_msg"].guild.id
         except:
             server = "ViaDirectMessage"
-        if len(message["user"]) > 0:
+        if "user" in message and len(message["user"]) > 0:
             identifier = message["user"]
         else:
             identifier = message["raw_msg"].author.id
