@@ -137,7 +137,9 @@ class RecordKeeper:
             else:
                 messages.append(msg)
                 msg = add_msg
-        if self.has_listener(user_msg, "iv-ranker") and (str(user_msg['client'].user.id) == '588364227396239361' or str(user_msg['client'].user.id) == '491321676835848203'):
+        if (self.has_listener(user_msg, "iv-ranker") and 
+                (str(user_msg['client'].user.id) == '588364227396239361' or 
+                str(user_msg['client'].user.id) == '491321676835848203')):
             add_msg = self.helpIVRanker()
             if (len(add_msg) + len(msg) <= 2000):
                 msg += add_msg
