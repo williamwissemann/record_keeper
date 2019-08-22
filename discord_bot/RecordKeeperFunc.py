@@ -734,7 +734,10 @@ class RecordKeeper:
             server = message["raw_msg"].guild.id
         except:
             server = "ViaDirectMessage"
-        identifier = message["raw_msg"].author.id
+        if len(message["user"]) > 0:
+            identifier = message["user"]
+        else:
+            identifier = message["raw_msg"].author.id
         if not identifier:
             return "Bidoof, cannot find user"
 

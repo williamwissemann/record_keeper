@@ -400,7 +400,7 @@ def create_friends_table(server, usdb, message, gamertag):
         cnt = 0
         for el in list:
             g, status = el
-            if cnt == 15 or len(msg) > 1500:
+            if cnt == 100 or len(msg) > 1700:
                 msg += "```"
                 messages.append(msg)
                 msg = "<@!" + str(gamertag) + ">'s ultra friend list continued \n```"
@@ -443,9 +443,9 @@ def create_ping_table(server, usdb, message, gamertag):
         friends = False
         cnt = 0
         for g, idx in list:
-            if cnt == 20 or len(msg) > 1500:
+            if cnt == 50 or len(msg) > 1700:
                 messages.append(msg)
-                if (message["args"]) > 0: 
+                if len(message["args"]) > 0: 
                     formated = str(message["args"]).replace("[","").replace("]","").replace(",","").replace("'","")
                     msg = "<@!" + str(gamertag) + "> is looking to battle in {}!\n".format(formated)
                 else:
