@@ -148,19 +148,22 @@ class UserStats:
         if not server == "ViaDirectMessage":
             sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
         if uuid:
-            sql += " AND update_at >= date('now', '-30 minutes') "
-            sql += " AND update_at <=  date('now','+30 minutes') "
+            sql += " AND update_at >= datetime('now', '-1 day') "
+            sql += " AND update_at <= datetime('now', '+1 day') "
         sql += " ORDER BY update_at DESC" 
         sql += " LIMIT " + str(limit)
         return sql
 
     @get_decorator
-    def get_recent_pvp(self, server, table, user, limit=25):
+    def get_recent_pvp(self, server, table, user, limit=25, uuid=False):
         sql = "SELECT * FROM " + str(table)
         sql += " WHERE gamertag_winner = '" + str(user) + "'"
         sql += " OR gamertag_loser = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
             sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
+        if uuid:
+            sql += " AND update_at >= datetime('now', '-1 day') "
+            sql += " AND update_at <= datetime('now', '+1 day') "
         sql += " ORDER BY update_at DESC"
         sql += " LIMIT " + (str(limit))
         return sql
@@ -196,17 +199,6 @@ class UserStats:
         if not server == "ViaDirectMessage":
             sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')" 
         sql += " ORDER BY number ASC"
-        return sql
-
-    @get_decorator
-    def get_recent_pvp(self, server, table, user, limit=25):
-        sql = "SELECT * FROM " + str(table)
-        sql += " WHERE gamertag_winner = '" + str(user) + "'"
-        sql += " OR gamertag_loser = '" + str(user) + "'"
-        if not server == "ViaDirectMessage":
-            sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')" 
-        sql += " ORDER BY update_at DESC"
-        sql += " LIMIT " + (str(limit))
         return sql
 
     @get_decorator
@@ -308,8 +300,8 @@ class UserStats:
         sql += " WHERE gamertag = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
             sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
-        sql += " AND update_at >= date('now', '-30 minutes') "
-        sql += " AND update_at <=  date('now','+30 minutes') "
+        sql += " AND update_at >= datetime('now', '-1 day') "
+        sql += " AND update_at <= datetime('now','+1 day') "
         sql += " AND uuid = '" + str(uuid) + "'"
         return sql
 
@@ -344,8 +336,8 @@ class UserStats:
         sql += " OR gamertag_loser = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
             sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
-        sql += " AND update_at >= date('now', '-" + str(days) + " days')"
-        sql += " AND update_at <=  date('now','+1 day')"
+        sql += " AND update_at >= datetime('now', '-" + str(days) + " days')"
+        sql += " AND update_at <= datetime('now','+1 day')"
         sql += " ORDER BY update_at ASC"
         for row in self.c.execute(sql):
             total = row[0]
@@ -355,8 +347,8 @@ class UserStats:
         sql += " WHERE gamertag_winner = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
             sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
-        sql += " AND update_at >= date('now', '-" + str(days) + " days')"
-        sql += " AND update_at <=  date('now','+1 day')"
+        sql += " AND update_at >= datetime('now', '-" + str(days) + " days')"
+        sql += " AND update_at <= datetime('now','+1 day')"
         sql += " AND tie == 0"
         sql += " ORDER BY update_at ASC"
         for row in self.c.execute(sql):
@@ -374,8 +366,8 @@ class UserStats:
         sql_string += " WHERE gamertag = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
             sql_string += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
-        sql_string += " AND update_at >= date('now', '-" + str(days) + " days') "
-        sql_string += " AND update_at <=  date('now','+1 day') "
+        sql_string += " AND update_at >= datetime('now', '-" + str(days) + " days') "
+        sql_string += " AND update_at <=  datetime('now','+1 day') "
         sql_string += " ORDER BY update_at ASC"
 
         recent = []

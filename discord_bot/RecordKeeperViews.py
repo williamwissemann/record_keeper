@@ -355,7 +355,7 @@ def create_uuid_table_pvp(server, usdb, message, medal, gamertag):
     """
     Creates a most recent 5 for a medal, gamertag with uuid
     """
-    list = usdb.get_recent(server, medal, str(gamertag))
+    list = usdb.get_recent(server, medal, str(gamertag), uuid=True)
     if len(list) > 0:
         u, s, d, _, gw, _, _, gl, _, _, _, n = list[0]
         msg = "<@!" + str(gamertag) + ">'s last 5 entries for " + medal + "\n" + "```"
