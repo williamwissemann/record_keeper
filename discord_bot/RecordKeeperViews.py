@@ -18,14 +18,30 @@ def create_elo10(server, usdb, medal, message):
     """
     list = usdb.get_elo_leaders(server, medal + "_elo")
     if len(list) > 0:
+        memebers = {}
+        try:
+            for x in message["raw_msg"].guild.get_all_members():
+                members[x.id] = None
+        except:
+            pass
+
+        for el in list:
+            # this can be done smarter
+            user_elo = "1200"
+            g, v = el
+            if g == str(message["raw_msg"].author.id):
+                user_elo = v
+                break
+
         msg = ("ELO Leaderboard for " + medal + "\n" + "```")
         msg += "   |Value      |Name\n"
         msg += "---+-----------+--------------\n"
         cnt = 0
         for el in list:
-            cnt += 1
             if cnt > 11:
                 break
+            if len(memebers) > 0 and g not in memebers:
+                continue
             g, v = el
             v = str(round(v, 2))
             while len(v) < 10:
@@ -34,6 +50,7 @@ def create_elo10(server, usdb, medal, message):
                 v += " "
             try:
                 g = get_discord_name(server, message, g)
+                cnt += 1
                 assert g
             except:
                 continue
@@ -44,6 +61,7 @@ def create_elo10(server, usdb, medal, message):
                 c += " "
             msg += c + " | " + str(v) + "| " + str(g) + "\n"
         msg += "```"
+        msg += "<@!" + str(message["raw_msg"].author.id) + "> elo is " + str(round(float(user_elo), 2))
         return msg
     else:
         return "Bidoof, nothing to see here"
