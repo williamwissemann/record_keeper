@@ -182,7 +182,6 @@ async def on_message(message):
                     await send_message(view, dm_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == 'tbs' and keeper.has_listener(user_msg, "trade-keeper"):
                     # generates a search string for a user
-                    # xxx hmm...
                     view = keeper.tbs(user_msg)
                     await send_message(view, dm_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == 'tbp' and keeper.has_listener(user_msg, "trade-keeper"):
