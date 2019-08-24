@@ -54,7 +54,7 @@ class UserStats:
 
         # Check if we need to migrate database to a new format
         if os.path.isfile(database_name) and version != "IGNORE_VERSION":
-            try: 
+            try:
                 cdbv = self.database_version()[0][0]
             except:
                 cdbv = "0.0"
@@ -63,8 +63,7 @@ class UserStats:
                 self.conn.close()
                 name = re.findall("/database/(.*).db",  database_name)[0]
                 backup_name = "/database/{}_backup_{}.db".format(name, cdbv)
-                backup_name = re.sub("/database/(.*)",backup_name, database_name)
-              
+                backup_name = re.sub("/database/(.*)", backup_name, database_name)
                 if not os.path.isfile(backup_name):
                     shutil.copyfile(database_name, backup_name)
                 else:
@@ -75,7 +74,7 @@ class UserStats:
                 self.init_table(data["tables"])
                 self.migrate(backup_name, cdbv, version)
                 cdbv = self.database_version()[0][0]
-                assert str(cdbv) == str(version)      
+                assert str(cdbv) == str(version)
             else:
                 self.init_table(data["tables"])
         else:
@@ -143,14 +142,14 @@ class UserStats:
 
     @get_decorator
     def get_recent(self, server, table, user, limit=25, uuid=False):
-        sql = "SELECT * FROM " + str(table) 
-        sql += " WHERE gamertag = '" + str(user) + "'" 
+        sql = "SELECT * FROM " + str(table)
+        sql += " WHERE gamertag = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
             sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
         if uuid:
             sql += " AND update_at >= datetime('now', '-1 day') "
             sql += " AND update_at <= datetime('now', '+1 day') "
-        sql += " ORDER BY update_at DESC" 
+        sql += " ORDER BY update_at DESC"
         sql += " LIMIT " + str(limit)
         return sql
 
@@ -172,7 +171,7 @@ class UserStats:
     def get_recent_pvp_no_limit(self, server, table):
         sql = "SELECT * FROM " + str(table)
         if not server == "ViaDirectMessage":
-            sql += " WHERE ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"    
+            sql += " WHERE ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
         sql += " ORDER BY update_at ASC"
         return sql
 
@@ -188,7 +187,7 @@ class UserStats:
         sql = "SELECT * FROM TRADE_BOARD"
         sql += " WHERE gamertag = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
-            sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')" 
+            sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
         sql += " ORDER BY number ASC"
         return sql
 
@@ -197,7 +196,7 @@ class UserStats:
         sql = "SELECT * FROM TRADE_BOARD"
         sql += " WHERE pokemon = '" + str(pokemon) + "'"
         if not server == "ViaDirectMessage":
-            sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')" 
+            sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
         sql += " ORDER BY number ASC"
         return sql
 
@@ -206,14 +205,14 @@ class UserStats:
         if str(table) == "Stardust":
             sql = "SELECT uuid, server_id, update_at, gamertag, value, note FROM " + str(table)
             if not server == "ViaDirectMessage":
-                sql += " WHERE ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"   
+                sql += " WHERE ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
             sql += " GROUP BY gamertag"
             sql += " ORDER BY value DESC, update_at ASC"
             sql += " LIMIT 25"
         else:
             sql = "SELECT uuid, server_id, update_at, gamertag, MAX(value), note FROM " + str(table)
             if not server == "ViaDirectMessage":
-                sql += " WHERE ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')" 
+                sql += " WHERE ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
             sql += " GROUP BY gamertag"
             sql += " ORDER BY value DESC, update_at ASC"
             sql += " LIMIT 25"
@@ -245,7 +244,7 @@ class UserStats:
             "', elo_loser_change='" + str(elo_loser_change) + "'" +
             ", server_id='" + str(server) + "'" +
             " WHERE uuid = '" + str(uuid) + "'" +
-            " AND server_id = '" + str(server) + "'" )
+            " AND server_id = '" + str(server) + "'")
         print(sql)
         return sql
 
@@ -424,11 +423,11 @@ class UserStats:
         sql = "SELECT DISTINCT gamertag2, IFNULL(status, 'Offline') as status "
         sql += " FROM FRIEND_BOARD "
         sql += " LEFT JOIN ACTIVE_BOARD "
-        sql += " ON gamertag2 = gamertag " 
+        sql += " ON gamertag2 = gamertag "
         sql += " WHERE gamertag1 = '" + str(gamertag) + "'"
         sql += " AND status = 'Online' "
         sql += " ORDER BY status DESC, gamertag2 ASC"
-        #sql += " LIMIT " + str(limit)
+        # sql += " LIMIT " + str(limit)
         return sql
 
     @update_decorator
@@ -442,21 +441,21 @@ class UserStats:
             "'" + str(status) + "')")
         return sql
 
-    @get_decorator 
+    @get_decorator
     def get_listeners(self, server, channel):
         sql = "SELECT * FROM listener "
         if not server == "ViaDirectMessage":
             sql += " WHERE server_id = '" + str(server) + "'"
-            sql += " AND active_channel = '"+ str(channel) + "'"
+            sql += " AND active_channel = '" + str(channel) + "'"
         return sql
 
-    @get_decorator 
+    @get_decorator
     def has_listeners(self, server, channel, toggle):
         sql = str(
             "SELECT * FROM listener " +
             " WHERE server_id = '" + str(server) + "'" +
             " AND toggle = '" + str(toggle) + "'" +
-            " AND active_channel = '"+ str(channel) + "'")
+            " AND active_channel = '" + str(channel) + "'")
         return sql
 
     @update_decorator
@@ -497,19 +496,19 @@ class UserStats:
         array = []
         for table in old_c.execute("SELECT name FROM sqlite_master WHERE type='table'"):
             array.append(table[0])
-     
+
         for table in array:
             for row in old_c.execute("SELECT * FROM " + table):
                 sql = str(
                     "INSERT INTO " + table +
-                    " values( ") 
+                    " values( ")
                 for eln in range(len(row)):
-                    sql += "'" + str(row[eln]) + "'," 
+                    sql += "'" + str(row[eln]) + "',"
                     if eln == 0 and not table == 'ACTIVE_BOARD' and "_elo" not in table:
-                        sql += "'" + str(server_id) + "'," 
+                        sql += "'" + str(server_id) + "',"
                 sql = sql[0:len(sql)-2] + "')"
                 self.c.execute(sql)
-        
+
         id = uuid.uuid4()
         sql = str(
             "INSERT OR REPLACE INTO botinfo" +
