@@ -148,6 +148,14 @@
                 "GL": "Great League",
                 "UL": "Ultra League",
                 "ML": "Master Lague",
+                "boulder": "Boulder Cup",
+                "tempest": "Tempest Cup",
+                "kingdom": "Kingdom Cup",
+                "twilight": "Twilight Cup",
+                "regionals": "Regionals",
+                "nightmare": "Nightmare Cup",
+                "rainbow": "Rainbow Cup",
+                "jungle": "Jungle Cup",
                 "lvl1": "Level 1"
             },
             "table": {

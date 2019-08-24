@@ -30,7 +30,7 @@ def message_parser(message):
         except:
             raise ValueError("not an accepted date format")
     else:
-        msg["date"] = datetime.datetime.now().isoformat()
+        msg["date"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     return msg
 

@@ -89,11 +89,19 @@ async def on_message(message):
                         delete_after=90)
                     if not dm_message:
                         await message.delete()
-                elif user_msg["cmd"].lower() == 'setup':
+                elif user_msg["cmd"].lower() == 'stats' and str(user_msg["raw_msg"].author.id) == '204058877317218304':
                     checkpoint_two = False
-                    await message.channel.send("wip setup", delete_after=60)
+                    await message.channel.send(keeper.stats(user_msg))
                     if not dm_message:
-                        await message.delete()
+                        await message.delete()       
+                elif user_msg["cmd"].lower() == 'servers' and str(user_msg["raw_msg"].author.id) == '204058877317218304':
+                    checkpoint_two = False
+                    view = keeper.servers(user_msg)
+                    if isinstance(view, list):
+                        for x in view:
+                            await message.channel.send(x)
+                    else:
+                        await message.channel.send(view)                                          
             if user_msg and not user_msg == "spacing issue":
                 user_msg["raw_msg"] = message
                 user_msg["client"] = client
@@ -127,6 +135,9 @@ async def on_message(message):
                     (keeper.has_listener(user_msg, "record-keeper") or keeper.has_listener(user_msg, "battle-keeper"))):
                     # creates a leaderboard for a given stat
                     await message.channel.send(keeper.lb(user_msg))
+                elif user_msg["cmd"].lower() == 'leagues' and keeper.has_listener(user_msg, "battle-keeper"):
+                    # creates the medal list help page
+                    await message.channel.send(keeper.leagues())
                 elif user_msg["cmd"].lower() == 'add-player' and keeper.has_listener(user_msg, "deletable-data"):
                     # manually add player to track player outside discord
                     await message.channel.send(keeper.add_player(user_msg))

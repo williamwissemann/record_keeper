@@ -94,6 +94,28 @@ class RecordKeeper:
         msg += "---------------------------------------------\n"
         return msg
 
+    def stats(self, user_msg):
+        cnt = 0
+        for x in user_msg['client'].guilds:
+            cnt += 1
+        msg = "servers: {} \n".format(cnt)
+        cnt = 0
+        for x in user_msg['client'].get_all_members():
+            cnt += 1
+        msg += "users: {} \n".format(cnt)
+        return msg
+
+    def servers(self, user_msg):
+        messages = []
+        msg = ""
+        for x in user_msg['client'].guilds:
+            if len(msg + str(x) + "\n") > 1900:
+                messages.append(msg)
+                msg = ""
+            msg += str(x) + "\n"
+        messages.append(msg)
+        return messages    
+
     """
     CAT1: GENERAL Functionality
     """
@@ -167,6 +189,8 @@ class RecordKeeper:
         msg += "\t!ls <*medal*> <*discord_id*>\n"
         msg += "_**List the leaderboards for a given medal**_\n"
         msg += "\t!lb <*medal*>\n"
+        msg += "_**View a list of tracked medals**_\n"
+        msg += "\t!medals\n"        
         msg += "---------------------------------------------\n"
         return msg
 
@@ -174,9 +198,9 @@ class RecordKeeper:
         msg = "__**DELETING**__\n"
         msg += "_**Delete entry via UUID**_\n"
         msg += "\t!del <*medal*> <*uuid*>\n"
-        msg += "_**List the uuids for a given medal**_\n"
+        msg += "_**List the UUIDs for a given medal**_\n"
         msg += "\t!uuid <*medal*>\n"
-        msg += "**NOTE:** Only entries made in the last 30 minutes can be deleted\n"
+        msg += "**NOTE:** Only entries made in the last 24 hours can be deleted\n"
         msg += "---------------------------------------------\n"
         return msg
 
@@ -215,6 +239,9 @@ class RecordKeeper:
         msg += "\t!ls <*league*> <*discord_id*>\n"
         msg += "_**List the elo leaderboard for a league**_\n"
         msg += "\t!lb <*league*>\n"
+        msg += "_**View a list of all tracked leagues**_\n"
+        msg += "\t!leagues\n"          
+        msg += "**NOTE:** elo is updated every 4 hours\n"
         msg += "---------------------------------------------\n"
         return msg
 
@@ -229,9 +256,9 @@ class RecordKeeper:
         msg += "\t!unwant <*dex#*>\n"
         msg += "_**List trade board for a pokemon**_\n"
         msg += "\t!tbp <*pokemon or dex number*>\n"
-        msg += "_**List a user's wants**_\n"
+        msg += "_**List a user's trade prefrences**_\n"
         msg += "\t!tbu <*discord_id*>\n"
-        msg += "_**Print a copyable version of a users search string**_\n"
+        msg += "_**Prints a copyable version of a users search string**_\n"
         msg += "\t!tbs <*discord_id*>\n"
         msg += "---------------------------------------------\n"
         return msg
@@ -277,13 +304,22 @@ class RecordKeeper:
         msg += "```"
         msg += str(sorted(self.usdb.type_tables)).replace("[", "").replace("]", "").replace("'", "")
         msg += "```"
-        msg += "JP badges:"
+        msg += "Custom Badges:"
         msg += "```"
         msg += str(sorted(self.usdb.custom_tables)).replace("[", "").replace("]", "").replace("'", "")
         msg += "```"
         msg += "Raids:"
         msg += "```"
         msg += "use !raid to get a list of all the raid bosses"
+        msg += "```"
+        if (len(msg) >= 2000):
+            return "ERROR: message too long"
+        return msg
+
+    def leagues(self):
+        msg = "__**Leauges:**__\n"
+        msg += "```"
+        msg += str(sorted(self.usdb.pvp_leagues)).replace("[", "").replace("]", "").replace("'", "")
         msg += "```"
         if (len(msg) >= 2000):
             return "ERROR: message too long"
