@@ -179,7 +179,6 @@ class UserStats:
     def get_elo_leaders(self, server, table):
         sql = "SELECT * FROM " + str(table)
         sql += " ORDER BY elo DESC"
-        sql += " LIMIT 25"
         return sql
 
     @get_decorator
