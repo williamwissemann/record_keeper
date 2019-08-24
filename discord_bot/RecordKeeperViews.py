@@ -26,7 +26,7 @@ def create_elo10(server, usdb, medal, message):
             cnt += 1
             if cnt > 11:
                 break
-            g, v = el 
+            g, v = el
             v = str(round(v, 2))
             while len(v) < 10:
                 v += " "
@@ -434,19 +434,22 @@ def create_ping_table(server, usdb, message, gamertag):
 
     messages = []
     if len(list) > 0:
-        if len(message["args"]) > 0: 
-           formated = str(message["args"]).replace("[","").replace("]","").replace(",","").replace("'","")
-           msg = "<@!" + str(gamertag) + "> is looking to battle in {}!\n".format(formated)
+        if len(message["args"]) > 0:
+            formated = str(message["args"]).replace(
+                "[", "").replace("]", "").replace(",", "").replace("'", "")
+            msg = ("<@!" + str(gamertag) +
+                   "> is looking to battle in {}!\n".format(formated))
         else:
-           msg = "<@!" + str(gamertag) + "> is looking to battle!\n"
+            msg = "<@!" + str(gamertag) + "> is looking to battle!\n"
 
         friends = False
         cnt = 0
         for g, idx in list:
             if cnt == 50 or len(msg) > 1700:
                 messages.append(msg)
-                if len(message["args"]) > 0: 
-                    formated = str(message["args"]).replace("[","").replace("]","").replace(",","").replace("'","")
+                if len(message["args"]) > 0:
+                    formated = str(message["args"]).replace(
+                        "[", "").replace("]", "").replace(",", "").replace("'", "")
                     msg = "<@!" + str(gamertag) + "> is looking to battle in {}!\n".format(formated)
                 else:
                     msg = "<@!" + str(gamertag) + "> is looking to battle!\n"
@@ -456,7 +459,7 @@ def create_ping_table(server, usdb, message, gamertag):
                 assert discord_name
             except:
                 if server != "ViaDirectMessage":
-                    continue       
+                    continue
             msg += "<@!" + str(g) + "> "
             friends = True
             cnt += 1
