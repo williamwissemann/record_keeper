@@ -39,7 +39,12 @@ class RecordKeeper:
             for setting in self.admin_options:
                 self.usdb.update_listener(
                     message["raw_msg"].guild.id, message["raw_msg"].channel.id, setting.lower())
-            return "all valid listener activated"
+            return "all valid listener are activated"
+        elif message["args"][0].lower() == "default":
+            for setting in ["help", "message-cleanup", "training-wheels"]:
+                self.usdb.update_listener(
+                    message["raw_msg"].guild.id, message["raw_msg"].channel.id, setting.lower())
+            return "default listeners are activate"
 
         if message["args"][0].lower() not in self.admin_options:
             return "{} not a valid listener".format(message["args"][0])
@@ -98,6 +103,8 @@ class RecordKeeper:
         msg += " - **message-cleanup**: cleans up bot messages on a timer\n"
         msg += " - **deletable-data**: activiates commands for delete bad entries\n"
         msg += " - **dice**: activiates !roll <*sides*>\n"
+        msg += "**Note**: it is recommend to turn on *message-cleanup*, *training-wheels* and *help* \n"
+        msg += "in addition to any other listner (via `!activate default`)\n"
         msg += "---------------------------------------------\n"
         return msg
 
