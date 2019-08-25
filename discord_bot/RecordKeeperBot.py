@@ -56,12 +56,12 @@ async def send_message(view, dm_message, user_msg, delete_time, edit=False):
         for msg in view:
             if edit:
                 update_message = await user_msg["raw_msg"].channel.send("updating...")
-                if cleanup:
+                if cleanup and not dm_message:
                     await update_message.edit(content=msg, delete_after=delete_time)
                 else:
                     await update_message.edit(content=msg)
             else:
-                if cleanup:
+                if cleanup and not dm_message:
                     await user_msg["raw_msg"].channel.send(msg, delete_after=delete_time)
                 else:
                     await user_msg["raw_msg"].channel.send(msg)
