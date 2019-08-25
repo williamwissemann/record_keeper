@@ -188,7 +188,8 @@ class RecordKeeper:
             else:
                 messages.append(msg)
                 msg = add_msg
-        add_msg = self.helpDonate()
+        if ("Direct Message" in str(user_msg["raw_msg"].channel)):
+            add_msg = self.helpDonate() 
         if (len(add_msg) + len(msg) <= 2000):
             msg += add_msg
         else:
@@ -305,7 +306,8 @@ class RecordKeeper:
         return msg
 
     def helpDonateLink(self):
-        msg = "https://paypal.me/aDyslexicPanda\n"
+        msg = "patreon: https://www.patreon.com/gostadium"
+        msg = "paypal: https://paypal.me/aDyslexicPanda\n"
         msg += "Keep hunting trainers!"
         return msg
 
