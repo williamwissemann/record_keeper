@@ -306,8 +306,8 @@ class RecordKeeper:
         return msg
 
     def helpDonateLink(self):
-        msg = "patreon: https://www.patreon.com/gostadium"
-        msg = "paypal: https://paypal.me/aDyslexicPanda\n"
+        msg = "patreon: https://www.patreon.com/gostadium \n"
+        msg += "paypal: https://paypal.me/aDyslexicPanda \n"
         msg += "Keep hunting trainers!"
         return msg
 
