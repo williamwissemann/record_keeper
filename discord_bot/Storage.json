@@ -157,7 +157,9 @@
                 "rainbow": "Rainbow Cup",
                 "jungle": "Jungle Cup",
                 "worlds": "worlds",
-                "lvl1": "Level 1"
+                "lvl1": "Level 1",
+                "Cliffhanger": "Cliffhanger",
+                "MontrealCup": "Montreal's Safari Cup"
             },
             "table": {
                 "init": {
