@@ -138,7 +138,14 @@ for itemTemplates in data["itemTemplates"]:
         pTemplate = itemTemplates["templateId"]
         pId = pSettings["pokemonId"]
         pNumber = pTemplate.split("_")[0].lstrip("V0")
-        print(pNumber)
+        if "SHADOW" in pTemplate:
+            continue
+        if "NORMAL" in pTemplate:
+            continue
+        if "PURIFIED" in pTemplate:
+            continue
+        print(pNumber, pTemplate)
+
         pForm = pSettings["form"] if "form" in pSettings else pId
         pFormClean = pForm.replace("_", "") if pForm else None
 

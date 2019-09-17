@@ -78,7 +78,8 @@
                 "Unown": "Unown",
                 "Sinnoh": "Sinnoh",
                 "Hero": "Hero",
-                "Purifier": "Purifier"
+                "Purifier": "Purifier",
+                "Unova":"Unova"
             },
             "table": {
                 "init": {
