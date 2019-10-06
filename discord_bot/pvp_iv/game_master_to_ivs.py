@@ -134,7 +134,7 @@ url = "https://raw.githubusercontent.com/pokemongo-dev-contrib/pokemongo-game-ma
 response = urlopen(url)
 data = json.loads(response.read())
 
-for itemTemplates in data["itemTemplates"]:
+for itemTemplates in data["itemTemplates"]:  # noqa: C901
     if "pokemonSettings" in itemTemplates:
         pSettings = itemTemplates["pokemonSettings"]
         pTemplate = itemTemplates["templateId"]

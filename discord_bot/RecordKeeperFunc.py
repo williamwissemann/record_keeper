@@ -139,7 +139,7 @@ class RecordKeeper:
     CAT1: GENERAL Functionality
     """
 
-    def help(self, user_msg):
+    def help(self, user_msg):  # noqa: C901
         messages = []
         msg = "__**COMMAND LIST**__\n"
         msg += "DM the bot !help for a completed list of supported commands\n"
@@ -398,7 +398,7 @@ class RecordKeeper:
                 return accepted
         return None
 
-    def up(self, message):
+    def up(self, message):  # noqa: C901
         try:
             server = message["raw_msg"].guild.id
         except:
@@ -438,7 +438,7 @@ class RecordKeeper:
                                            self.usdb, medal, str(identifier))
             return bm
 
-    def ls(self, message):
+    def ls(self, message):  # noqa: C901
         try:
             server = message["raw_msg"].guild.id
         except:
@@ -571,7 +571,7 @@ class RecordKeeper:
         except:
                 return "Bidoof, sorry, something went wrong, try !help for more info"
 
-    def pvp(self, message):
+    def pvp(self, message):  # noqa: C901
         try:
             server = message["raw_msg"].guild.id
         except:
@@ -627,7 +627,7 @@ class RecordKeeper:
             return "Bidoof, sorry, somehing went wrong, try !help for more info"
         return bm
 
-    def want(self, message):
+    def want(self, message):  # noqa: C901
         try:
             server = message["raw_msg"].guild.id
         except:

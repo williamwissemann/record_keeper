@@ -8,7 +8,7 @@ lint: venv
 	. venv/bin/activate; python3.7 -m flake8 \
 		--ignore=F401,E266,E501,E731 \
 		--exclude .git,__pycache__,venv,old,build,dist \
-	    --max-complexity 20 
+	    --max-complexity 10
 
 coverage: venv test
 	. venv/bin/activate; coverage html

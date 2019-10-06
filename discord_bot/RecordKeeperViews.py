@@ -12,7 +12,7 @@ import sys
 import os
 
 
-def create_elo10(server, usdb, medal, message):
+def create_elo10(server, usdb, medal, message):  # noqa: C901
     """
     Creates the 10 leaderboards for a given medal
     """

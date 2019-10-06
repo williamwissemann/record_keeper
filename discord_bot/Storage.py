@@ -82,7 +82,7 @@ class UserStats:
 
         print("loading complete")
 
-    def init_table(self, tables):
+    def init_table(self, tables):  # noqa: C901
         """
         Initilize a table if it doesn't already exist
         """
