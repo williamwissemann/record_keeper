@@ -60,7 +60,6 @@ def get_discord_id(message, search_term):
 
 
 def get_discord_name(server, message, identifier):
-    found = False
     display_name = None
     for guild in message["client"].guilds:
         if guild.id != server and server != "ViaDirectMessage":
@@ -75,7 +74,6 @@ def get_discord_name(server, message, identifier):
                     display_name = member.nick.encode('utf8').decode('utf8')
                 else:
                     display_name = member.name.encode('utf8').decode('utf8')
-                found = True
                 break
         if display_name:
             break

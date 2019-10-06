@@ -61,7 +61,7 @@ class UserStats:
 
             if cdbv != version and version != "IGNORE_VERSION":
                 self.conn.close()
-                name = re.findall("/database/(.*).db",  database_name)[0]
+                name = re.findall("/database/(.*).db", database_name)[0]
                 backup_name = "/database/{}_backup_{}.db".format(name, cdbv)
                 backup_name = re.sub("/database/(.*)", backup_name, database_name)
                 if not os.path.isfile(backup_name):
@@ -319,7 +319,7 @@ class UserStats:
             return True
         return False
 
-    def gamertag_exists(self, server,  gamertag):
+    def gamertag_exists(self, server, gamertag):
         self.c.execute("SELECT * FROM gamertag WHERE gamertag=? AND server_id = '" + str(server) + "'", (gamertag,))
         if self.c.fetchone():
             return True
@@ -505,7 +505,7 @@ class UserStats:
                     sql += "'" + str(row[eln]) + "',"
                     if eln == 0 and not table == 'ACTIVE_BOARD' and "_elo" not in table:
                         sql += "'" + str(server_id) + "',"
-                sql = sql[0:len(sql)-2] + "')"
+                sql = sql[0:len(sql) - 2] + "')"
                 self.c.execute(sql)
 
         id = uuid.uuid4()
@@ -517,6 +517,7 @@ class UserStats:
             "'" + str(version) + "')")
         self.c.execute(sql)
         self.conn.commit()
+
 
 if __name__ == "__main__":
     # XXX Phase 2

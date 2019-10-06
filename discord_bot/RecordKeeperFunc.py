@@ -423,8 +423,7 @@ class RecordKeeper:
             return "Bidoof, " + message["args"][0] + " can not be found"
 
         try:
-            uuid = self.usdb.update_medal(server, medal,
-                                          str(identifier), value, message["date"], note)
+            self.usdb.update_medal(server, medal, str(identifier), value, message["date"], note)
         except:
             return "Bidoof, " + value + " can not be found"
 
@@ -744,13 +743,11 @@ class RecordKeeper:
             PokemonName = None
             for x in self.usdb.pokemonByNumber:
                 if x.lower() == message["args"][0].lower():
-                    PokemonNumber = x
                     PokemonName = self.usdb.pokemonByNumber[x]
                     break
             for x in self.usdb.pokemonByName:
                 if x.lower() == message["args"][0].lower():
                     PokemonName = x
-                    PokemonNumber = self.usdb.pokemonByName[x]
                     break
         except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
@@ -860,13 +857,11 @@ class RecordKeeper:
             PokemonName = None
             for x in self.usdb.pokemonByNumber:
                 if x.lower() == message["args"][0].lower():
-                    PokemonNumber = x
                     PokemonName = self.usdb.pokemonByNumber[x]
                     break
             for x in self.usdb.pokemonByName:
                 if x.lower() == message["args"][0].lower():
                     PokemonName = x
-                    PokemonNumber = self.usdb.pokemonByName[x]
                     break
             message["args"][0] = PokemonName
         except:

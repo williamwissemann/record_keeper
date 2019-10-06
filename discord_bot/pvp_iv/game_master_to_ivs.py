@@ -102,6 +102,7 @@ floors = {
     "lucky": 12,
 }
 
+
 def compute_cp(ind_atk, ind_def, ind_sta, base_atk, base_def, base_sta):
     out = {}
     for lvl in range(1, 41 * 2):
@@ -121,6 +122,7 @@ def iv_combo(floor):
     perm = product(range(floor, 16), repeat=3)
     for iv in perm:
         yield iv
+
 
 base_dir = "compressed_iv_data"
 try:
@@ -182,7 +184,7 @@ for itemTemplates in data["itemTemplates"]:
                 max_sp = 0
                 content = "%s,%s,,,,,,,,,,\r\n" % (pNumber, pForm)
                 content += "Rank,ATK,DEF,HP,IV %,CP,LVL,ATK,DEF,HP,SP,%\r\n"
-                
+
                 for key, value in sorted(allranks.items(), key=lambda item: (item[1][9], item[1][2]), reverse=True):
                     if rank == 1:
                         max_sp = value[9]

@@ -21,7 +21,7 @@ def create_elo10(server, usdb, medal, message):
         memebers = {}
         try:
             for x in message["raw_msg"].guild.get_all_members():
-                members[x.id] = None
+                memebers[x.id] = None
         except:
             pass
 

@@ -50,7 +50,6 @@ def get_csv_header(pokemon, folder, league):
         if pokemon.lower() == files.replace(".csv.gz", "").lower():
             infile = path + files
             print(path)
-            array = []
             with gzip.open(infile, 'rb') as f:
                 for line in f.readlines()[0:2]:
                     line = str(line).split(",")
