@@ -1,8 +1,8 @@
-from Storage import UserStats
-from RecordKeeperFunc import RecordKeeper
-from RecordKeeperUtils import message_parser
+from discord_bot.Storage import UserStats
+from discord_bot.RecordKeeperFunc import RecordKeeper
+from discord_bot.RecordKeeperUtils import message_parser
 
-import RecordKeeperViews as bot_message
+import discord_bot.RecordKeeperViews as bot_message
 
 import discord
 import asyncio

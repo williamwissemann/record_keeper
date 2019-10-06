@@ -1,6 +1,6 @@
-from Storage import UserStats
-from RecordKeeperUtils import get_discord_name
-from pvp_iv.pvp_iv_util import find_combo, find_top_5, get_csv_header
+from discord_bot.Storage import UserStats
+from discord_bot.RecordKeeperUtils import get_discord_name
+from discord_bot.pvp_iv.pvp_iv_util import find_combo, find_top_5, get_csv_header
 
 import discord
 import asyncio

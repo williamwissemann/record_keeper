@@ -4,3 +4,6 @@ discord_bot/RecordKeeperBot.json
 discord_bot/__pycache__ 
 discord_bot/scheduled/google-sheets-creds/*.json
 discord_bot/pvp_iv/compressed_iv_data/*
+venv
+*.pyc
+NewDatabase

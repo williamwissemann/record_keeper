@@ -1,7 +1,7 @@
-from Storage import UserStats
-from RecordKeeperUtils import get_discord_id
+from discord_bot.Storage import UserStats
+from discord_bot.RecordKeeperUtils import get_discord_id
 
-import RecordKeeperViews as bot_message
+import discord_bot.RecordKeeperViews as bot_message
 
 import discord
 import asyncio
