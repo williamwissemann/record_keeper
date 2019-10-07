@@ -8,3 +8,4 @@ services:
     volumes: 
       - "./Database/:/usr/src/RecordKeeperBot/database/"
       - "./discord_bot:/usr/src/RecordKeeperBot/discord_bot/" 
+    entrypoint: ./RecordKeeperBot.sh

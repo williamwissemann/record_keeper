@@ -20,3 +20,9 @@ setup:
 venv: setup
 	rm -rf venv
 	virtualenv -p python3 venv
+
+docker-build:
+	docker-compose build 
+
+docker-entry-bash:
+	docker run -it record_keeper:discord

@@ -21,10 +21,13 @@ RUN set -ex \
 
 # --- copy over files ----------------------------------------------------------
 
-COPY discord_bot /usr/src/RecordKeeperBot/discord_bot
 WORKDIR /usr/src/RecordKeeperBot/discord_bot
 
+COPY discord_bot .
+COPY tests ../tests
+COPY __init__.py ../__init__.py
+COPY Makefile ../Makefile
+RUN mkdir -p ../database
+
 # --- run script ---------------------------------------------------------------
-ENTRYPOINT ["./RecordKeeperBot.sh"]
-
-
+ENTRYPOINT ["/bin/bash"]

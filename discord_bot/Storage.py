@@ -6,6 +6,7 @@ import json
 import os
 import shutil
 import re
+import logging
 
 
 class UserStats:
@@ -14,7 +15,7 @@ class UserStats:
     """
     def __init__(self, database_name="test.db", version='0.0'):
         # setup table catagories
-        print("loading_database...")
+        logging.info("loading_database...")
         self.accepted_tables = []
         self.basic_tables = []
         self.badge_tables = []
@@ -49,6 +50,7 @@ class UserStats:
             data["tables"]["raid_tables"]["table_names"][pokeclean + "BB"] = pokemon
             data["tables"]["raid_tables"]["table_names"][pokeclean + "CB"] = pokemon
         # load the DB
+        print(database_name)
         self.conn = sqlite3.connect(database_name)
         self.c = self.conn.cursor()
 

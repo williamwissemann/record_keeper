@@ -3,7 +3,7 @@
 # exits on ctrl+c
 trap "echo Exited!; exit 0;" SIGINT
 
-PYTHONPATH="${PYTHONPATH}:/usr/src/RecordKeeperBot/discord_bot/"
+PYTHONPATH="${PYTHONPATH}:/usr/src/RecordKeeperBot/"
 export PYTHONPATH
 
 # create crontab jobs
