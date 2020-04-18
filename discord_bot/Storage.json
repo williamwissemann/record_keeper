@@ -137,7 +137,8 @@
                 "Level40Pokemon": "Level 40 Pokemon",
                 "DittoSeen": "Ditto Seen",
                 "DittoCaught": "Ditto Caught",
-                "LuckySpecialTrade": "Lucky Special Trade"
+                "LuckySpecialTrade": "Lucky Special Trade",
+                "GBLELO": "GO Battle League Elo"
             },
             "table": {
                 "init": {
