@@ -60,6 +60,7 @@
                 "Scientist": "Scientist",
                 "Breeder": "Breeder",
                 "Backpacker": "Backpacker",
+                "BestBuddy": "BestBuddy",
                 "Fisherman": "Fisherman",
                 "BattleGirl": "Battle Girl",
                 "AceTrainer": "Ace Trainer",
@@ -79,7 +80,8 @@
                 "Sinnoh": "Sinnoh",
                 "Hero": "Hero",
                 "Purifier": "Purifier",
-                "Unova":"Unova"
+                "Unova": "Unova",
+                "UltraHero": "Ultra Hero"
             },
             "table": {
                 "init": {
