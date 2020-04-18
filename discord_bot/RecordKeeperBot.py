@@ -14,7 +14,7 @@ import sys
 import json
 import os
 
-database_version = '1.0.1'
+database_version = '1.0.2'
 
 os.chdir(os.path.abspath(__file__).replace("RecordKeeperBot.py", ""))
 RecordKeeperBotJson = os.path.realpath(__file__).rstrip(".py")

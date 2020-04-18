@@ -74,6 +74,7 @@ class UserStats:
                 self.init_table(data["tables"])
                 self.migrate(backup_name, cdbv, version)
                 cdbv = self.database_version()[0][0]
+                print(str(cdbv), str(version))
                 assert str(cdbv) == str(version)
             else:
                 self.init_table(data["tables"])
@@ -484,37 +485,46 @@ class UserStats:
         old_conn = sqlite3.connect(backup_name)
         old_c = old_conn.cursor()
 
-        if str(version) == "1.0" and str(cdbv) == "0.0":
-            server_id = "487986792868478987"
-        elif str(version) == "1.0.1" and str(cdbv) == "0.0":
-            server_id = "513857416983609354"
+        if str(version) == "0.0":
+            id = uuid.uuid4()
+            sql = str(
+                "INSERT OR REPLACE INTO botinfo" +
+                " VALUES( " +
+                "'" + str(id) + "'," +
+                "'version'," +
+                "'" + str(version) + "')")
+            self.c.execute(sql)
+            self.conn.commit()
+            return True
+        elif str(version) == "1.0.2" and (str(cdbv) == "1.0" or str(cdbv) == "1.0.1"):
+            pass
+        elif str(version) == str(cdbv):
+            print(f"VERSION: {str(version)}")
+            return True
         else:
             assert False
 
-        print("ADDING server_id: {}".format(server_id))
+        print(f"moving to {version}")
         array = []
         for table in old_c.execute("SELECT name FROM sqlite_master WHERE type='table'"):
             array.append(table[0])
 
         for table in array:
+            print(table)
             for row in old_c.execute("SELECT * FROM " + table):
                 sql = str(
                     "INSERT INTO " + table +
                     " values( ")
                 for eln in range(len(row)):
                     sql += "'" + str(row[eln]) + "',"
-                    if eln == 0 and not table == 'ACTIVE_BOARD' and "_elo" not in table:
-                        sql += "'" + str(server_id) + "',"
                 sql = sql[0:len(sql)-2] + "')"
                 self.c.execute(sql)
+                self.conn.commit()
 
-        id = uuid.uuid4()
         sql = str(
-            "INSERT OR REPLACE INTO botinfo" +
-            " VALUES( " +
-            "'" + str(id) + "'," +
-            "'version'," +
-            "'" + str(version) + "')")
+            "UPDATE botinfo " +
+            f" SET info = '{version}'" +
+            " WHERE field == 'version'")
         self.c.execute(sql)
         self.conn.commit()
 
