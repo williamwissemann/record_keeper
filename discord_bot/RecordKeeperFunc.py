@@ -281,6 +281,21 @@ class RecordKeeper:
         msg += "_**Prints a copyable version of a users search string**_\n"
         msg += "\t!tbs <*discord_id*>\n"
         msg += "---------------------------------------------\n"
+        msg += "__**SPECIAL-TRADE-BOARD**__\n"
+        msg += "_**Add a pokmeon to the trade board**_\n"
+        msg += "\t!special <*pokemon*>\n"
+        msg += "\t!special <*pokemon*> note:<*ExampleNote*>\n"
+        msg += "\t!special <*dex number*> note:<*ExampleNote*>\n"
+        msg += "_**Remove a pokemon from the trade board**_\n"
+        msg += "\t!unspecial <*pokemon*>\n"
+        msg += "\t!unspecial <*dex#*>\n"
+        msg += "_**List trade board for a pokemon**_\n"
+        msg += "\t!stbp <*pokemon or dex number*>\n"
+        msg += "_**List a user's trade prefrences**_\n"
+        msg += "\t!stbu <*discord_id*>\n"
+        msg += "_**Prints a copyable version of a users search string**_\n"
+        msg += "\t!stbs <*discord_id*>\n"
+        msg += "---------------------------------------------\n"
         return msg
 
     def helpIVRanker(self):
