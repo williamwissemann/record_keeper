@@ -85,6 +85,7 @@ async def on_message(message):
         checkpoint_one = True
     if checkpoint_one and not message.author.bot:
         user_msg = message_parser(message.content)
+
         if user_msg:
             checkpoint_two = True
             if user_msg == "spacing issue":
@@ -117,6 +118,16 @@ async def on_message(message):
                 user_msg["raw_msg"] = message
                 user_msg["client"] = client
                 bot_msg = None
+
+                # apply alises
+                if len(user_msg["args"]) > 0:
+                    user_msg["args"][0] = user_msg["args"][0].lower().replace(
+                        "mmr", "gblelo")
+                    user_msg["args"][0] = user_msg["args"][0].lower().replace(
+                        "fisher", "fisherman")
+                    user_msg["args"][0] = user_msg["args"][0].lower().replace(
+                        "railstaff", "depotagent")
+
                 if user_msg["cmd"].lower() == 'donate':
                     view = keeper.helpDonateLink()
                     await send_message(view, dm_message, user_msg, 120, edit=True)
@@ -187,6 +198,26 @@ async def on_message(message):
                 elif user_msg["cmd"].lower() == 'tbp' and keeper.has_listener(user_msg, "trade-keeper"):
                     # generates a tradeboard for a given pokemon
                     view = keeper.tbp(user_msg)
+                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                elif user_msg["cmd"].lower() == 'special' and keeper.has_listener(user_msg, "trade-keeper"):
+                    # adds wanted pokemon to tradeboard
+                    view = keeper.want(user_msg, board="SPECIAL_TRADE_BOARD")
+                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                elif user_msg["cmd"].lower() == 'unspecial' and keeper.has_listener(user_msg, "trade-keeper"):
+                    # delete unwanted pokemon from tradeboard
+                    view = keeper.unwant(user_msg, board="SPECIAL_TRADE_BOARD")
+                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                elif user_msg["cmd"].lower() == 'stbu' and keeper.has_listener(user_msg, "trade-keeper"):
+                    # list tradeboard by user
+                    view = keeper.tbu(user_msg, board="SPECIAL_TRADE_BOARD")
+                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                elif user_msg["cmd"].lower() == 'stbs' and keeper.has_listener(user_msg, "trade-keeper"):
+                    # generates a search string for a user
+                    view = keeper.tbs(user_msg, board="SPECIAL_TRADE_BOARD")
+                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                elif user_msg["cmd"].lower() == 'stbp' and keeper.has_listener(user_msg, "trade-keeper"):
+                    # generates a tradeboard for a given pokemon
+                    view = keeper.tbp(user_msg, board="SPECIAL_TRADE_BOARD")
                     await send_message(view, dm_message, user_msg, 90, edit=True)
                 elif ((user_msg["cmd"].lower() == 'add-friend' or user_msg["cmd"].lower() == 'auf') and
                         keeper.has_listener(user_msg, "friend-keeper")):

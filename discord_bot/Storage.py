@@ -183,17 +183,17 @@ class UserStats:
         return sql
 
     @get_decorator
-    def get_trade_board_by_user(self, server, user):
-        sql = "SELECT * FROM TRADE_BOARD"
-        sql += " WHERE gamertag = '" + str(user) + "'"
+    def get_trade_board_by_user(self, server, user, board):
+        sql = f"SELECT * FROM {board}"
+        sql += f" WHERE gamertag = '{str(user)}'"
         if not server == "ViaDirectMessage":
             sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
         sql += " ORDER BY number ASC"
         return sql
 
     @get_decorator
-    def get_trade_board_by_pokemon(self, server, pokemon):
-        sql = "SELECT * FROM TRADE_BOARD"
+    def get_trade_board_by_pokemon(self, server, pokemon, board):
+        sql = f"SELECT * FROM {board}"
         sql += " WHERE pokemon = '" + str(pokemon) + "'"
         if not server == "ViaDirectMessage":
             sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
@@ -280,10 +280,10 @@ class UserStats:
         return sql
 
     @update_decorator
-    def update_trade_board(self, server, PokemonNumber, PokemonName, user, notes=""):
+    def update_trade_board(self, server, PokemonNumber, PokemonName, user, notes="", board=""):
         id = uuid.uuid4()
         sql = str(
-            "INSERT OR REPLACE INTO TRADE_BOARD" +
+            f"INSERT OR REPLACE INTO {board}" +
             " VALUES( " +
             "'" + str(id) + "'," +
             "'" + str(server) + "'," +
@@ -305,8 +305,8 @@ class UserStats:
         return sql
 
     @update_decorator
-    def delete_from_trade_board(self, server, PokemonName, user):
-        sql = "DELETE FROM TRADE_BOARD"
+    def delete_from_trade_board(self, server, PokemonName, user, board):
+        sql = f"DELETE FROM {board}"
         sql += " WHERE gamertag = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
             sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"

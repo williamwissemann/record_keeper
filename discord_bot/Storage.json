@@ -187,7 +187,8 @@
         },
         "trade_board": {
             "table_names": {
-                "TRADE_BOARD": "TRADE_BOARD"
+                "TRADE_BOARD": "TRADE_BOARD",
+                "SPECIAL_TRADE_BOARD": "SPECIAL_TRADE_BOARD"
             },
             "table": {
                 "init": {
