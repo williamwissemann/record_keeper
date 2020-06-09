@@ -81,7 +81,8 @@
                 "Hero": "Hero",
                 "Purifier": "Purifier",
                 "Unova": "Unova",
-                "UltraHero": "Ultra Hero"
+                "UltraHero": "Ultra Hero",
+                "Wayfarer": "Wayfarer"
             },
             "table": {
                 "init": {
