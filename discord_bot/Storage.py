@@ -68,7 +68,7 @@ class UserStats:
                     shutil.copyfile(database_name, backup_name)
                 else:
                     print("WARNING: database backup already exists!")
-                    assert False
+                    raise Exception("WARNING: database backup already exists!")
                 os.remove(database_name)
                 self.conn = sqlite3.connect(database_name)
                 self.c = self.conn.cursor()
