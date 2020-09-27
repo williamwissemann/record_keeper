@@ -82,7 +82,9 @@
                 "Purifier": "Purifier",
                 "Unova": "Unova",
                 "UltraHero": "Ultra Hero",
-                "Wayfarer": "Wayfarer"
+                "Wayfarer": "Wayfarer",
+                "Successor": "Successor",
+                "MegaEvolutionGuru": "MegaEvolutionGuru"
             },
             "table": {
                 "init": {
