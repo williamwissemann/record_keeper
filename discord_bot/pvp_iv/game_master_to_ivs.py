@@ -102,6 +102,7 @@ floors = {
     "lucky": 12,
 }
 
+
 def compute_cp(ind_atk, ind_def, ind_sta, base_atk, base_def, base_sta):
     out = {}
     for lvl in range(1, 41 * 2):
@@ -122,6 +123,7 @@ def iv_combo(floor):
     for iv in perm:
         yield iv
 
+
 base_dir = "compressed_iv_data"
 try:
     os.mkdir(base_dir)
@@ -132,7 +134,7 @@ url = "https://raw.githubusercontent.com/pokemongo-dev-contrib/pokemongo-game-ma
 response = urlopen(url)
 data = json.loads(response.read())
 
-for itemTemplates in data["itemTemplates"]:
+for itemTemplates in data["itemTemplates"]:  # noqa: C901
     if "pokemonSettings" in itemTemplates:
         pSettings = itemTemplates["pokemonSettings"]
         pTemplate = itemTemplates["templateId"]
@@ -145,7 +147,6 @@ for itemTemplates in data["itemTemplates"]:
         if "PURIFIED" in pTemplate:
             continue
         print(pNumber, pTemplate)
-
         pForm = pSettings["form"] if "form" in pSettings else pId
         pFormClean = pForm.replace("_", "") if pForm else None
 
@@ -183,7 +184,7 @@ for itemTemplates in data["itemTemplates"]:
                 max_sp = 0
                 content = "%s,%s,,,,,,,,,,\r\n" % (pNumber, pForm)
                 content += "Rank,ATK,DEF,HP,IV %,CP,LVL,ATK,DEF,HP,SP,%\r\n"
-                
+
                 for key, value in sorted(allranks.items(), key=lambda item: (item[1][9], item[1][2]), reverse=True):
                     if rank == 1:
                         max_sp = value[9]

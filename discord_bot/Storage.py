@@ -61,7 +61,7 @@ class UserStats:
 
             if cdbv != version and version != "IGNORE_VERSION":
                 self.conn.close()
-                name = re.findall("/database/(.*).db",  database_name)[0]
+                name = re.findall("/database/(.*).db", database_name)[0]
                 backup_name = "/database/{}_backup_{}.db".format(name, cdbv)
                 backup_name = re.sub("/database/(.*)", backup_name, database_name)
                 if not os.path.isfile(backup_name):
@@ -84,7 +84,7 @@ class UserStats:
 
         print("loading complete")
 
-    def init_table(self, tables):
+    def init_table(self, tables):  # noqa: C901
         """
         Initilize a table if it doesn't already exist
         """
@@ -321,7 +321,7 @@ class UserStats:
             return True
         return False
 
-    def gamertag_exists(self, server,  gamertag):
+    def gamertag_exists(self, server, gamertag):
         self.c.execute("SELECT * FROM gamertag WHERE gamertag=? AND server_id = '" + str(server) + "'", (gamertag,))
         if self.c.fetchone():
             return True
@@ -528,6 +528,7 @@ class UserStats:
             " WHERE field == 'version'")
         self.c.execute(sql)
         self.conn.commit()
+
 
 if __name__ == "__main__":
     # XXX Phase 2

@@ -19,8 +19,12 @@ database_version = '1.0.2'
 os.chdir(os.path.abspath(__file__).replace("RecordKeeperBot.py", ""))
 RecordKeeperBotJson = os.path.realpath(__file__).rstrip(".py")
 
+intents = discord.Intents.default()
+intents.presences = True
+intents.members = True
+
 # Load in json file to initialize the bot
-client = discord.Client(max_messages=100000)
+client = discord.Client(max_messages=100000, intents=intents)
 with open(RecordKeeperBotJson + ".json") as f:
     settings = json.load(f)
     bot_environment = settings["bot_settings"]["environment"]
@@ -46,6 +50,7 @@ async def on_ready():
     except Exception as e:
         print(e)
 
+
 async def send_message(view, dm_message, user_msg, delete_time, edit=False):
     if view:
         if not isinstance(view, list):
@@ -70,7 +75,7 @@ async def send_message(view, dm_message, user_msg, delete_time, edit=False):
             await user_msg["raw_msg"].delete()
 
 
-@client.event
+@client.event  # noqa: C901
 async def on_message(message):
     checkpoint_one = False
     dm_message = False
@@ -282,10 +287,8 @@ async def on_message(message):
             # global_command
             if ((user_msg["cmd"].lower() == 'roll' or user_msg["cmd"].lower() == 'd20') and
                     keeper.has_listener(user_msg, "dice")):
-                try:
-                    await update_message.edit(content="rolling...")
-                except:
-                    update_message = await message.channel.send("rolling...")
+
+                update_message = await message.channel.send("rolling...")
                 # dice rolls d6
                 await asyncio.sleep(2)
                 if len(user_msg["args"]) > 0:

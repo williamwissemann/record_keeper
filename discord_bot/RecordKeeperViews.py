@@ -12,13 +12,13 @@ import sys
 import os
 
 
-def create_elo10(server, usdb, medal, message):
+def create_elo10(server, usdb, medal, message):  # noqa: C901
     """
     Creates the 10 leaderboards for a given medal
     """
     list = usdb.get_elo_leaders(server, medal + "_elo")
     if len(list) > 0:
-        memebers = {}
+        members = {}
         try:
             for x in message["raw_msg"].guild.get_all_members():
                 members[x.id] = None
@@ -40,7 +40,7 @@ def create_elo10(server, usdb, medal, message):
         for el in list:
             if cnt > 11:
                 break
-            if len(memebers) > 0 and g not in memebers:
+            if len(members) > 0 and g not in members:
                 continue
             g, v = el
             v = str(round(v, 2))

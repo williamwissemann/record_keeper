@@ -13,7 +13,6 @@ import discord
 import time
 # import requests
 import csv
-import datetime
 import sys
 import json
 
@@ -22,7 +21,7 @@ import os
 os.chdir(os.path.abspath(__file__).replace("toSheets.py", ""))
 
 server = "487986792868478987"
-client = discord.Client()
+dclient = discord.Client()
 
 
 with open("/usr/src/RecordKeeperBot/discord_bot/RecordKeeperBot.json") as f:
@@ -43,17 +42,18 @@ if server not in settings["server_settings"]:
 
 members = {}
 
+
 @client.event
 async def on_ready():
-    print("> signed in as: " + client.user.name)
-    print("> with client id: " + str(client.user.id))
+    print("> signed in as: " + dclient.user.name)
+    print("> with client id: " + str(dclient.user.id))
     print('> Discord.py Version: {}'.format(discord.__version__))
 
-    for member in client.get_all_members():
-        members[str(member.id)]=str(member)
+    for member in dclient.get_all_members():
+        members[str(member.id)] = str(member)
 
-    await client.close()
-client.run(settings["bot_settings"][bot_environment]["discord_token"])
+    await dclient.close()
+dclient.run(settings["bot_settings"][bot_environment]["discord_token"])
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
@@ -71,6 +71,7 @@ service = build('sheets', 'v4', http=creds.authorize(Http()))
 y_offset = 1
 x_list = ["A", "I", "Q"]
 x_offset = 0
+
 
 def label(text):
     global y_offset
@@ -90,7 +91,7 @@ def label(text):
 
     request = service.spreadsheets().values().update(spreadsheetId=spreadsheet_id, range=range_,
                                                      valueInputOption=value_input_option, body=value_range_body)
-    response = request.execute()
+    request.execute()
     y_offset += 1
 
 
@@ -113,7 +114,7 @@ def update_speadsheet(value_body):
 
     request = service.spreadsheets().values().update(spreadsheetId=spreadsheet_id, range=range_,
                                                      valueInputOption=value_input_option, body=value_range_body)
-    response = request.execute()
+    request.execute()
 
     x_offset = (x_offset + 1) % 3
     print(x_offset, y_offset)
@@ -130,11 +131,11 @@ def build_tables(array):
             max_val = board[0][4]
             cnt = 1
             table = [[el, "", "", "", "Average per day"],
-                    ["Rank", "Gamertag", "Value", "", "Past Week", "Past Month", "Past 90 Days"]]
+                     ["Rank", "Gamertag", "Value", "", "Past Week", "Past Month", "Past 90 Days"]]
             for player in board[0:10]:
                 array = []
                 val = player[4]
-                #print(player)
+                # print(player)
                 try:
                     diff = val / max_val
                 except:
@@ -142,8 +143,8 @@ def build_tables(array):
                 gt = player[3]
 
                 array.append(cnt)
-                #print(gt, members[gt])
-            
+                # print(gt, members[gt])
+
                 array.append((str(members[gt]).split('#')[0]))
                 array.append(val)
                 array.append(diff)
@@ -157,6 +158,7 @@ def build_tables(array):
         update_speadsheet(table)
         time.sleep(3)
 
+
 def build_tables_raids(array):
     global y_offset
     global x_offset
@@ -166,7 +168,7 @@ def build_tables_raids(array):
         try:
             max_val = board[0][4]
         except:
-            max_value = 1
+            max_val = 1
         cnt = 1
         table = [[el, "", "", "", ""],
                  ["Rank", "Gamertag", "Time", "", "Notes"]]
@@ -192,6 +194,7 @@ def build_tables_raids(array):
         update_speadsheet(table)
         time.sleep(3)
 
+
 x_offset = 0
 label("Basics")
 build_tables(usdb.basic_tables)
@@ -213,5 +216,5 @@ build_tables(usdb.custom_tables)
 
 y_offset += 12 + 2
 x_offset = 0
-#label("Raids")
-#build_tables_raids(usdb.raid_tables)
+#  label("Raids")
+#  build_tables_raids(usdb.raid_tables)

@@ -29,6 +29,7 @@ def EloRating(Ra, Rb, K, d):
         Rb = Rb + K * (1 - Pb)
     return (Ra, Rb)
 
+
 if __name__ == "__main__":
     with open("/usr/src/RecordKeeperBot/discord_bot/RecordKeeperBot.json") as f:
         settings = json.load(f)
@@ -45,8 +46,9 @@ if __name__ == "__main__":
     for table in usdb.pvp_leagues:
         dict_elo = {}
 
-        for (uuid, server, update_at, gamertag, gamertag_winner, elo_winner, elo_winner_change,
-            gamertag_loser, elo_loser, elo_loser_change, tie, note) in usdb.get_recent_pvp_no_limit("ViaDirectMessage",  table):
+        for (uuid, server, update_at, gamertag, gamertag_winner,
+             elo_winner, elo_winner_change, gamertag_loser,
+             elo_loser, elo_loser_change, tie, note) in usdb.get_recent_pvp_no_limit("ViaDirectMessage", table):
 
             if gamertag_winner not in dict_elo:
                 dict_elo[gamertag_winner] = 1200.0

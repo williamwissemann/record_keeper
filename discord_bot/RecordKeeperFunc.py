@@ -139,7 +139,7 @@ class RecordKeeper:
     CAT1: GENERAL Functionality
     """
 
-    def help(self, user_msg):
+    def help(self, user_msg):  # noqa: C901
         messages = []
         msg = "__**COMMAND LIST**__\n"
         msg += "DM the bot !help for a completed list of supported commands\n"
@@ -413,7 +413,7 @@ class RecordKeeper:
                 return accepted
         return None
 
-    def up(self, message):
+    def up(self, message):  # noqa: C901
         try:
             server = message["raw_msg"].guild.id
         except:
@@ -438,8 +438,7 @@ class RecordKeeper:
             return "Bidoof, " + message["args"][0] + " can not be found"
 
         try:
-            uuid = self.usdb.update_medal(server, medal,
-                                          str(identifier), value, message["date"], note)
+            self.usdb.update_medal(server, medal, str(identifier), value, message["date"], note)
         except:
             return "Bidoof, " + value + " can not be found"
 
@@ -454,7 +453,7 @@ class RecordKeeper:
                                            self.usdb, medal, str(identifier))
             return bm
 
-    def ls(self, message):
+    def ls(self, message):  # noqa: C901
         try:
             server = message["raw_msg"].guild.id
         except:
@@ -587,7 +586,7 @@ class RecordKeeper:
         except:
                 return "Bidoof, sorry, something went wrong, try !help for more info"
 
-    def pvp(self, message):
+    def pvp(self, message):  # noqa: C901
         try:
             server = message["raw_msg"].guild.id
         except:
@@ -758,13 +757,11 @@ class RecordKeeper:
             PokemonName = None
             for x in self.usdb.pokemonByNumber:
                 if x.lower() == message["args"][0].lower():
-                    PokemonNumber = x
                     PokemonName = self.usdb.pokemonByNumber[x]
                     break
             for x in self.usdb.pokemonByName:
                 if x.lower() == message["args"][0].lower():
                     PokemonName = x
-                    PokemonNumber = self.usdb.pokemonByName[x]
                     break
         except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
@@ -874,13 +871,11 @@ class RecordKeeper:
             PokemonName = None
             for x in self.usdb.pokemonByNumber:
                 if x.lower() == message["args"][0].lower():
-                    PokemonNumber = x
                     PokemonName = self.usdb.pokemonByNumber[x]
                     break
             for x in self.usdb.pokemonByName:
                 if x.lower() == message["args"][0].lower():
                     PokemonName = x
-                    PokemonNumber = self.usdb.pokemonByName[x]
                     break
             message["args"][0] = PokemonName
         except:
