@@ -68,12 +68,14 @@ class UserStats:
                     shutil.copyfile(database_name, backup_name)
                 else:
                     print("WARNING: database backup already exists!")
+                    raise Exception("WARNING: database backup already exists!")
                 os.remove(database_name)
                 self.conn = sqlite3.connect(database_name)
                 self.c = self.conn.cursor()
                 self.init_table(data["tables"])
                 self.migrate(backup_name, cdbv, version)
                 cdbv = self.database_version()[0][0]
+                print(str(cdbv), str(version))
                 assert str(cdbv) == str(version)
             else:
                 self.init_table(data["tables"])
@@ -182,17 +184,17 @@ class UserStats:
         return sql
 
     @get_decorator
-    def get_trade_board_by_user(self, server, user):
-        sql = "SELECT * FROM TRADE_BOARD"
-        sql += " WHERE gamertag = '" + str(user) + "'"
+    def get_trade_board_by_user(self, server, user, board):
+        sql = f"SELECT * FROM {board}"
+        sql += f" WHERE gamertag = '{str(user)}'"
         if not server == "ViaDirectMessage":
             sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
         sql += " ORDER BY number ASC"
         return sql
 
     @get_decorator
-    def get_trade_board_by_pokemon(self, server, pokemon):
-        sql = "SELECT * FROM TRADE_BOARD"
+    def get_trade_board_by_pokemon(self, server, pokemon, board):
+        sql = f"SELECT * FROM {board}"
         sql += " WHERE pokemon = '" + str(pokemon) + "'"
         if not server == "ViaDirectMessage":
             sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
@@ -279,10 +281,10 @@ class UserStats:
         return sql
 
     @update_decorator
-    def update_trade_board(self, server, PokemonNumber, PokemonName, user, notes=""):
+    def update_trade_board(self, server, PokemonNumber, PokemonName, user, notes="", board=""):
         id = uuid.uuid4()
         sql = str(
-            "INSERT OR REPLACE INTO TRADE_BOARD" +
+            f"INSERT OR REPLACE INTO {board}" +
             " VALUES( " +
             "'" + str(id) + "'," +
             "'" + str(server) + "'," +
@@ -304,8 +306,8 @@ class UserStats:
         return sql
 
     @update_decorator
-    def delete_from_trade_board(self, server, PokemonName, user):
-        sql = "DELETE FROM TRADE_BOARD"
+    def delete_from_trade_board(self, server, PokemonName, user, board):
+        sql = f"DELETE FROM {board}"
         sql += " WHERE gamertag = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
             sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
@@ -484,37 +486,46 @@ class UserStats:
         old_conn = sqlite3.connect(backup_name)
         old_c = old_conn.cursor()
 
-        if str(version) == "1.0" and str(cdbv) == "0.0":
-            server_id = "487986792868478987"
-        elif str(version) == "1.0.1" and str(cdbv) == "0.0":
-            server_id = "513857416983609354"
+        if str(version) == "0.0":
+            id = uuid.uuid4()
+            sql = str(
+                "INSERT OR REPLACE INTO botinfo" +
+                " VALUES( " +
+                "'" + str(id) + "'," +
+                "'version'," +
+                "'" + str(version) + "')")
+            self.c.execute(sql)
+            self.conn.commit()
+            return True
+        elif str(version) == "1.0.2" and (str(cdbv) == "1.0" or str(cdbv) == "1.0.1"):
+            pass
+        elif str(version) == str(cdbv):
+            print(f"VERSION: {str(version)}")
+            return True
         else:
             assert False
 
-        print("ADDING server_id: {}".format(server_id))
+        print(f"moving to {version}")
         array = []
         for table in old_c.execute("SELECT name FROM sqlite_master WHERE type='table'"):
             array.append(table[0])
 
         for table in array:
+            print(table)
             for row in old_c.execute("SELECT * FROM " + table):
                 sql = str(
                     "INSERT INTO " + table +
                     " values( ")
                 for eln in range(len(row)):
                     sql += "'" + str(row[eln]) + "',"
-                    if eln == 0 and not table == 'ACTIVE_BOARD' and "_elo" not in table:
-                        sql += "'" + str(server_id) + "',"
-                sql = sql[0:len(sql) - 2] + "')"
+                sql = sql[0:len(sql)-2] + "')"
                 self.c.execute(sql)
+                self.conn.commit()
 
-        id = uuid.uuid4()
         sql = str(
-            "INSERT OR REPLACE INTO botinfo" +
-            " VALUES( " +
-            "'" + str(id) + "'," +
-            "'version'," +
-            "'" + str(version) + "')")
+            "UPDATE botinfo " +
+            f" SET info = '{version}'" +
+            " WHERE field == 'version'")
         self.c.execute(sql)
         self.conn.commit()
 

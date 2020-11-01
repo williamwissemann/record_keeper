@@ -109,11 +109,11 @@ def create_leaderboard10(server, usdb, medal, message):
         return "Bidoof, nothing to see here"
 
 
-def create_search_string(server, usdb, gamertag):
+def create_search_string(server, usdb, gamertag, board):
     """
     Creates a most recent 5 for a medal, gamertag
     """
-    list = usdb.get_trade_board_by_user(server, str(gamertag))
+    list = usdb.get_trade_board_by_user(server, str(gamertag), board)
     if len(list) > 0:
         msg = ""
         array = []
@@ -143,11 +143,11 @@ def create_search_string(server, usdb, gamertag):
         return "Bidoof, nothing to see here"
 
 
-def create_search_string_table(server, usdb, gamertag):
+def create_search_string_table(server, usdb, gamertag, board):
     """
     Creates a most recent 5 for a medal, gamertag
     """
-    list = usdb.get_trade_board_by_user(server, str(gamertag))
+    list = usdb.get_trade_board_by_user(server, str(gamertag), board)
     if len(list) > 0:
         msg = "search string:\n"
         msg += "```"
@@ -179,11 +179,11 @@ def create_search_string_table(server, usdb, gamertag):
         return "Bidoof, nothing to see here"
 
 
-def create_pokemon_trade_table(server, usdb, gamertag):
+def create_pokemon_trade_table(server, usdb, gamertag, board):
     """
     Creates a most recent 5 for a medal, gamertag
     """
-    list = usdb.get_trade_board_by_user(server, str(gamertag))
+    list = usdb.get_trade_board_by_user(server, str(gamertag), board)
     if len(list) > 0:
         msg = "```"
         msg += "Pokemon      |#    |Note   \n"
@@ -208,11 +208,11 @@ def create_pokemon_trade_table(server, usdb, gamertag):
         return "Bidoof, nothing to see here"
 
 
-def create_per_pokemon_trade_table(server, usdb, pokemon, message):
+def create_per_pokemon_trade_table(server, usdb, pokemon, message, board):
     """
     Creates a most recent 5 for a medal, gamertag
     """
-    list = usdb.get_trade_board_by_pokemon(server, str(pokemon))
+    list = usdb.get_trade_board_by_pokemon(server, str(pokemon), board)
     if len(list) > 0:
         msg = "```"
         msg += "Want         |Note   \n"

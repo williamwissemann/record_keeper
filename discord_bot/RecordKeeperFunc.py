@@ -281,6 +281,21 @@ class RecordKeeper:
         msg += "_**Prints a copyable version of a users search string**_\n"
         msg += "\t!tbs <*discord_id*>\n"
         msg += "---------------------------------------------\n"
+        msg += "__**SPECIAL-TRADE-BOARD**__\n"
+        msg += "_**Add a pokmeon to the trade board**_\n"
+        msg += "\t!special <*pokemon*>\n"
+        msg += "\t!special <*pokemon*> note:<*ExampleNote*>\n"
+        msg += "\t!special <*dex number*> note:<*ExampleNote*>\n"
+        msg += "_**Remove a pokemon from the trade board**_\n"
+        msg += "\t!unspecial <*pokemon*>\n"
+        msg += "\t!unspecial <*dex#*>\n"
+        msg += "_**List trade board for a pokemon**_\n"
+        msg += "\t!stbp <*pokemon or dex number*>\n"
+        msg += "_**List a user's trade prefrences**_\n"
+        msg += "\t!stbu <*discord_id*>\n"
+        msg += "_**Prints a copyable version of a users search string**_\n"
+        msg += "\t!stbs <*discord_id*>\n"
+        msg += "---------------------------------------------\n"
         return msg
 
     def helpIVRanker(self):
@@ -627,7 +642,7 @@ class RecordKeeper:
             return "Bidoof, sorry, somehing went wrong, try !help for more info"
         return bm
 
-    def want(self, message):  # noqa: C901
+    def want(self, message, board="TRADE_BOARD"):
         try:
             server = message["raw_msg"].guild.id
         except:
@@ -657,16 +672,16 @@ class RecordKeeper:
             return "There was an issue adding " + message["args"][0]
 
         self.usdb.update_trade_board(server, PokemonNumber, PokemonName, str(
-            message["raw_msg"].author.id), note)
-        bm = "Added " + PokemonName + \
-            " (" + PokemonNumber + ") to the trade board!"
+            message["raw_msg"].author.id), notes=note, board=board)
+
+        bm = f"Added {PokemonName} ({PokemonNumber}) to the {board}!"
         bm += bot_message.create_pokemon_trade_table(
-            server, self.usdb, str(message["raw_msg"].author.id))
+            server, self.usdb, str(message["raw_msg"].author.id), board)
         bm += bot_message.create_search_string_table(
-            server, self.usdb, str(message["raw_msg"].author.id))
+            server, self.usdb, str(message["raw_msg"].author.id), board)
         return bm
 
-    def unwant(self, message):
+    def unwant(self, message, board="TRADE_BOARD"):
         try:
             server = message["raw_msg"].guild.id
         except:
@@ -691,12 +706,11 @@ class RecordKeeper:
             return "There was an issue removing " + message["args"][0]
 
         self.usdb.delete_from_trade_board(
-            server, PokemonName, str(message["raw_msg"].author.id))
-        bm = "Removed " + PokemonName + \
-            " (" + PokemonNumber + ") from the trade board!"
+            server, PokemonName, str(message["raw_msg"].author.id), board)
+        bm = f"Removed {PokemonName} ({PokemonNumber}) to the {board}!"
         return bm
 
-    def tbu(self, message):
+    def tbu(self, message, board="TRADE_BOARD"):
         try:
             server = message["raw_msg"].guild.id
         except:
@@ -711,13 +725,13 @@ class RecordKeeper:
             return "Bidoof, cannot find user"
 
         bm = bot_message.create_pokemon_trade_table(
-            server, self.usdb, identifier)
+            server, self.usdb, identifier, board)
         if "Bidoof" not in bm:
             bm += bot_message.create_search_string_table(
-                server, self.usdb, identifier)
+                server, self.usdb, identifier, board)
         return bm
 
-    def tbs(self, message):
+    def tbs(self, message, board="TRADE_BOARD"):
         try:
             server = message["raw_msg"].guild.id
         except:
@@ -730,10 +744,10 @@ class RecordKeeper:
         if not identifier:
             return "Bidoof, cannot find user"
 
-        bm = bot_message.create_search_string(server, self.usdb, identifier)
+        bm = bot_message.create_search_string(server, self.usdb, identifier, board)
         return bm
 
-    def tbp(self, message):
+    def tbp(self, message, board="TRADE_BOARD"):
         try:
             server = message["raw_msg"].guild.id
         except:
@@ -756,7 +770,7 @@ class RecordKeeper:
             return "There was an issue finding " + message["args"][0]
 
         bm = bot_message.create_per_pokemon_trade_table(
-            server, self.usdb, PokemonName, message)
+            server, self.usdb, PokemonName, message, board)
         return bm
 
     def addfriend(self, message):

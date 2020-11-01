@@ -60,6 +60,7 @@
                 "Scientist": "Scientist",
                 "Breeder": "Breeder",
                 "Backpacker": "Backpacker",
+                "BestBuddy": "BestBuddy",
                 "Fisherman": "Fisherman",
                 "BattleGirl": "Battle Girl",
                 "AceTrainer": "Ace Trainer",
@@ -78,7 +79,12 @@
                 "Unown": "Unown",
                 "Sinnoh": "Sinnoh",
                 "Hero": "Hero",
-                "Purifier": "Purifier"
+                "Purifier": "Purifier",
+                "Unova": "Unova",
+                "UltraHero": "Ultra Hero",
+                "Wayfarer": "Wayfarer",
+                "Successor": "Successor",
+                "MegaEvolutionGuru": "MegaEvolutionGuru"
             },
             "table": {
                 "init": {
@@ -134,7 +140,8 @@
                 "Level40Pokemon": "Level 40 Pokemon",
                 "DittoSeen": "Ditto Seen",
                 "DittoCaught": "Ditto Caught",
-                "LuckySpecialTrade": "Lucky Special Trade"
+                "LuckySpecialTrade": "Lucky Special Trade",
+                "GBLELO": "GO Battle League Elo"
             },
             "table": {
                 "init": {
@@ -183,7 +190,8 @@
         },
         "trade_board": {
             "table_names": {
-                "TRADE_BOARD": "TRADE_BOARD"
+                "TRADE_BOARD": "TRADE_BOARD",
+                "SPECIAL_TRADE_BOARD": "SPECIAL_TRADE_BOARD"
             },
             "table": {
                 "init": {
