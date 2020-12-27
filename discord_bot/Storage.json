@@ -89,7 +89,8 @@
                 "Sightseer": "Sightseer",
                 "RisingStar": "Rising Star",
                 "RisingStarDuo": "Rising Star Duo",
-                "Picnicker": "Picnicker"
+                "Picnicker": "Picnicker",
+                "Kalos": "kalos"
             },
             "table": {
                 "init": {
