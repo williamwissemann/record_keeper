@@ -90,7 +90,8 @@
                 "RisingStar": "Rising Star",
                 "RisingStarDuo": "Rising Star Duo",
                 "Picnicker": "Picnicker",
-                "Kalos": "kalos"
+                "Kalos": "kalos",
+                "EliteCollector": "Elite Collector"
             },
             "table": {
                 "init": {
