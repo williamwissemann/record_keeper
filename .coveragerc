@@ -1,0 +1,25 @@
+[run]
+branch = True
+source =
+    record-keeper
+
+[paths]
+source =
+    src/record-keeper
+    **/site-packages/record-keeper
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug
+    raise AssertionError
+    raise NotImplentedError
+    if 0:
+    if __name__ == .__main__.:
+
+ignore_errors = True
+
+[html]
+title = record-keeper Coverage Test Report
+directory = docs/source/_static/coverage

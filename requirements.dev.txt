@@ -1,0 +1,14 @@
+-r requirements.local.txt
+-r requirements.txt
+
+-r requirements.flake8.txt
+
+black
+coverage
+isort
+mypy
+sphinx
+twine
+wheel
+pytest
+pytest-cov

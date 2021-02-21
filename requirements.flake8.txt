@@ -1,0 +1,22 @@
+flake8
+flake8-builtins
+flake8-print
+
+# optional flake8 packages helpful for linting, for more see:
+# https://github.com/DmytroLitvinov/awesome-flake8-extensions
+
+pep8-naming
+flake8-eradicate
+flake8-fixme
+flake8-commas
+flake8-return
+flake8-requirements
+flake8-spellcheck
+flake8-expression-complexity
+flake8-docstrings
+flake8-aaa
+flake8-assertive
+flake8-mock
+flake8-pytest
+flake8-bandit
+Dlint

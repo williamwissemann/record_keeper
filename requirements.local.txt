@@ -1,0 +1,4 @@
+# path to local packages
+# i.e ../../modules/module_folder <-- defaults to latest
+# verson can be pinned by adding a comment
+# i.e ../../modules/module_folder # ==0.0.1

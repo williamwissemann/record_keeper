@@ -9,9 +9,6 @@ export PYTHONPATH
 # create crontab jobs
 echo "google sheets export scheduled"
 echo "0 */4 * * * /usr/src/RecordKeeperBot/discord_bot/scheduled/toSheets.sh" >> dynamic_cron
-echo "elo calculator scheduled"
-echo "0 */1 * * * /usr/src/RecordKeeperBot/discord_bot/scheduled/elo_calculator.sh" >> dynamic_cron
-echo "" >> dynamic_cron
 
 # install new cron file
 crontab dynamic_cron
