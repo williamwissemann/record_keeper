@@ -1,3 +1,5 @@
-"""Record Keeper"""
+"""A package to help keep game stats via discord."""
 
-__version__ = "2.0.0"
+import importlib.metadata
+
+__version__ = importlib.metadata.version('record-keeper')

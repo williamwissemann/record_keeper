@@ -8,18 +8,6 @@ regexp = re.compile(r'.*__version__ = [\'\"](.*?)[\'\"]', re.S)
 base_package = 'record-keeper'
 base_path = os.path.dirname(__file__)
 
-init_file = os.path.join(
-    base_path, 'src', 'record-keeper', '__init__.py')
-with open(init_file, 'r') as f:
-    module_content = f.read()
-
-    match = regexp.match(module_content)
-    if match:
-        version = match.group(1)
-    else:
-        raise RuntimeError(
-            'Cannot find __version__ in {}'.format(init_file))
-
 
 def parse_requirements(filename):
     ''' Load requirements from a pip requirements file '''
@@ -60,6 +48,9 @@ with open('README.md', 'r', encoding='utf-8') as f:
 with open('CHANGELOG.md', 'r', encoding='utf-8') as f:
     changes = f.read()
 
+with open('PACKAGE_VERSION') as f:
+    package_version = f.read().strip()
+
 if __name__ == '__main__':
     setup(
         name='record-keeper',
@@ -68,7 +59,7 @@ if __name__ == '__main__':
         long_description_content_type='text/markdown',
         license='Not open source',
         url='https://github.com/williamwissemann/foundation',
-        version=version,
+        version=package_version,
         author='William T. Wissemann',
         author_email='WilliamWissemann@gmail.com',
         maintainer='William T. Wissemann',
