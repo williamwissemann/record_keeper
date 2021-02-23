@@ -14,46 +14,17 @@ from RecordKeeperFunc import RecordKeeper
 from RecordKeeperUtils import message_parser
 from Storage import UserStats
 
-# setup a logger
-FORMAT = '%(levelname)s %(filename)s:%(lineno)d %(message)s'
-logging.basicConfig(format=FORMAT)
-logging.root.level = logging.INFO
+from bot.setup import BotSetup
 
-# discover some paths
-abs_path = os.path.abspath(__file__)
-rel_path = os.path.relpath(__file__)
-base_name = os.path.basename(__file__)
-config_file = base_name.replace('.py', '.json')
-exec_path = abs_path.replace(rel_path, '')
-
-# load data out of the configuration file
-config_file = os.path.join(exec_path, "config", config_file)
-with open(config_file) as f:
-    settings = json.load(f)
-    bot_settings = settings.get('bot_settings')
-    bot_environment = bot_settings['environment']
-    environment_settings = bot_settings[bot_environment]
-    dev_environment = bot_settings['development']
-
-# load sqlite3 database
-database_version = '1.0.2'
-database_file = environment_settings['database']
-db_path = os.path.join(exec_path, "database", database_file)
-keeper = RecordKeeper(db_path, database_version)
-
-# load sqlite3 database
-intents = discord.Intents.default()
-intents.presences = True
-intents.members = True
-client = discord.Client(max_messages=100000, intents=intents)
+bot = BotSetup()
 
 
-@client.event
+@bot.client.event
 async def on_ready():
     ''' executed when discord client is connected '''
     try:
-        logging.info('signed in as: ' + client.user.name)
-        logging.info('with client id: ' + str(client.user.id))
+        logging.info('signed in as: ' + bot.client.user.name)
+        logging.info('with client id: ' + str(bot.client.user.id))
         logging.info('Discord.py Version: {}'.format(discord.__version__))
     except Exception as e:
         logging.error(e, exc_info=True)
@@ -83,7 +54,7 @@ async def send_message(view, dm_message, user_msg, delete_time, edit=False):
             await user_msg['raw_msg'].delete()
 
 
-@client.event  # noqa: C901
+@bot.client.event
 async def on_message(message):
     checkpoint_one = False
     dm_message = False
@@ -261,18 +232,18 @@ async def on_message(message):
                     await send_message(view, dm_message, user_msg, 3600)
                 elif ((user_msg['cmd'].lower() == 'rankgreat' or user_msg['cmd'].lower() == 'rank' or
                         user_msg['cmd'].lower() == 'rankg') and keeper.has_listener(user_msg, 'iv-ranker') and
-                        (str(client.user.id) == '588364227396239361' or
-                            str(client.user.id) == '491321676835848203')):
+                        (str(bot.client.user.id) == '588364227396239361' or
+                            str(bot.client.user.id) == '491321676835848203')):
                     view = keeper.rank(user_msg, 'great')
                     await send_message(view, dm_message, user_msg, 120)
                 elif ((user_msg['cmd'].lower() == 'rankultra' or user_msg['cmd'].lower() == 'ranku') and
                         keeper.has_listener(user_msg, 'iv-ranker') and
-                        (str(client.user.id) == '588364227396239361' or str(client.user.id) == '491321676835848203')):
+                        (str(bot.client.user.id) == '588364227396239361' or str(bot.client.user.id) == '491321676835848203')):
                     view = keeper.rank(user_msg, 'ultra')
                     await send_message(view, dm_message, user_msg, 120)
                 elif ((user_msg['cmd'].lower() == 'rankmaster' or user_msg['cmd'].lower() == 'rankm') and
                         keeper.has_listener(user_msg, 'iv-ranker') and
-                        (str(client.user.id) == '588364227396239361' or str(client.user.id) == '491321676835848203')):
+                        (str(bot.client.user.id) == '588364227396239361' or str(bot.client.user.id) == '491321676835848203')):
                     view = keeper.rank(user_msg, 'master')
                     await send_message(view, dm_message, user_msg, 120)
                 elif user_msg['cmd'].lower() == 'stats' and str(user_msg['raw_msg'].author.id) == '204058877317218304':
@@ -308,7 +279,5 @@ async def on_message(message):
                 bot_msg = '{} rolled a {}'.format(message.author.name, counter)
                 await update_message.edit(content=bot_msg)
 
-# starts bot
 if __name__ == '__main__':
-    # token from https://discordapp.com/developers
-    client.run(settings['bot_settings'][bot_environment]['discord_token'])
+    bot.client.run(bot.discord_token)
