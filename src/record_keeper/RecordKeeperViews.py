@@ -22,7 +22,7 @@ def create_elo10(server, usdb, medal, message):  # noqa: C901
         try:
             for x in message["raw_msg"].guild.get_all_members():
                 members[x.id] = None
-        except:
+        except Exception:
             pass
 
         for el in list:
@@ -52,7 +52,7 @@ def create_elo10(server, usdb, medal, message):  # noqa: C901
                 g = get_discord_name(server, message, g)
                 cnt += 1
                 assert g
-            except:
+            except Exception:
                 continue
             g = g.split("#")[0]
             g = g[0:15]
@@ -97,7 +97,7 @@ def create_leaderboard10(server, usdb, medal, message):
             try:
                 g = get_discord_name(server, message, g)
                 assert g
-            except:
+            except Exception:
                 g = "bidoof"
             g = g.split("#")[0]
             g = g[0:15]
@@ -230,7 +230,7 @@ def create_per_pokemon_trade_table(server, usdb, pokemon, message, board):
             try:
                 g = get_discord_name(server, message, g)
                 assert g
-            except:
+            except Exception:
                 g = "bidoof"
             g = g.split("#")[0][0:12]
             while len(g) < 12:
@@ -266,12 +266,12 @@ def create_recent_pvp10(server, usdb, message, medal, gamertag):
             try:
                 gw = get_discord_name(server, message, gw)
                 assert gw
-            except:
+            except Exception:
                 gw = "bidoof"
             try:
                 gl = get_discord_name(server, message, gl)
                 assert gl
-            except:
+            except Exception:
                 gl = "bidoof"
             gw = gw.split("#")[0][0:10]
             gl = gl.split("#")[0][0:10]
@@ -394,12 +394,12 @@ def create_uuid_table_pvp(server, usdb, message, medal, gamertag):
             try:
                 gw = get_discord_name(server, message, gw)
                 assert gw
-            except:
+            except Exception:
                 gw = "bidoof"
             try:
                 gl = get_discord_name(server, message, gl)
                 assert gl
-            except:
+            except Exception:
                 gl = "bidoof"
             gw = gw.split("#")[0][0:10]
             gl = gl.split("#")[0][0:10]
@@ -431,7 +431,7 @@ def create_friends_table(server, usdb, message, gamertag):
             try:
                 discord_name = get_discord_name(server, message, g)
                 assert discord_name
-            except:
+            except Exception:
                 if server == "ViaDirectMessage":
                     discord_name = g
                 else:
@@ -497,7 +497,7 @@ def create_ping_table(server, usdb, message, gamertag):
             try:
                 discord_name = get_discord_name(server, message, g)
                 assert discord_name
-            except:
+            except Exception:
                 if server != "ViaDirectMessage":
                     continue
             msg += "<@!" + str(g) + "> "

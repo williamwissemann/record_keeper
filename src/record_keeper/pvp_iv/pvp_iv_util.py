@@ -32,7 +32,7 @@ def find_combo(pokemon, ATK_IV, DEF_IV, HP_IV, folder, league):
                             SP,
                             P,
                         ) = line.split(",")
-                    except:
+                    except Exception:
                         continue
                     if ATK == ATK_IV and DEF == DEF_IV and HP == HP_IV:
                         return (line.replace("\r\n", ""), perfect)

@@ -129,7 +129,7 @@ def iv_combo(floor):
 base_dir = "compressed_iv_data"
 try:
     os.mkdir(base_dir)
-except:
+except Exception:
     pass
 
 url = "https://raw.githubusercontent.com/pokemongo-dev-contrib/pokemongo-game-master/master/versions/latest/GAME_MASTER.json"
@@ -159,13 +159,13 @@ for itemTemplates in data["itemTemplates"]:  # noqa: C901
         for league in leagues:
             try:
                 os.mkdir(base_dir + "/" + league)
-            except:
+            except Exception:
                 pass
 
             for floor in floors:
                 try:
                     os.mkdir(base_dir + "/" + league + "/" + floor)
-                except:
+                except Exception:
                     pass
                 allranks = {}
 

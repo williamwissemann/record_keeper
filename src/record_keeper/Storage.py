@@ -56,7 +56,7 @@ class UserStats:
         if os.path.isfile(database_name) and version != "IGNORE_VERSION":
             try:
                 cdbv = self.database_version()[0][0]
-            except:
+            except Exception:
                 cdbv = "0.0"
 
             if cdbv != version and version != "IGNORE_VERSION":

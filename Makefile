@@ -9,7 +9,7 @@ PYTHON=python3.8
 # Do not remove this block. It is used by the 'help' rule when
 # constructing the help output.    
 # help:                                                                                             
-# help: Record-Keeper help
+# help: record_keeper help
 # help:
 
 # help: help                           - display this makefile's help information
@@ -33,6 +33,7 @@ clean:
 	@rm -rf docs/_build/
 	@rm -rf docs/build/
 	@rm -rf docs/source/api/
+	@rm -rf .pytest_cache
 	@find . -type f -name '*.pyc' -delete
 	@find . -empty -type d -delete
 	@echo "\nClean up based on .gitignore rules:\n"
@@ -42,7 +43,7 @@ clean:
 	
 # help: test                           - run tests
 .PHONY: test 
-test: venv check-lint
+test: venv # check-lint
 	@. venv/bin/activate; pytest \
 		--cov=src \
 		--cov-report html \
@@ -74,13 +75,13 @@ coverage:
 # help: format                         - perform code style format
 .PHONY: format
 format:
-	@. venv/bin/activate; black src/record-keeper tests examples
+	@. venv/bin/activate; black src/record_keeper tests examples
 
 
 # help: check-format                   - check code format compliance
 .PHONY: check-format
 check-format:
-	@. venv/bin/activate; black --check src/record-keeper tests examples
+	@. venv/bin/activate; black --check src/record_keeper tests examples
 
 
 # help: sort-imports                   - apply import sort ordering
@@ -108,7 +109,7 @@ check-style: check-sort-imports check-format
 # help: check-types                    - check type hint annotations
 .PHONY: check-types
 check-types:
-	@. venv/bin/activate; cd src; mypy -p record-keeper --ignore-missing-imports
+	@. venv/bin/activate; cd src; mypy -p record_keeper --ignore-missing-imports
 
 
 # help: check-lint                     - run static analysis checks
@@ -125,7 +126,7 @@ check-static-analysis: check-lint check-types
 # help: docs                           - generate project documentation
 .PHONY: docs
 docs: coverage
-	@. venv/bin/activate; cd docs; rm -rf source/api/record-keeper*.rst source/api/modules.rst build/*
+	@. venv/bin/activate; cd docs; rm -rf source/api/record_keeper*.rst source/api/modules.rst build/*
 	@. venv/bin/activate; cd docs; make html
 
 
@@ -149,7 +150,7 @@ dist:
 # help: dist-upload                    - upload a wheel distribution package
 .PHONY: dist-upload
 dist-upload:
-	@twine upload dist/record-keeper-*-py3-none-any.whl
+	@twine upload dist/record_keeper-*-py3-none-any.whl
 
 
 # Keep these lines at the end of the file to retain nice help

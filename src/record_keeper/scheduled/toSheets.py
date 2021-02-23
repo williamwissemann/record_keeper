@@ -162,7 +162,7 @@ def build_tables(array):
                 # print(player)
                 try:
                     diff = val / max_val
-                except:
+                except Exception:
                     diff = 0
                 gt = player[3]
 
@@ -177,7 +177,7 @@ def build_tables(array):
                 array.append(usdb.get_day_avg(server, el, gt, 90))
                 cnt += 1
                 table.append(array)
-        except:
+        except Exception:
             continue
         update_speadsheet(table)
         time.sleep(3)
@@ -191,7 +191,7 @@ def build_tables_raids(array):
         print(board)
         try:
             max_val = board[0][4]
-        except:
+        except Exception:
             max_val = 1
         cnt = 1
         table = [[el, "", "", "", ""], ["Rank", "Gamertag", "Time", "", "Notes"]]
@@ -200,7 +200,7 @@ def build_tables_raids(array):
             val = player[3]
             try:
                 diff = val / max_val
-            except:
+            except Exception:
                 diff = 0
             gt = player[3]
             note = player[5]

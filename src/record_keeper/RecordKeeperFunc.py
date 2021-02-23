@@ -61,7 +61,7 @@ class RecordKeeper:
                 message["raw_msg"].channel.id,
                 message["args"][0].lower(),
             )
-        except:
+        except Exception:
             pass
         return "listener ({}) was activated for this channel".format(message["args"][0])
 
@@ -417,15 +417,15 @@ class RecordKeeper:
         max_pages = str(math.ceil(len(self.usdb.raid_tables) / (entry_per)))
         try:
             offset = int(message["args"][0])
-        except:
+        except Exception:
             offset = 1
         if offset > int(max_pages):
             offset = 1
 
         offset = offset - 1
-        list = sorted(self.usdb.raid_tables)[
-            0 + (entry_per * offset) : entry_per + (entry_per * offset)
-        ]
+        start = entry_per * offset
+        end = entry_per + (entry_per * offset)
+        list = sorted(self.usdb.raid_tables)[start:end]
 
         msg = "---__**Command List**__---\n"
         if offset == 0:
@@ -463,7 +463,7 @@ class RecordKeeper:
     def up(self, message):  # noqa: C901
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         if "user" in message:
@@ -478,7 +478,7 @@ class RecordKeeper:
             value = message["args"][1]
             value = value.replace(",", "")
             note = message["note"] if "note" in message else ""
-        except:
+        except Exception:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
         if medal not in self.usdb.accepted_tables:
@@ -488,7 +488,7 @@ class RecordKeeper:
             self.usdb.update_medal(
                 server, medal, str(identifier), value, message["date"], note
             )
-        except:
+        except Exception:
             return "Bidoof, " + value + " can not be found"
 
         if str(identifier) != str(message["raw_msg"].author.id):
@@ -509,12 +509,12 @@ class RecordKeeper:
     def ls(self, message):  # noqa: C901
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         try:
             medal = self.find_table_name(message["args"][0])
-        except:
+        except Exception:
             return "Bidoof, sorry, something went wrong, try !help for more info"
         if len(message["args"]) > 1:
             search_term = message["args"][1]
@@ -546,12 +546,12 @@ class RecordKeeper:
     def uuid(self, message):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         try:
             medal = self.find_table_name(message["args"][0])
-        except:
+        except Exception:
             return "Bidoof, sorry, something went wrong, try !help for more info"
         if len(message["args"]) > 1:
             search_term = message["args"][1]
@@ -575,12 +575,12 @@ class RecordKeeper:
     def lb(self, message):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         try:
             medal = self.find_table_name(message["args"][0])
-        except:
+        except Exception:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
         if not (medal in self.usdb.accepted_tables or medal in self.usdb.pvp_leagues):
@@ -595,7 +595,7 @@ class RecordKeeper:
     def delete(self, message):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         if "user" in message:
@@ -609,7 +609,7 @@ class RecordKeeper:
             medal = self.find_table_name(message["args"][0])
             value = message["args"][1]
             value = value.replace(",", "")
-        except:
+        except Exception:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
         if not medal:
@@ -627,7 +627,7 @@ class RecordKeeper:
     def add_player(self, message):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         try:
@@ -637,13 +637,13 @@ class RecordKeeper:
                 return "player " + player + " added"
             else:
                 return "player " + player + " already added"
-        except:
+        except Exception:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
     def pvp(self, message):  # noqa: C901
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         try:
@@ -662,7 +662,7 @@ class RecordKeeper:
                     loser = message["raw_msg"].author.id
                 try:
                     assert loser and winner and not str(loser) == str(winner)
-                except:
+                except Exception:
                     return "You can't beat yourself"
 
                 self.usdb.update_pvp(
@@ -686,7 +686,7 @@ class RecordKeeper:
                     loser = message["raw_msg"].author.id
                 try:
                     assert loser and winner and not str(loser) == str(winner)
-                except:
+                except Exception:
                     return "You can't beat yourself"
 
                 self.usdb.update_pvp(
@@ -699,7 +699,7 @@ class RecordKeeper:
                     0,
                     note,
                 )
-        except:
+        except Exception:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
         if medal in self.usdb.pvp_leagues:
@@ -714,12 +714,12 @@ class RecordKeeper:
     def want(self, message, board="TRADE_BOARD"):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         try:
             note = message["note"] if "note" in message else ""
-        except:
+        except Exception:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
         try:
@@ -734,7 +734,7 @@ class RecordKeeper:
                     PokemonName = x
                     PokemonNumber = self.usdb.pokemonByName[x]
                     break
-        except:
+        except Exception:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
         if not PokemonName:
@@ -761,7 +761,7 @@ class RecordKeeper:
     def unwant(self, message, board="TRADE_BOARD"):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         try:
@@ -776,7 +776,7 @@ class RecordKeeper:
                     PokemonName = x
                     PokemonNumber = self.usdb.pokemonByName[x]
                     break
-        except:
+        except Exception:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
         if not PokemonName:
@@ -791,7 +791,7 @@ class RecordKeeper:
     def tbu(self, message, board="TRADE_BOARD"):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         if len(message["args"]) > 0:
@@ -814,7 +814,7 @@ class RecordKeeper:
     def tbs(self, message, board="TRADE_BOARD"):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         if len(message["args"]) > 0:
@@ -830,7 +830,7 @@ class RecordKeeper:
     def tbp(self, message, board="TRADE_BOARD"):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         try:
@@ -843,7 +843,7 @@ class RecordKeeper:
                 if x.lower() == message["args"][0].lower():
                     PokemonName = x
                     break
-        except:
+        except Exception:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
         if not PokemonName:
@@ -857,7 +857,7 @@ class RecordKeeper:
     def addfriend(self, message):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         if len(message["args"]) > 0:
@@ -884,7 +884,7 @@ class RecordKeeper:
     def removefriend(self, message):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         if len(message["args"]) > 0:
@@ -909,7 +909,7 @@ class RecordKeeper:
     def list_friends(self, message):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         if len(message["args"]) > 0:
@@ -925,7 +925,7 @@ class RecordKeeper:
     def ping_friends(self, message):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
         if "user" in message and len(message["user"]) > 0:
             identifier = message["user"]
@@ -940,7 +940,7 @@ class RecordKeeper:
     def online(self, message):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
         author = "<@!" + str(message["raw_msg"].author.id) + ">"
         self.usdb.update_active_board(server, message["raw_msg"].author.id, "Online")
@@ -949,7 +949,7 @@ class RecordKeeper:
     def offline(self, message):
         try:
             server = message["raw_msg"].guild.id
-        except:
+        except Exception:
             server = "ViaDirectMessage"
 
         author = "<@!" + str(message["raw_msg"].author.id) + ">"
@@ -969,7 +969,7 @@ class RecordKeeper:
                     PokemonName = x
                     break
             message["args"][0] = PokemonName
-        except:
+        except Exception:
             pass
 
         try:
@@ -982,5 +982,5 @@ class RecordKeeper:
                 bm = bot_message.create_rank_header(message, league)
                 bm += bot_message.create_rank_top10_table(message, league)
                 return bm
-        except:
+        except Exception:
             return "Bidoof, something went wrong, double check your IVs"

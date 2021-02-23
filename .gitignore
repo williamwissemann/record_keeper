@@ -1,7 +1,7 @@
 database/*.db
 config/*.json
 config/google-sheets-creds/*.json
-src/record-keeper/pvp_iv/compressed_iv_data/*
+src/record_keeper/pvp_iv/compressed_iv_data/*
 
 *.DS_Store
 

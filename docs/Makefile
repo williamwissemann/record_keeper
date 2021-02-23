@@ -3,7 +3,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = Record-Keeper
+SPHINXPROJ    = Record_Keeper
 SOURCEDIR     = source
 BUILDDIR      = build
 

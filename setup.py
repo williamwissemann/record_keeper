@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 
 regexp = re.compile(r'.*__version__ = [\'\"](.*?)[\'\"]', re.S)
 
-base_package = 'record-keeper'
+base_package = 'record_keeper'
 base_path = os.path.dirname(__file__)
 
 
@@ -53,7 +53,7 @@ with open('PACKAGE_VERSION') as f:
 
 if __name__ == '__main__':
     setup(
-        name='record-keeper',
+        name='record_keeper',
         description='A description of the package.',
         long_description='\n\n'.join([readme, changes]),
         long_description_content_type='text/markdown',
@@ -65,7 +65,7 @@ if __name__ == '__main__':
         maintainer='William T. Wissemann',
         maintainer_email='WilliamWissemann@gmail.com',
         install_requires=requirements,
-        keywords=['record-keeper'],
+        keywords=['record_keeper'],
         package_dir={'': 'src'},
         packages=find_packages('src'),
         zip_safe=False,

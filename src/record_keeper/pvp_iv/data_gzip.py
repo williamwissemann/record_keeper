@@ -9,11 +9,11 @@ for dir in dirs:
     if "." not in dir:
         try:
             os.mkdir(outpath)
-        except:
+        except Exception:
             pass
         try:
             os.mkdir(outpath + dir)
-        except:
+        except Exception:
             pass
 
         items = os.listdir(path + "/" + dir)

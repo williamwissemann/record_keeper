@@ -15,9 +15,10 @@ from RecordKeeperFunc import RecordKeeper
 from RecordKeeperUtils import message_parser
 from Storage import UserStats
 
+''' grabs all the bot settings'''
 bot = BotSetup()
 
-
+''' starts the bot when ready''' 
 @bot.client.event
 async def on_ready():
     """ executed when discord client is connected """
@@ -29,7 +30,7 @@ async def on_ready():
         logging.error(e, exc_info=True)
 
 
-async def send_message(view, dm_message, user_msg, delete_time, edit=False):
+async def send_message(view, direct_message, user_msg, delete_time, edit=False):
     if view:
         if not isinstance(view, list):
             view = [view]
@@ -39,35 +40,37 @@ async def send_message(view, dm_message, user_msg, delete_time, edit=False):
         for msg in view:
             if edit:
                 update_message = await user_msg["raw_msg"].channel.send("updating...")
-                if cleanup and not dm_message:
+                if cleanup and not direct_message:
                     await update_message.edit(content=msg, delete_after=delete_time)
                 else:
                     await update_message.edit(content=msg)
             else:
-                if cleanup and not dm_message:
+                if cleanup and not direct_message:
                     await user_msg["raw_msg"].channel.send(
                         msg, delete_after=delete_time
                     )
                 else:
                     await user_msg["raw_msg"].channel.send(msg)
 
-        if keeper.has_listener(user_msg, "message-cleanup") and not dm_message:
+        if keeper.has_listener(user_msg, "message-cleanup") and not direct_message:
             await user_msg["raw_msg"].delete()
 
 
 @bot.client.event
 async def on_message(message):
     checkpoint_one = False
-    dm_message = False
+    direct_message = False
+
     if "Direct Message" in str(message.channel):
         checkpoint_one = True
-        dm_message = True
+        direct_message = True
     if bot_environment == "development" and "-testing" not in str(message.channel):
         print("(dev) ignore message because of '-testing' flag")
     elif bot_environment == "production" and "-testing" in str(message.channel):
         print("(prod) ignore  message because of '-testing' flag")
     else:
         checkpoint_one = True
+
     if checkpoint_one and not message.author.bot:
         user_msg = message_parser(message.content)
 
@@ -77,13 +80,13 @@ async def on_message(message):
                 await message.channel.send(
                     "You're missing a space somewhere in the command"
                 )
-            if not dm_message and message.author.guild_permissions.administrator:
+            if not direct_message and message.author.guild_permissions.administrator:
                 user_msg["raw_msg"] = message
                 user_msg["client"] = client
                 if user_msg["cmd"].lower() == "setup":
                     checkpoint_two = False
                     await message.channel.send(keeper.setup(user_msg), delete_after=600)
-                    if not dm_message:
+                    if not direct_message:
                         await message.delete()
                 elif user_msg["cmd"].lower() == "activate":
                     checkpoint_two = False
@@ -91,21 +94,21 @@ async def on_message(message):
                         await message.channel.send(
                             keeper.activate(user_msg), delete_after=60
                         )
-                        if not dm_message:
+                        if not direct_message:
                             await message.delete()
                 elif user_msg["cmd"].lower() == "deactivate":
                     checkpoint_two = False
                     await message.channel.send(
                         keeper.deactivate(user_msg), delete_after=60
                     )
-                    if not dm_message:
+                    if not direct_message:
                         await message.delete()
                 elif user_msg["cmd"].lower() == "active":
                     checkpoint_two = False
                     await message.channel.send(
                         keeper.list_listener(user_msg), delete_after=90
                     )
-                    if not dm_message:
+                    if not direct_message:
                         await message.delete()
             if user_msg and not user_msg == "spacing issue":
                 user_msg["raw_msg"] = message
@@ -126,174 +129,174 @@ async def on_message(message):
 
                 if user_msg["cmd"].lower() == "donate":
                     view = keeper.helpDonateLink()
-                    await send_message(view, dm_message, user_msg, 120, edit=True)
+                    await send_message(view, direct_message, user_msg, 120, edit=True)
                 elif user_msg["cmd"].lower() == "help" and keeper.has_listener(
                     user_msg, "help"
                 ):
                     # creates the help page
                     view = keeper.help(user_msg)
-                    await send_message(view, dm_message, user_msg, 120, edit=True)
+                    await send_message(view, direct_message, user_msg, 120, edit=True)
                 elif user_msg["cmd"].lower() == "medals" and keeper.has_listener(
                     user_msg, "help"
                 ):
                     # creates the medal list help page
                     view = keeper.medals()
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "raid" and keeper.has_listener(
                     user_msg, "help"
                 ):
                     # generate the raid list help page
                     view = keeper.raid(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "up" and keeper.has_listener(
                     user_msg, "record-keeper"
                 ):
                     # updates a given stat
                     view = keeper.up(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "ls" and (
                     keeper.has_listener(user_msg, "record-keeper")
                     or keeper.has_listener(user_msg, "battle-keeper")
                 ):
                     # lists stats for a given user
                     view = keeper.ls(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "lb" and (
                     keeper.has_listener(user_msg, "record-keeper")
                     or keeper.has_listener(user_msg, "battle-keeper")
                 ):
                     # creates a leaderboard for a given stat
                     view = keeper.lb(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "leagues" and keeper.has_listener(
                     user_msg, "battle-keeper"
                 ):
                     # creates the medal list help page
                     view = keeper.leagues()
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "add-player" and keeper.has_listener(
                     user_msg, "deletable-data"
                 ):
                     # manually add player to track player outside discord
                     view = keeper.add_player(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "uuid" and keeper.has_listener(
                     user_msg, "deletable-data"
                 ):
                     # generate uuid(s) table
                     view = keeper.uuid(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "del" and keeper.has_listener(
                     user_msg, "deletable-data"
                 ):
                     # delete a data point based a (medal, uuid) pair
                     view = keeper.delete(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "pvp" and keeper.has_listener(
                     user_msg, "battle-keeper"
                 ):
                     # handles pvp win / lose
                     view = keeper.pvp(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "want" and keeper.has_listener(
                     user_msg, "trade-keeper"
                 ):
                     # adds wanted pokemon to tradeboard
                     view = keeper.want(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "unwant" and keeper.has_listener(
                     user_msg, "trade-keeper"
                 ):
                     # delete unwanted pokemon from tradeboard
                     view = keeper.unwant(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "tbu" and keeper.has_listener(
                     user_msg, "trade-keeper"
                 ):
                     # list tradeboard by user
                     view = keeper.tbu(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "tbs" and keeper.has_listener(
                     user_msg, "trade-keeper"
                 ):
                     # generates a search string for a user
                     view = keeper.tbs(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "tbp" and keeper.has_listener(
                     user_msg, "trade-keeper"
                 ):
                     # generates a tradeboard for a given pokemon
                     view = keeper.tbp(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "special" and keeper.has_listener(
                     user_msg, "trade-keeper"
                 ):
                     # adds wanted pokemon to tradeboard
                     view = keeper.want(user_msg, board="SPECIAL_TRADE_BOARD")
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "unspecial" and keeper.has_listener(
                     user_msg, "trade-keeper"
                 ):
                     # delete unwanted pokemon from tradeboard
                     view = keeper.unwant(user_msg, board="SPECIAL_TRADE_BOARD")
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "stbu" and keeper.has_listener(
                     user_msg, "trade-keeper"
                 ):
                     # list tradeboard by user
                     view = keeper.tbu(user_msg, board="SPECIAL_TRADE_BOARD")
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "stbs" and keeper.has_listener(
                     user_msg, "trade-keeper"
                 ):
                     # generates a search string for a user
                     view = keeper.tbs(user_msg, board="SPECIAL_TRADE_BOARD")
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "stbp" and keeper.has_listener(
                     user_msg, "trade-keeper"
                 ):
                     # generates a tradeboard for a given pokemon
                     view = keeper.tbp(user_msg, board="SPECIAL_TRADE_BOARD")
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif (
                     user_msg["cmd"].lower() == "add-friend"
                     or user_msg["cmd"].lower() == "auf"
                 ) and keeper.has_listener(user_msg, "friend-keeper"):
                     # add friend to friends list
                     view = keeper.addfriend(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif (
                     user_msg["cmd"].lower() == "remove-friend"
                     or user_msg["cmd"].lower() == "ruf"
                 ) and keeper.has_listener(user_msg, "friend-keeper"):
                     # remove friend from friends list
                     view = keeper.removefriend(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "friends" and keeper.has_listener(
                     user_msg, "friend-keeper"
                 ):
                     # list friends friends list
                     view = keeper.list_friends(user_msg)
-                    await send_message(view, dm_message, user_msg, 90, edit=True)
+                    await send_message(view, direct_message, user_msg, 90, edit=True)
                 elif user_msg["cmd"].lower() == "online" and keeper.has_listener(
                     user_msg, "friend-keeper"
                 ):
                     # set status to online
                     view = keeper.online(user_msg)
-                    await send_message(view, dm_message, user_msg, 30, edit=True)
+                    await send_message(view, direct_message, user_msg, 30, edit=True)
                 elif user_msg["cmd"].lower() == "offline" and keeper.has_listener(
                     user_msg, "friend-keeper"
                 ):
                     # set status to offline
                     view = keeper.offline(user_msg)
-                    await send_message(view, dm_message, user_msg, 30, edit=True)
+                    await send_message(view, direct_message, user_msg, 30, edit=True)
                 elif (
                     user_msg["cmd"].lower() == "ping-friends"
                     or user_msg["cmd"].lower() == "ltb"
                 ) and keeper.has_listener(user_msg, "friend-keeper"):
                     # ping friends user is looking for match
                     view = keeper.ping_friends(user_msg)
-                    await send_message(view, dm_message, user_msg, 3600)
+                    await send_message(view, direct_message, user_msg, 3600)
                 elif (
                     (
                         user_msg["cmd"].lower() == "rankgreat"
@@ -307,7 +310,7 @@ async def on_message(message):
                     )
                 ):
                     view = keeper.rank(user_msg, "great")
-                    await send_message(view, dm_message, user_msg, 120)
+                    await send_message(view, direct_message, user_msg, 120)
                 elif (
                     (
                         user_msg["cmd"].lower() == "rankultra"
@@ -320,7 +323,7 @@ async def on_message(message):
                     )
                 ):
                     view = keeper.rank(user_msg, "ultra")
-                    await send_message(view, dm_message, user_msg, 120)
+                    await send_message(view, direct_message, user_msg, 120)
                 elif (
                     (
                         user_msg["cmd"].lower() == "rankmaster"
@@ -333,21 +336,21 @@ async def on_message(message):
                     )
                 ):
                     view = keeper.rank(user_msg, "master")
-                    await send_message(view, dm_message, user_msg, 120)
+                    await send_message(view, direct_message, user_msg, 120)
                 elif (
                     user_msg["cmd"].lower() == "stats"
                     and str(user_msg["raw_msg"].author.id) == "204058877317218304"
                 ):
                     checkpoint_two = False
                     view = keeper.stats(user_msg)
-                    await send_message(view, dm_message, user_msg, 300)
+                    await send_message(view, direct_message, user_msg, 300)
                 elif (
                     user_msg["cmd"].lower() == "servers"
                     and str(user_msg["raw_msg"].author.id) == "204058877317218304"
                 ):
                     checkpoint_two = False
                     view = keeper.servers(user_msg)
-                    await send_message(view, dm_message, user_msg, 300)
+                    await send_message(view, direct_message, user_msg, 300)
                 elif (
                     user_msg["cmd"].lower() == "roll"
                     or user_msg["cmd"].lower() == "d20"
@@ -360,7 +363,7 @@ async def on_message(message):
                         and checkpoint_two
                     ):
                         view = "Bidoof, sorry, something went wrong, try !help for more info"
-                        await send_message(view, dm_message, user_msg, 30)
+                        await send_message(view, direct_message, user_msg, 30)
 
             # global_command
             if (

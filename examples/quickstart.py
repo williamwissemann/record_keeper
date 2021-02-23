@@ -3,13 +3,11 @@ This example script imports the record-keeper package and
 prints out the version.
 """
 
-import record-keeper
+import record_keeper
 
 
 def main():
-    print(
-        f"record-keeper version: {record-keeper.__version__}"
-    )
+    print(f"record-keeper version: {record_keeper.__version__}")
 
 
 if __name__ == "__main__":

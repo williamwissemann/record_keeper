@@ -16,7 +16,7 @@ def message_parser(message):
     for s in special:
         try:
             key, value = s.split(":")
-        except:
+        except Exception:
             return "spacing issue"
         if key not in value:
             msg[key.lower()] = value.lstrip(" ")
@@ -28,7 +28,7 @@ def message_parser(message):
         try:
             y, m, d = msg["date"].split("-")
             msg["date"] = str(datetime.datetime(int(y), int(m), int(d)).isoformat(" "))
-        except:
+        except Exception:
             raise ValueError("not an accepted date format")
     else:
         msg["date"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -56,7 +56,7 @@ def get_discord_id(message, search_term):
         try:
             int(search_term)
             identifier = search_term
-        except:
+        except Exception:
             return None
     return identifier
 
@@ -70,7 +70,7 @@ def get_discord_name(server, message, identifier):
             if str(identifier) == str(member.id):
                 try:
                     msg_guild_id = message["raw_msg"].guild.id
-                except:
+                except Exception:
                     msg_guild_id = "None"
                 if member.nick and msg_guild_id == guild.id:
                     display_name = member.nick.encode("utf8").decode("utf8")
