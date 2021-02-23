@@ -3,4 +3,4 @@
 import importlib.metadata
 import logging
 
-__version__ = importlib.metadata.version('record-keeper')
+__version__ = importlib.metadata.version("record-keeper")

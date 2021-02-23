@@ -89,11 +89,7 @@ cp_multiplier = {
     40: 0.79030001,
 }
 
-leagues = {
-    "great": 1500,
-    "ultra": 2500,
-    "master": 20000
-}
+leagues = {"great": 1500, "ultra": 2500, "master": 20000}
 
 floors = {
     "wild": 0,
@@ -113,9 +109,14 @@ def compute_cp(ind_atk, ind_def, ind_sta, base_atk, base_def, base_sta):
             attack = (base_atk + ind_atk) * m
             defense = (base_def + ind_def) * m
             stamina = (base_sta + ind_sta) * m
-            cp = int(max(math.floor(attack * defense**0.5 * stamina**0.5) / 10, 10))
-            out[cp] = [lvl, round(attack, 2), round(defense, 2), round(
-                math.floor(stamina), 2), attack * defense * math.floor(stamina)]
+            cp = int(max(math.floor(attack * defense ** 0.5 * stamina ** 0.5) / 10, 10))
+            out[cp] = [
+                lvl,
+                round(attack, 2),
+                round(defense, 2),
+                round(math.floor(stamina), 2),
+                attack * defense * math.floor(stamina),
+            ]
     return out
 
 
@@ -170,7 +171,9 @@ for itemTemplates in data["itemTemplates"]:  # noqa: C901
 
                 for combo in iv_combo(floors[floor]):
                     patk, pdef, psta = combo
-                    cps = compute_cp(patk, pdef, psta, baseAttack, baseDefense, baseStamina)
+                    cps = compute_cp(
+                        patk, pdef, psta, baseAttack, baseDefense, baseStamina
+                    )
 
                     for x in sorted(cps):
                         if x <= leagues[league]:
@@ -186,14 +189,30 @@ for itemTemplates in data["itemTemplates"]:  # noqa: C901
                 content = "%s,%s,,,,,,,,,,\r\n" % (pNumber, pForm)
                 content += "Rank,ATK,DEF,HP,IV %,CP,LVL,ATK,DEF,HP,SP,%\r\n"
 
-                for key, value in sorted(allranks.items(), key=lambda item: (item[1][9], item[1][2]), reverse=True):
+                for key, value in sorted(
+                    allranks.items(),
+                    key=lambda item: (item[1][9], item[1][2]),
+                    reverse=True,
+                ):
                     if rank == 1:
                         max_sp = value[9]
                     value.append(round((value[9] / max_sp) * 100, 2))
                     value = [rank] + value
-                    content += str(value).replace(" ", "").lstrip("[").rstrip("]") + "\r\n"
+                    content += (
+                        str(value).replace(" ", "").lstrip("[").rstrip("]") + "\r\n"
+                    )
                     rank += 1
 
-                with gzip.open(base_dir + "/" + league + "/" + floor + "/" + pFormClean.lower() + '.csv.gz', 'wb') as f:
+                with gzip.open(
+                    base_dir
+                    + "/"
+                    + league
+                    + "/"
+                    + floor
+                    + "/"
+                    + pFormClean.lower()
+                    + ".csv.gz",
+                    "wb",
+                ) as f:
                     f.write(content.encode())
                 f.close()

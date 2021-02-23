@@ -27,7 +27,8 @@ class RecordKeeper:
             "iv-ranker",
             "message-cleanup",
             "training-wheels",
-            "deletable-data"]
+            "deletable-data",
+        ]
 
     """
     CAT0: ADMIN Functionality
@@ -37,12 +38,18 @@ class RecordKeeper:
         if message["args"][0].lower() == "all":
             for setting in self.admin_options:
                 self.usdb.update_listener(
-                    message["raw_msg"].guild.id, message["raw_msg"].channel.id, setting.lower())
+                    message["raw_msg"].guild.id,
+                    message["raw_msg"].channel.id,
+                    setting.lower(),
+                )
             return "all valid listener are activated"
         elif message["args"][0].lower() == "default":
             for setting in ["help", "message-cleanup", "training-wheels"]:
                 self.usdb.update_listener(
-                    message["raw_msg"].guild.id, message["raw_msg"].channel.id, setting.lower())
+                    message["raw_msg"].guild.id,
+                    message["raw_msg"].channel.id,
+                    setting.lower(),
+                )
             return "default listeners are activate"
 
         if message["args"][0].lower() not in self.admin_options:
@@ -50,7 +57,10 @@ class RecordKeeper:
 
         try:
             self.usdb.update_listener(
-                message["raw_msg"].guild.id, message["raw_msg"].channel.id, message["args"][0].lower())
+                message["raw_msg"].guild.id,
+                message["raw_msg"].channel.id,
+                message["args"][0].lower(),
+            )
         except:
             pass
         return "listener ({}) was activated for this channel".format(message["args"][0])
@@ -58,10 +68,16 @@ class RecordKeeper:
     def deactivate(self, message):
         if message["args"][0].lower() not in self.admin_options:
             self.usdb.remove_listener(
-                message["raw_msg"].guild.id, message["raw_msg"].channel.id, message["args"][0].lower())
+                message["raw_msg"].guild.id,
+                message["raw_msg"].channel.id,
+                message["args"][0].lower(),
+            )
             return "{} not a valid listener".format(message["args"][0])
         self.usdb.remove_listener(
-            message["raw_msg"].guild.id, message["raw_msg"].channel.id, message["args"][0].lower())
+            message["raw_msg"].guild.id,
+            message["raw_msg"].channel.id,
+            message["args"][0].lower(),
+        )
         return "listener ({}) removed for this channel".format(message["args"][0])
 
     def list_listener(self, message):
@@ -69,16 +85,24 @@ class RecordKeeper:
         string += "\n"
         string += "channel            | type \n"
         string += "-------------------+------------\n"
-        for (uuid, server, toggle, channel) in self.usdb.get_listeners(message["raw_msg"].guild.id,
-                                                                       message["raw_msg"].channel.id):
-            string += '{} | {}'.format(channel, toggle) + "\n"
+        for (uuid, server, toggle, channel) in self.usdb.get_listeners(
+            message["raw_msg"].guild.id, message["raw_msg"].channel.id
+        ):
+            string += "{} | {}".format(channel, toggle) + "\n"
         string += "```"
         return string
 
     def has_listener(self, message, toggle):
         if "Direct Message" in str(message["raw_msg"].channel):
             return True
-        return len(self.usdb.has_listeners(message["raw_msg"].guild.id, message["raw_msg"].channel.id, toggle)) > 0
+        return (
+            len(
+                self.usdb.has_listeners(
+                    message["raw_msg"].guild.id, message["raw_msg"].channel.id, toggle
+                )
+            )
+            > 0
+        )
 
     def setup(self, user_msg):
         msg = "__**Setup**__\n"
@@ -96,8 +120,10 @@ class RecordKeeper:
         msg += " - **trade-keeper**: a trading want manager\n"
         msg += " - **friend-keeper**: an ultra friends for pvp\n"
         msg += " - **battle-keeper**: an elo based leaderbaord\n"
-        if (str(user_msg['client'].user.id) == '588364227396239361' or
-                str(user_msg['client'].user.id) == '491321676835848203'):
+        if (
+            str(user_msg["client"].user.id) == "588364227396239361"
+            or str(user_msg["client"].user.id) == "491321676835848203"
+        ):
             msg += " - **iv-ranker**: a pokemon rater\n"
         msg += " - **message-cleanup**: cleans up bot messages on a timer\n"
         msg += " - **deletable-data**: activiates commands for delete bad entries\n"
@@ -109,13 +135,13 @@ class RecordKeeper:
 
     def stats(self, user_msg):
         cnt = 0
-        for x in user_msg['client'].guilds:
+        for x in user_msg["client"].guilds:
             cnt += 1
         msg = "servers: {} \n".format(cnt)
         members = {}
-        for x in user_msg['client'].get_all_members():
+        for x in user_msg["client"].get_all_members():
             members[x] = None
-        for x in user_msg['client'].get_all_members():
+        for x in user_msg["client"].get_all_members():
             members[x] = None
         msg += "users: {} \n".format(len(members))
         return msg
@@ -124,7 +150,7 @@ class RecordKeeper:
         messages = []
         msg = ""
         servers = {}
-        for x in user_msg['client'].guilds:
+        for x in user_msg["client"].guilds:
             servers[str(x)] = None
         for x in sorted(servers.keys()):
             if len(msg + str(x) + "\n") > 1900:
@@ -145,51 +171,52 @@ class RecordKeeper:
         msg += "---------------------------------------------\n"
         if self.has_listener(user_msg, "record-keeper"):
             add_msg = self.helpRecordKeeper()
-            if (len(add_msg) + len(msg) <= 2000):
+            if len(add_msg) + len(msg) <= 2000:
                 msg += add_msg
             else:
                 messages.append(msg)
                 msg = add_msg
         if self.has_listener(user_msg, "deletable-data"):
             add_msg = self.helpDeletableData()
-            if (len(add_msg) + len(msg) <= 2000):
+            if len(add_msg) + len(msg) <= 2000:
                 msg += add_msg
             else:
                 messages.append(msg)
                 msg = add_msg
         if self.has_listener(user_msg, "friend-keeper"):
             add_msg = self.helpFriendKeeper()
-            if (len(add_msg) + len(msg) <= 2000):
+            if len(add_msg) + len(msg) <= 2000:
                 msg += add_msg
             else:
                 messages.append(msg)
                 msg = add_msg
         if self.has_listener(user_msg, "battle-keeper"):
             add_msg = self.helpBattleKeeper()
-            if (len(add_msg) + len(msg) <= 2000):
+            if len(add_msg) + len(msg) <= 2000:
                 msg += add_msg
             else:
                 messages.append(msg)
                 msg = add_msg
         if self.has_listener(user_msg, "trade-keeper"):
             add_msg = self.helpTradeKeeper()
-            if (len(add_msg) + len(msg) <= 2000):
+            if len(add_msg) + len(msg) <= 2000:
                 msg += add_msg
             else:
                 messages.append(msg)
                 msg = add_msg
-        if (self.has_listener(user_msg, "iv-ranker") and
-                (str(user_msg['client'].user.id) == '588364227396239361' or
-                 str(user_msg['client'].user.id) == '491321676835848203')):
+        if self.has_listener(user_msg, "iv-ranker") and (
+            str(user_msg["client"].user.id) == "588364227396239361"
+            or str(user_msg["client"].user.id) == "491321676835848203"
+        ):
             add_msg = self.helpIVRanker()
-            if (len(add_msg) + len(msg) <= 2000):
+            if len(add_msg) + len(msg) <= 2000:
                 msg += add_msg
             else:
                 messages.append(msg)
                 msg = add_msg
-        if ("Direct Message" in str(user_msg["raw_msg"].channel)):
+        if "Direct Message" in str(user_msg["raw_msg"].channel):
             add_msg = self.helpDonate()
-            if (len(add_msg) + len(msg) <= 2000):
+            if len(add_msg) + len(msg) <= 2000:
                 msg += add_msg
             else:
                 messages.append(msg)
@@ -329,44 +356,64 @@ class RecordKeeper:
         msg = "__**Medal Names:**__\n"
         msg += "Basics:"
         msg += "```"
-        msg += str(sorted(self.usdb.basic_tables)
-                   ).replace("[", "").replace("]", "").replace("'", "")
+        msg += (
+            str(sorted(self.usdb.basic_tables))
+            .replace("[", "")
+            .replace("]", "")
+            .replace("'", "")
+        )
         msg += "```"
         msg += "Badges:"
         msg += "```"
-        msg += str(sorted(self.usdb.badge_tables)
-                   ).replace("[", "").replace("]", "").replace("'", "")
+        msg += (
+            str(sorted(self.usdb.badge_tables))
+            .replace("[", "")
+            .replace("]", "")
+            .replace("'", "")
+        )
         msg += "```"
         msg += "Types:"
         msg += "```"
-        msg += str(sorted(self.usdb.type_tables)
-                   ).replace("[", "").replace("]", "").replace("'", "")
+        msg += (
+            str(sorted(self.usdb.type_tables))
+            .replace("[", "")
+            .replace("]", "")
+            .replace("'", "")
+        )
         msg += "```"
         msg += "Custom Badges:"
         msg += "```"
-        msg += str(sorted(self.usdb.custom_tables)
-                   ).replace("[", "").replace("]", "").replace("'", "")
+        msg += (
+            str(sorted(self.usdb.custom_tables))
+            .replace("[", "")
+            .replace("]", "")
+            .replace("'", "")
+        )
         msg += "```"
         msg += "Raids:"
         msg += "```"
         msg += "use !raid to get a list of all the raid bosses"
         msg += "```"
-        if (len(msg) >= 2000):
+        if len(msg) >= 2000:
             return "ERROR: message too long"
         return msg
 
     def leagues(self):
         msg = "__**Leauges:**__\n"
         msg += "```"
-        msg += str(sorted(self.usdb.pvp_leagues)
-                   ).replace("[", "").replace("]", "").replace("'", "")
+        msg += (
+            str(sorted(self.usdb.pvp_leagues))
+            .replace("[", "")
+            .replace("]", "")
+            .replace("'", "")
+        )
         msg += "```"
-        if (len(msg) >= 2000):
+        if len(msg) >= 2000:
             return "ERROR: message too long"
         return msg
 
     def raid(self, message):
-        entry_per = (15 * 4)
+        entry_per = 15 * 4
         max_pages = str(math.ceil(len(self.usdb.raid_tables) / (entry_per)))
         try:
             offset = int(message["args"][0])
@@ -377,7 +424,8 @@ class RecordKeeper:
 
         offset = offset - 1
         list = sorted(self.usdb.raid_tables)[
-            0 + (entry_per * offset): entry_per + (entry_per * offset)]
+            0 + (entry_per * offset) : entry_per + (entry_per * offset)
+        ]
 
         msg = "---__**Command List**__---\n"
         if offset == 0:
@@ -399,7 +447,7 @@ class RecordKeeper:
         msg += str(list).replace("[", "").replace("]", "").replace("'", "")
         msg += "```"
         msg += "page " + str(offset + 1) + " of " + max_pages
-        if (len(msg) >= 2000):
+        if len(msg) >= 2000:
             return "ERROR: message too long"
         return msg
 
@@ -418,8 +466,8 @@ class RecordKeeper:
         except:
             server = "ViaDirectMessage"
 
-        if 'user' in message:
-            identifier = get_discord_id(message, message['user'])
+        if "user" in message:
+            identifier = get_discord_id(message, message["user"])
         else:
             identifier = message["raw_msg"].author.id
         if not identifier:
@@ -429,7 +477,7 @@ class RecordKeeper:
             medal = self.find_table_name(message["args"][0])
             value = message["args"][1]
             value = value.replace(",", "")
-            note = message['note'] if 'note' in message else ""
+            note = message["note"] if "note" in message else ""
         except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
@@ -437,19 +485,25 @@ class RecordKeeper:
             return "Bidoof, " + message["args"][0] + " can not be found"
 
         try:
-            self.usdb.update_medal(server, medal, str(identifier), value, message["date"], note)
+            self.usdb.update_medal(
+                server, medal, str(identifier), value, message["date"], note
+            )
         except:
             return "Bidoof, " + value + " can not be found"
 
         if str(identifier) != str(message["raw_msg"].author.id):
-            bm = "<@!" + str(identifier) + "> stats were updated by " + \
-                "<@!" + str(message["raw_msg"].author.id) + ">"
+            bm = (
+                "<@!"
+                + str(identifier)
+                + "> stats were updated by "
+                + "<@!"
+                + str(message["raw_msg"].author.id)
+                + ">"
+            )
             return bm
         else:
-            bm = bot_message.create_recent5(
-                server, self.usdb, medal, str(identifier))
-            bm += bot_message.create_stats(server,
-                                           self.usdb, medal, str(identifier))
+            bm = bot_message.create_recent5(server, self.usdb, medal, str(identifier))
+            bm += bot_message.create_stats(server, self.usdb, medal, str(identifier))
             return bm
 
     def ls(self, message):  # noqa: C901
@@ -475,16 +529,18 @@ class RecordKeeper:
 
         if medal in self.usdb.pvp_leagues:
             bm = bot_message.create_recent_pvp10(
-                server, self.usdb, message, medal, identifier)
+                server, self.usdb, message, medal, identifier
+            )
             if "Bidoof" not in bm:
-                bm += bot_message.create_stats(server,
-                                               self.usdb, medal, str(identifier))
+                bm += bot_message.create_stats(
+                    server, self.usdb, medal, str(identifier)
+                )
         else:
-            bm = bot_message.create_recent5(
-                server, self.usdb, medal, identifier)
+            bm = bot_message.create_recent5(server, self.usdb, medal, identifier)
             if "Bidoof" not in bm:
-                bm += bot_message.create_stats(server,
-                                               self.usdb, medal, str(identifier))
+                bm += bot_message.create_stats(
+                    server, self.usdb, medal, str(identifier)
+                )
         return bm
 
     def uuid(self, message):
@@ -510,10 +566,10 @@ class RecordKeeper:
 
         if medal in self.usdb.pvp_leagues:
             bm = bot_message.create_uuid_table_pvp(
-                server, self.usdb, message, medal, identifier)
+                server, self.usdb, message, medal, identifier
+            )
         else:
-            bm = bot_message.create_uuid_table(
-                server, self.usdb, medal, identifier)
+            bm = bot_message.create_uuid_table(server, self.usdb, medal, identifier)
         return bm
 
     def lb(self, message):
@@ -533,8 +589,7 @@ class RecordKeeper:
         if medal in self.usdb.pvp_leagues:
             bm = bot_message.create_elo10(server, self.usdb, medal, message)
         else:
-            bm = bot_message.create_leaderboard10(
-                server, self.usdb, medal, message)
+            bm = bot_message.create_leaderboard10(server, self.usdb, medal, message)
         return bm
 
     def delete(self, message):
@@ -543,8 +598,8 @@ class RecordKeeper:
         except:
             server = "ViaDirectMessage"
 
-        if 'user' in message:
-            identifier = get_discord_id(message, message['user'])
+        if "user" in message:
+            identifier = get_discord_id(message, message["user"])
         else:
             identifier = message["raw_msg"].author.id
         if not identifier:
@@ -563,10 +618,10 @@ class RecordKeeper:
         self.usdb.delete_row(server, medal, identifier, value)
         if medal in self.usdb.pvp_leagues:
             bm = bot_message.create_recent_pvp10(
-                server, self.usdb, message, medal, identifier)
+                server, self.usdb, message, medal, identifier
+            )
         else:
-            bm = bot_message.create_recent5(
-                server, self.usdb, medal, identifier)
+            bm = bot_message.create_recent5(server, self.usdb, medal, identifier)
         return bm
 
     def add_player(self, message):
@@ -583,7 +638,7 @@ class RecordKeeper:
             else:
                 return "player " + player + " already added"
         except:
-                return "Bidoof, sorry, something went wrong, try !help for more info"
+            return "Bidoof, sorry, something went wrong, try !help for more info"
 
     def pvp(self, message):  # noqa: C901
         try:
@@ -593,13 +648,13 @@ class RecordKeeper:
 
         try:
             medal = self.find_table_name(message["args"][0])
-            note = message['note'] if 'note' in message else ""
+            note = message["note"] if "note" in message else ""
 
             if medal not in self.usdb.pvp_leagues:
                 return "Bidoof, " + message["args"][0] + " can not be found"
 
-            if 't' in message:
-                winner = get_discord_id(message, message['t'])
+            if "t" in message:
+                winner = get_discord_id(message, message["t"])
                 if len(message["args"]) > 1:
                     search_term = message["args"][1]
                     loser = get_discord_id(message, search_term)
@@ -611,15 +666,22 @@ class RecordKeeper:
                     return "You can't beat yourself"
 
                 self.usdb.update_pvp(
-                    server, medal, message["raw_msg"].author.id,
-                    winner, loser, message["date"], 1, note)
+                    server,
+                    medal,
+                    message["raw_msg"].author.id,
+                    winner,
+                    loser,
+                    message["date"],
+                    1,
+                    note,
+                )
             else:
-                if 'w' in message:
-                    winner = get_discord_id(message, message['w'])
+                if "w" in message:
+                    winner = get_discord_id(message, message["w"])
                 else:
                     winner = message["raw_msg"].author.id
-                if 'l' in message:
-                    loser = get_discord_id(message, message['l'])
+                if "l" in message:
+                    loser = get_discord_id(message, message["l"])
                 else:
                     loser = message["raw_msg"].author.id
                 try:
@@ -628,14 +690,22 @@ class RecordKeeper:
                     return "You can't beat yourself"
 
                 self.usdb.update_pvp(
-                    server, medal, message["raw_msg"].author.id,
-                    winner, loser, message["date"], 0, note)
+                    server,
+                    medal,
+                    message["raw_msg"].author.id,
+                    winner,
+                    loser,
+                    message["date"],
+                    0,
+                    note,
+                )
         except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
         if medal in self.usdb.pvp_leagues:
             bm = bot_message.create_recent_pvp10(
-                server, self.usdb, message, medal, winner)
+                server, self.usdb, message, medal, winner
+            )
             bm += bot_message.create_stats(server, self.usdb, medal, winner)
         else:
             return "Bidoof, sorry, somehing went wrong, try !help for more info"
@@ -648,7 +718,7 @@ class RecordKeeper:
             server = "ViaDirectMessage"
 
         try:
-            note = message['note'] if 'note' in message else ""
+            note = message["note"] if "note" in message else ""
         except:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
@@ -670,14 +740,22 @@ class RecordKeeper:
         if not PokemonName:
             return "There was an issue adding " + message["args"][0]
 
-        self.usdb.update_trade_board(server, PokemonNumber, PokemonName, str(
-            message["raw_msg"].author.id), notes=note, board=board)
+        self.usdb.update_trade_board(
+            server,
+            PokemonNumber,
+            PokemonName,
+            str(message["raw_msg"].author.id),
+            notes=note,
+            board=board,
+        )
 
         bm = f"Added {PokemonName} ({PokemonNumber}) to the {board}!"
         bm += bot_message.create_pokemon_trade_table(
-            server, self.usdb, str(message["raw_msg"].author.id), board)
+            server, self.usdb, str(message["raw_msg"].author.id), board
+        )
         bm += bot_message.create_search_string_table(
-            server, self.usdb, str(message["raw_msg"].author.id), board)
+            server, self.usdb, str(message["raw_msg"].author.id), board
+        )
         return bm
 
     def unwant(self, message, board="TRADE_BOARD"):
@@ -705,7 +783,8 @@ class RecordKeeper:
             return "There was an issue removing " + message["args"][0]
 
         self.usdb.delete_from_trade_board(
-            server, PokemonName, str(message["raw_msg"].author.id), board)
+            server, PokemonName, str(message["raw_msg"].author.id), board
+        )
         bm = f"Removed {PokemonName} ({PokemonNumber}) to the {board}!"
         return bm
 
@@ -724,10 +803,12 @@ class RecordKeeper:
             return "Bidoof, cannot find user"
 
         bm = bot_message.create_pokemon_trade_table(
-            server, self.usdb, identifier, board)
+            server, self.usdb, identifier, board
+        )
         if "Bidoof" not in bm:
             bm += bot_message.create_search_string_table(
-                server, self.usdb, identifier, board)
+                server, self.usdb, identifier, board
+            )
         return bm
 
     def tbs(self, message, board="TRADE_BOARD"):
@@ -769,7 +850,8 @@ class RecordKeeper:
             return "There was an issue finding " + message["args"][0]
 
         bm = bot_message.create_per_pokemon_trade_table(
-            server, self.usdb, PokemonName, message, board)
+            server, self.usdb, PokemonName, message, board
+        )
         return bm
 
     def addfriend(self, message):
@@ -790,7 +872,14 @@ class RecordKeeper:
             return "can't add yourself as a friend"
         self.usdb.update_friend_board(server, identifier, author)
         self.usdb.update_friend_board(server, author, identifier)
-        return "<@!" + str(author) + ">" + ", <@!" + str(identifier) + "> was added to your ultra friend list!"
+        return (
+            "<@!"
+            + str(author)
+            + ">"
+            + ", <@!"
+            + str(identifier)
+            + "> was added to your ultra friend list!"
+        )
 
     def removefriend(self, message):
         try:
@@ -808,7 +897,14 @@ class RecordKeeper:
             return "can't add yourself as a friend"
         self.usdb.delete_from_friend_board(server, identifier, author)
         self.usdb.delete_from_friend_board(server, author, identifier)
-        return "<@!" + str(author) + ">" + ", <@!" + str(identifier) + "> was removed from your ultra friend list!"
+        return (
+            "<@!"
+            + str(author)
+            + ">"
+            + ", <@!"
+            + str(identifier)
+            + "> was removed from your ultra friend list!"
+        )
 
     def list_friends(self, message):
         try:
@@ -823,8 +919,7 @@ class RecordKeeper:
         if not identifier:
             return "Bidoof, cannot find user"
 
-        rm = bot_message.create_friends_table(
-            server, self.usdb, message, identifier)
+        rm = bot_message.create_friends_table(server, self.usdb, message, identifier)
         return rm
 
     def ping_friends(self, message):
@@ -839,8 +934,7 @@ class RecordKeeper:
         if not identifier:
             return "Bidoof, cannot find user"
 
-        rm = bot_message.create_ping_table(
-            server, self.usdb, message, identifier)
+        rm = bot_message.create_ping_table(server, self.usdb, message, identifier)
         return rm
 
     def online(self, message):
@@ -849,8 +943,7 @@ class RecordKeeper:
         except:
             server = "ViaDirectMessage"
         author = "<@!" + str(message["raw_msg"].author.id) + ">"
-        self.usdb.update_active_board(
-            server, message["raw_msg"].author.id, "Online")
+        self.usdb.update_active_board(server, message["raw_msg"].author.id, "Online")
         return author + " you are now online & accepting invites! (ง'̀-'́)ง"
 
     def offline(self, message):
@@ -860,8 +953,7 @@ class RecordKeeper:
             server = "ViaDirectMessage"
 
         author = "<@!" + str(message["raw_msg"].author.id) + ">"
-        self.usdb.update_active_board(
-            server, message["raw_msg"].author.id, "Offline")
+        self.usdb.update_active_board(server, message["raw_msg"].author.id, "Offline")
         return author + " you are now offline & no longer accepting invites"
 
     def rank(self, message, league):

@@ -8,15 +8,15 @@ import random
 import sys
 import time
 
-from Storage import UserStats
-from RecordKeeperFunc import RecordKeeper
 import discord
+from RecordKeeperFunc import RecordKeeper
+from Storage import UserStats
 
 
 class BotSetup:
     def __init__(self):
         # setup a logger
-        FORMAT = '%(levelname)s %(filename)s:%(lineno)d %(message)s'
+        FORMAT = "%(levelname)s %(filename)s:%(lineno)d %(message)s"
         logging.basicConfig(format=FORMAT)
         logging.root.level = logging.INFO
 
@@ -24,22 +24,22 @@ class BotSetup:
         abs_path = os.path.abspath(__file__)
         rel_path = os.path.relpath(__file__)
         base_name = os.path.basename(__file__)
-        config_file = base_name.replace('.py', '.json')
-        exec_path = abs_path.replace(rel_path, '')
+        config_file = base_name.replace(".py", ".json")
+        exec_path = abs_path.replace(rel_path, "")
 
         # load data out of the configuration file
         config_file = os.path.join(exec_path, "config", config_file)
         with open(config_file) as f:
             settings = json.load(f)
-            bot_settings = settings.get('bot_settings')
-            bot_environment = bot_settings['environment']
+            bot_settings = settings.get("bot_settings")
+            bot_environment = bot_settings["environment"]
             environment_settings = bot_settings[bot_environment]
-            dev_environment = bot_settings['development']
-            self.discord_token = environment_settings['discord_token']
+            dev_environment = bot_settings["development"]
+            self.discord_token = environment_settings["discord_token"]
 
         # load sqlite3 database
-        self.database_version = '1.0.2'
-        database_file = environment_settings['database']
+        self.database_version = "1.0.2"
+        database_file = environment_settings["database"]
         db_path = os.path.join(exec_path, "database", database_file)
         self.keeper = RecordKeeper(db_path, self.database_version)
 

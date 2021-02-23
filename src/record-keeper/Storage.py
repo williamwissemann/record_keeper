@@ -1,4 +1,3 @@
-
 import datetime
 import json
 import os
@@ -10,9 +9,10 @@ import uuid
 
 class UserStats:
     """
-        Handles the database manipulation
+    Handles the database manipulation
     """
-    def __init__(self, database_name="test.db", version='0.0'):
+
+    def __init__(self, database_name="test.db", version="0.0"):
         # setup table catagories
         print("loading_database...")
         self.accepted_tables = []
@@ -106,7 +106,11 @@ class UserStats:
                         self.custom_tables.append(name)
                     if category == "raid_tables":
                         self.raid_tables.append(name)
-                    if category == "pvp_leagues" and "_elo" not in name and "_ties" not in name:
+                    if (
+                        category == "pvp_leagues"
+                        and "_elo" not in name
+                        and "_ties" not in name
+                    ):
                         self.pvp_leagues.append(name)
                     self.c.execute("CREATE TABLE IF NOT EXISTS " + name + " " + sql)
 
@@ -115,12 +119,14 @@ class UserStats:
         The get decorator:
             sql string -> database [SELECT] -> return array
         """
+
         def wrapper(self, *args, **kwargs):
             sql_string = func(self, *args, **kwargs)
             recent = []
             for row in self.c.execute(sql_string):
                 recent.append(row)
             return recent
+
         return wrapper
 
     def update_decorator(func):
@@ -128,10 +134,12 @@ class UserStats:
         The get decorator
             sql string -> database [INSERT/REPLACE/UPDATE/DELETE]
         """
+
         def wrapper(self, *args, **kwargs):
             sql_string = func(self, *args, **kwargs)
             self.c.execute(sql_string)
             self.conn.commit()
+
         return wrapper
 
     @get_decorator
@@ -140,14 +148,22 @@ class UserStats:
 
     @get_decorator
     def list_gamertag(self, server):
-        return str("SELECT * FROM gamertag WHERE server_id = '" + str(server) + "' ORDER BY gamertag")
+        return str(
+            "SELECT * FROM gamertag WHERE server_id = '"
+            + str(server)
+            + "' ORDER BY gamertag"
+        )
 
     @get_decorator
     def get_recent(self, server, table, user, limit=25, uuid=False):
         sql = "SELECT * FROM " + str(table)
         sql += " WHERE gamertag = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
-            sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
+            sql += (
+                " AND ( server_id = '"
+                + str(server)
+                + "' OR server_id = 'ViaDirectMessage')"
+            )
         if uuid:
             sql += " AND update_at >= datetime('now', '-1 day') "
             sql += " AND update_at <= datetime('now', '+1 day') "
@@ -161,7 +177,11 @@ class UserStats:
         sql += " WHERE gamertag_winner = '" + str(user) + "'"
         sql += " OR gamertag_loser = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
-            sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
+            sql += (
+                " AND ( server_id = '"
+                + str(server)
+                + "' OR server_id = 'ViaDirectMessage')"
+            )
         if uuid:
             sql += " AND update_at >= datetime('now', '-1 day') "
             sql += " AND update_at <= datetime('now', '+1 day') "
@@ -173,7 +193,11 @@ class UserStats:
     def get_recent_pvp_no_limit(self, server, table):
         sql = "SELECT * FROM " + str(table)
         if not server == "ViaDirectMessage":
-            sql += " WHERE ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
+            sql += (
+                " WHERE ( server_id = '"
+                + str(server)
+                + "' OR server_id = 'ViaDirectMessage')"
+            )
         sql += " ORDER BY update_at ASC"
         return sql
 
@@ -188,7 +212,11 @@ class UserStats:
         sql = f"SELECT * FROM {board}"
         sql += f" WHERE gamertag = '{str(user)}'"
         if not server == "ViaDirectMessage":
-            sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
+            sql += (
+                " AND ( server_id = '"
+                + str(server)
+                + "' OR server_id = 'ViaDirectMessage')"
+            )
         sql += " ORDER BY number ASC"
         return sql
 
@@ -197,23 +225,41 @@ class UserStats:
         sql = f"SELECT * FROM {board}"
         sql += " WHERE pokemon = '" + str(pokemon) + "'"
         if not server == "ViaDirectMessage":
-            sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
+            sql += (
+                " AND ( server_id = '"
+                + str(server)
+                + "' OR server_id = 'ViaDirectMessage')"
+            )
         sql += " ORDER BY number ASC"
         return sql
 
     @get_decorator
     def get_leaders(self, server, table):
         if str(table) == "Stardust":
-            sql = "SELECT uuid, server_id, update_at, gamertag, value, note FROM " + str(table)
+            sql = (
+                "SELECT uuid, server_id, update_at, gamertag, value, note FROM "
+                + str(table)
+            )
             if not server == "ViaDirectMessage":
-                sql += " WHERE ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
+                sql += (
+                    " WHERE ( server_id = '"
+                    + str(server)
+                    + "' OR server_id = 'ViaDirectMessage')"
+                )
             sql += " GROUP BY gamertag"
             sql += " ORDER BY value DESC, update_at ASC"
             sql += " LIMIT 25"
         else:
-            sql = "SELECT uuid, server_id, update_at, gamertag, MAX(value), note FROM " + str(table)
+            sql = (
+                "SELECT uuid, server_id, update_at, gamertag, MAX(value), note FROM "
+                + str(table)
+            )
             if not server == "ViaDirectMessage":
-                sql += " WHERE ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
+                sql += (
+                    " WHERE ( server_id = '"
+                    + str(server)
+                    + "' OR server_id = 'ViaDirectMessage')"
+                )
             sql += " GROUP BY gamertag"
             sql += " ORDER BY value DESC, update_at ASC"
             sql += " LIMIT 25"
@@ -225,73 +271,166 @@ class UserStats:
         update_at.replace(" ", "T")
         id = uuid.uuid4()
         sql = str(
-            "INSERT INTO " + table +
-            " values( " +
-            "'" + str(id) + "'," +
-            "'" + str(server) + "'," +
-            "'" + str(update_at) + "'," +
-            "'" + str(gamertag) + "'," +
-            "'" + str(value) + "'," +
-            "'" + str(notes) + "')")
+            "INSERT INTO "
+            + table
+            + " values( "
+            + "'"
+            + str(id)
+            + "',"
+            + "'"
+            + str(server)
+            + "',"
+            + "'"
+            + str(update_at)
+            + "',"
+            + "'"
+            + str(gamertag)
+            + "',"
+            + "'"
+            + str(value)
+            + "',"
+            + "'"
+            + str(notes)
+            + "')"
+        )
         return sql
 
     @update_decorator
-    def update_elo(self, server, table, uuid, elo_winner, elo_winner_change, elo_loser, elo_loser_change):
+    def update_elo(
+        self,
+        server,
+        table,
+        uuid,
+        elo_winner,
+        elo_winner_change,
+        elo_loser,
+        elo_loser_change,
+    ):
         sql = str(
-            "UPDATE " + str(table) +
-            " SET elo_winner = '" + str(elo_winner) +
-            "', elo_winner_change = '" + str(elo_winner_change) +
-            "', elo_loser = '" + str(elo_loser) +
-            "', elo_loser_change='" + str(elo_loser_change) + "'" +
-            ", server_id='" + str(server) + "'" +
-            " WHERE uuid = '" + str(uuid) + "'" +
-            " AND server_id = '" + str(server) + "'")
+            "UPDATE "
+            + str(table)
+            + " SET elo_winner = '"
+            + str(elo_winner)
+            + "', elo_winner_change = '"
+            + str(elo_winner_change)
+            + "', elo_loser = '"
+            + str(elo_loser)
+            + "', elo_loser_change='"
+            + str(elo_loser_change)
+            + "'"
+            + ", server_id='"
+            + str(server)
+            + "'"
+            + " WHERE uuid = '"
+            + str(uuid)
+            + "'"
+            + " AND server_id = '"
+            + str(server)
+            + "'"
+        )
         print(sql)
         return sql
 
     @update_decorator
     def update_elo_player(self, table, gamertag, elo):
         sql = str(
-            "REPLACE INTO " + str(table) +
-            " VALUES (" +
-            "'" + str(gamertag) + "'," +
-            "'" + str(elo) + "')")
+            "REPLACE INTO "
+            + str(table)
+            + " VALUES ("
+            + "'"
+            + str(gamertag)
+            + "',"
+            + "'"
+            + str(elo)
+            + "')"
+        )
         print(sql)
         return sql
 
     @update_decorator
-    def update_pvp(self, server, table, gamertag, gamertag_winner, gamertag_loser, update_at, tie, notes=""):
+    def update_pvp(
+        self,
+        server,
+        table,
+        gamertag,
+        gamertag_winner,
+        gamertag_loser,
+        update_at,
+        tie,
+        notes="",
+    ):
         update_at.replace(" ", "T")
         id = uuid.uuid4()
         sql = str(
-            "INSERT INTO " + table +
-            " VALUES( " +
-            "'" + str(id) + "'," +
-            "'" + str(server) + "'," +
-            "'" + str(update_at) + "'," +
-            "'" + str(gamertag) + "'," +
-            "'" + str(gamertag_winner) + "'," +
-            "'" + str(-1) + "'," +
-            "'" + str(-1) + "'," +
-            "'" + str(gamertag_loser) + "'," +
-            "'" + str(-1) + "'," +
-            "'" + str(-1) + "'," +
-            "'" + str(tie) + "'," +
-            "'" + str(notes) + "')")
+            "INSERT INTO "
+            + table
+            + " VALUES( "
+            + "'"
+            + str(id)
+            + "',"
+            + "'"
+            + str(server)
+            + "',"
+            + "'"
+            + str(update_at)
+            + "',"
+            + "'"
+            + str(gamertag)
+            + "',"
+            + "'"
+            + str(gamertag_winner)
+            + "',"
+            + "'"
+            + str(-1)
+            + "',"
+            + "'"
+            + str(-1)
+            + "',"
+            + "'"
+            + str(gamertag_loser)
+            + "',"
+            + "'"
+            + str(-1)
+            + "',"
+            + "'"
+            + str(-1)
+            + "',"
+            + "'"
+            + str(tie)
+            + "',"
+            + "'"
+            + str(notes)
+            + "')"
+        )
         return sql
 
     @update_decorator
-    def update_trade_board(self, server, PokemonNumber, PokemonName, user, notes="", board=""):
+    def update_trade_board(
+        self, server, PokemonNumber, PokemonName, user, notes="", board=""
+    ):
         id = uuid.uuid4()
         sql = str(
-            f"INSERT OR REPLACE INTO {board}" +
-            " VALUES( " +
-            "'" + str(id) + "'," +
-            "'" + str(server) + "'," +
-            "'" + str(user) + "'," +
-            "'" + str(PokemonName) + "'," +
-            "'" + str(PokemonNumber) + "'," +
-            "'" + str(notes) + "')")
+            f"INSERT OR REPLACE INTO {board}"
+            + " VALUES( "
+            + "'"
+            + str(id)
+            + "',"
+            + "'"
+            + str(server)
+            + "',"
+            + "'"
+            + str(user)
+            + "',"
+            + "'"
+            + str(PokemonName)
+            + "',"
+            + "'"
+            + str(PokemonNumber)
+            + "',"
+            + "'"
+            + str(notes)
+            + "')"
+        )
         return sql
 
     @update_decorator
@@ -299,7 +438,11 @@ class UserStats:
         sql = "DELETE FROM " + str(table)
         sql += " WHERE gamertag = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
-            sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
+            sql += (
+                " AND ( server_id = '"
+                + str(server)
+                + "' OR server_id = 'ViaDirectMessage')"
+            )
         sql += " AND update_at >= datetime('now', '-1 day') "
         sql += " AND update_at <= datetime('now','+1 day') "
         sql += " AND uuid = '" + str(uuid) + "'"
@@ -310,19 +453,34 @@ class UserStats:
         sql = f"DELETE FROM {board}"
         sql += " WHERE gamertag = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
-            sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
+            sql += (
+                " AND ( server_id = '"
+                + str(server)
+                + "' OR server_id = 'ViaDirectMessage')"
+            )
         sql += "AND pokemon = '" + str(PokemonName) + "'"
         return sql
 
     def add_gamertag(self, server, gamertag):
         if not self.gamertag_exists(gamertag):
-            self.c.execute("""INSERT INTO gamertag values ('""" + server + """, """ + gamertag + """')""")
+            self.c.execute(
+                """INSERT INTO gamertag values ('"""
+                + server
+                + """, """
+                + gamertag
+                + """')"""
+            )
             self.conn.commit()
             return True
         return False
 
     def gamertag_exists(self, server, gamertag):
-        self.c.execute("SELECT * FROM gamertag WHERE gamertag=? AND server_id = '" + str(server) + "'", (gamertag,))
+        self.c.execute(
+            "SELECT * FROM gamertag WHERE gamertag=? AND server_id = '"
+            + str(server)
+            + "'",
+            (gamertag,),
+        )
         if self.c.fetchone():
             return True
         else:
@@ -335,7 +493,11 @@ class UserStats:
         sql += " WHERE gamertag_winner = '" + str(user) + "'"
         sql += " OR gamertag_loser = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
-            sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
+            sql += (
+                " AND ( server_id = '"
+                + str(server)
+                + "' OR server_id = 'ViaDirectMessage')"
+            )
         sql += " AND update_at >= datetime('now', '-" + str(days) + " days')"
         sql += " AND update_at <= datetime('now','+1 day')"
         sql += " ORDER BY update_at ASC"
@@ -346,7 +508,11 @@ class UserStats:
         sql = "SELECT COUNT(gamertag_winner) FROM " + str(table)
         sql += " WHERE gamertag_winner = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
-            sql += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
+            sql += (
+                " AND ( server_id = '"
+                + str(server)
+                + "' OR server_id = 'ViaDirectMessage')"
+            )
         sql += " AND update_at >= datetime('now', '-" + str(days) + " days')"
         sql += " AND update_at <= datetime('now','+1 day')"
         sql += " AND tie == 0"
@@ -365,7 +531,11 @@ class UserStats:
         sql_string = "SELECT * FROM " + str(table)
         sql_string += " WHERE gamertag = '" + str(user) + "'"
         if not server == "ViaDirectMessage":
-            sql_string += " AND ( server_id = '" + str(server) + "' OR server_id = 'ViaDirectMessage')"
+            sql_string += (
+                " AND ( server_id = '"
+                + str(server)
+                + "' OR server_id = 'ViaDirectMessage')"
+            )
         sql_string += " AND update_at >= datetime('now', '-" + str(days) + " days') "
         sql_string += " AND update_at <=  datetime('now','+1 day') "
         sql_string += " ORDER BY update_at ASC"
@@ -376,14 +546,17 @@ class UserStats:
             recent.append(row)
             if len(recent) > 1:
                 average_increase.append(
-                    recent[len(recent) - 1][4] - recent[len(recent) - 2][4])
+                    recent[len(recent) - 1][4] - recent[len(recent) - 2][4]
+                )
             else:
                 continue
 
         if len(recent) > 0:
             y, m, d = recent[0][2].split("T")[0].split(" ")[0].split("-")
             min_date = datetime.datetime(int(y), int(m), int(d))
-            y, m, d = recent[(len(recent) - 1)][2].split("T")[0].split(" ")[0].split("-")
+            y, m, d = (
+                recent[(len(recent) - 1)][2].split("T")[0].split(" ")[0].split("-")
+            )
             max_date = datetime.datetime(int(y), int(m), int(d))
             day_diff = (max_date - min_date).days + 1
             return float(sum(average_increase)) / day_diff
@@ -393,12 +566,21 @@ class UserStats:
     def update_friend_board(self, server, gamertag1, gamertag2):
         id = uuid.uuid4()
         sql = str(
-            "INSERT OR REPLACE INTO FRIEND_BOARD" +
-            " VALUES( " +
-            "'" + str(id) + "'," +
-            "'" + str(server) + "'," +
-            "'" + str(gamertag1) + "'," +
-            "'" + str(gamertag2) + "')")
+            "INSERT OR REPLACE INTO FRIEND_BOARD"
+            + " VALUES( "
+            + "'"
+            + str(id)
+            + "',"
+            + "'"
+            + str(server)
+            + "',"
+            + "'"
+            + str(gamertag1)
+            + "',"
+            + "'"
+            + str(gamertag2)
+            + "')"
+        )
         return sql
 
     @update_decorator
@@ -435,11 +617,18 @@ class UserStats:
     def update_active_board(self, server, gamertag, status):
         id = uuid.uuid4()
         sql = str(
-            "INSERT OR REPLACE INTO ACTIVE_BOARD" +
-            " VALUES( " +
-            "'" + str(id) + "'," +
-            "'" + str(gamertag) + "'," +
-            "'" + str(status) + "')")
+            "INSERT OR REPLACE INTO ACTIVE_BOARD"
+            + " VALUES( "
+            + "'"
+            + str(id)
+            + "',"
+            + "'"
+            + str(gamertag)
+            + "',"
+            + "'"
+            + str(status)
+            + "')"
+        )
         return sql
 
     @get_decorator
@@ -453,33 +642,54 @@ class UserStats:
     @get_decorator
     def has_listeners(self, server, channel, toggle):
         sql = str(
-            "SELECT * FROM listener " +
-            " WHERE server_id = '" + str(server) + "'" +
-            " AND toggle = '" + str(toggle) + "'" +
-            " AND active_channel = '" + str(channel) + "'")
+            "SELECT * FROM listener "
+            + " WHERE server_id = '"
+            + str(server)
+            + "'"
+            + " AND toggle = '"
+            + str(toggle)
+            + "'"
+            + " AND active_channel = '"
+            + str(channel)
+            + "'"
+        )
         return sql
 
     @update_decorator
     def update_listener(self, server, channel, toggle):
         id = uuid.uuid4()
         sql = str(
-            "INSERT or IGNORE INTO listener " +
-            " values( " +
-            "'" + str(id) + "'," +
-            "'" + str(server) + "'," +
-            "'" + str(toggle) + "'," +
-            "'" + str(channel) + "')")
+            "INSERT or IGNORE INTO listener "
+            + " values( "
+            + "'"
+            + str(id)
+            + "',"
+            + "'"
+            + str(server)
+            + "',"
+            + "'"
+            + str(toggle)
+            + "',"
+            + "'"
+            + str(channel)
+            + "')"
+        )
         return sql
 
     @update_decorator
     def remove_listener(self, server, channel, toggle):
         sql = str(
-            "DELETE FROM listener " +
-            " WHERE server_id = '" + str(server) +
-            "' AND" +
-            " active_channel = '" + str(channel) +
-            "' AND" +
-            " toggle = '" + str(toggle) + "'")
+            "DELETE FROM listener "
+            + " WHERE server_id = '"
+            + str(server)
+            + "' AND"
+            + " active_channel = '"
+            + str(channel)
+            + "' AND"
+            + " toggle = '"
+            + str(toggle)
+            + "'"
+        )
         return sql
 
     def migrate(self, backup_name, cdbv, version):
@@ -489,11 +699,16 @@ class UserStats:
         if str(version) == "0.0":
             id = uuid.uuid4()
             sql = str(
-                "INSERT OR REPLACE INTO botinfo" +
-                " VALUES( " +
-                "'" + str(id) + "'," +
-                "'version'," +
-                "'" + str(version) + "')")
+                "INSERT OR REPLACE INTO botinfo"
+                + " VALUES( "
+                + "'"
+                + str(id)
+                + "',"
+                + "'version',"
+                + "'"
+                + str(version)
+                + "')"
+            )
             self.c.execute(sql)
             self.conn.commit()
             return True
@@ -513,19 +728,16 @@ class UserStats:
         for table in array:
             print(table)
             for row in old_c.execute("SELECT * FROM " + table):
-                sql = str(
-                    "INSERT INTO " + table +
-                    " values( ")
+                sql = str("INSERT INTO " + table + " values( ")
                 for eln in range(len(row)):
                     sql += "'" + str(row[eln]) + "',"
-                sql = sql[0:len(sql)-2] + "')"
+                sql = sql[0 : len(sql) - 2] + "')"
                 self.c.execute(sql)
                 self.conn.commit()
 
         sql = str(
-            "UPDATE botinfo " +
-            f" SET info = '{version}'" +
-            " WHERE field == 'version'")
+            "UPDATE botinfo " + f" SET info = '{version}'" + " WHERE field == 'version'"
+        )
         self.c.execute(sql)
         self.conn.commit()
 
@@ -542,9 +754,15 @@ if __name__ == "__main__":
     print()
     d.update_medal("Kanto", "test_account", 151, datetime.datetime.now().isoformat())
     d.update_medal("Kanto", "doesnt_exist", 151, datetime.datetime.now().isoformat())
-    d.update_medal("DepotAgent", "test_account", 10, datetime.datetime.now().isoformat())
-    d.update_medal("DepotAgent", "test_account", 15, datetime.datetime.now().isoformat())
-    d.update_medal("DepotAgent", "test_account", 25, datetime.datetime.now().isoformat())
+    d.update_medal(
+        "DepotAgent", "test_account", 10, datetime.datetime.now().isoformat()
+    )
+    d.update_medal(
+        "DepotAgent", "test_account", 15, datetime.datetime.now().isoformat()
+    )
+    d.update_medal(
+        "DepotAgent", "test_account", 25, datetime.datetime.now().isoformat()
+    )
     print()
     # d.list_medal("DepotAgent")
     print()

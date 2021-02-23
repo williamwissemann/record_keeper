@@ -33,7 +33,7 @@ def create_elo10(server, usdb, medal, message):  # noqa: C901
                 user_elo = v
                 break
 
-        msg = ("ELO Leaderboard for " + medal + "\n" + "```")
+        msg = "ELO Leaderboard for " + medal + "\n" + "```"
         msg += "   |Value      |Name\n"
         msg += "---+-----------+--------------\n"
         cnt = 0
@@ -61,7 +61,12 @@ def create_elo10(server, usdb, medal, message):  # noqa: C901
                 c += " "
             msg += c + " | " + str(v) + "| " + str(g) + "\n"
         msg += "```"
-        msg += "<@!" + str(message["raw_msg"].author.id) + "> elo is " + str(round(float(user_elo), 2))
+        msg += (
+            "<@!"
+            + str(message["raw_msg"].author.id)
+            + "> elo is "
+            + str(round(float(user_elo), 2))
+        )
         return msg
     else:
         return "Bidoof, nothing to see here"
@@ -73,7 +78,7 @@ def create_leaderboard10(server, usdb, medal, message):
     """
     list = usdb.get_leaders(server, medal)
     if len(list) > 0:
-        msg = ("Leaderboard for " + medal + "\n" + "```")
+        msg = "Leaderboard for " + medal + "\n" + "```"
         # build header
         msg += "   |Value      |Name\n"
         msg += "---+-----------+--------------\n"
@@ -453,10 +458,18 @@ def create_ping_table(server, usdb, message, gamertag):
     messages = []
     if len(list) > 0:
         if len(message["args"]) > 0:
-            formated = str(message["args"]).replace(
-                "[", "").replace("]", "").replace(",", "").replace("'", "")
-            msg = ("<@!" + str(gamertag) +
-                   "> is looking to battle in {}!\n".format(formated))
+            formated = (
+                str(message["args"])
+                .replace("[", "")
+                .replace("]", "")
+                .replace(",", "")
+                .replace("'", "")
+            )
+            msg = (
+                "<@!"
+                + str(gamertag)
+                + "> is looking to battle in {}!\n".format(formated)
+            )
         else:
             msg = "<@!" + str(gamertag) + "> is looking to battle!\n"
 
@@ -466,9 +479,18 @@ def create_ping_table(server, usdb, message, gamertag):
             if cnt == 50 or len(msg) > 1700:
                 messages.append(msg)
                 if len(message["args"]) > 0:
-                    formated = str(message["args"]).replace(
-                        "[", "").replace("]", "").replace(",", "").replace("'", "")
-                    msg = "<@!" + str(gamertag) + "> is looking to battle in {}!\n".format(formated)
+                    formated = (
+                        str(message["args"])
+                        .replace("[", "")
+                        .replace("]", "")
+                        .replace(",", "")
+                        .replace("'", "")
+                    )
+                    msg = (
+                        "<@!"
+                        + str(gamertag)
+                        + "> is looking to battle in {}!\n".format(formated)
+                    )
                 else:
                     msg = "<@!" + str(gamertag) + "> is looking to battle!\n"
                 cnt = 0
@@ -498,7 +520,11 @@ def create_rank_header(message, league):
         folder = message["args"][1].lower()
     else:
         folder = "wild"
-    return "%s filtered by *%s*  in *%s*\n" % (str(get_csv_header(message["args"][0], folder, league)), folder, league)
+    return "%s filtered by *%s*  in *%s*\n" % (
+        str(get_csv_header(message["args"][0], folder, league)),
+        folder,
+        league,
+    )
 
 
 def create_rank_table(message, league):
@@ -506,18 +532,48 @@ def create_rank_table(message, league):
         folder = message["args"][4]
     else:
         folder = "wild"
-    result, perfect = find_combo(message["args"][0], message["args"][1],
-                                 message["args"][2], message["args"][3], folder, league)
+    result, perfect = find_combo(
+        message["args"][0],
+        message["args"][1],
+        message["args"][2],
+        message["args"][3],
+        folder,
+        league,
+    )
     result = result.replace("\r\n", " ").split(",")
     perfect = perfect.replace("\r\n", " ").split(",")
 
     outstring = "```"
     outstring += "RANK:  " + result[0] + " (" + result[11] + ")\n"
     outstring += "CP:    " + result[5] + "\n"
-    outstring += "LVL:   " + result[6] + "  (" + str(round(float(result[6]) - float(perfect[6]), 2)) + ") \n"
-    outstring += "ATK:   " + result[7] + " (" + str(round(float(result[7]) - float(perfect[7]), 2)) + ") \n"
-    outstring += "DEF:   " + result[8] + " (" + str(round(float(result[8]) - float(perfect[8]), 2)) + ") \n"
-    outstring += "HP:    " + result[9] + " (" + str(round(float(result[9]) - float(perfect[9]), 2)) + ")```"
+    outstring += (
+        "LVL:   "
+        + result[6]
+        + "  ("
+        + str(round(float(result[6]) - float(perfect[6]), 2))
+        + ") \n"
+    )
+    outstring += (
+        "ATK:   "
+        + result[7]
+        + " ("
+        + str(round(float(result[7]) - float(perfect[7]), 2))
+        + ") \n"
+    )
+    outstring += (
+        "DEF:   "
+        + result[8]
+        + " ("
+        + str(round(float(result[8]) - float(perfect[8]), 2))
+        + ") \n"
+    )
+    outstring += (
+        "HP:    "
+        + result[9]
+        + " ("
+        + str(round(float(result[9]) - float(perfect[9]), 2))
+        + ")```"
+    )
 
     return outstring
 
@@ -533,7 +589,9 @@ def create_rank_top10_table(message, league):
     msg += " |ATK|DEF|HP |CP   |LVL  \n"
     msg += "-+---+---+---+-----+-----\n"
     for line in find_top_5(message["args"][0], folder, league):
-        rank, ATK, DEF, HP, IV_P, CP, LVL, ref_ATK, ref_DEF, ref_HP, SP, P = line.split(",")
+        rank, ATK, DEF, HP, IV_P, CP, LVL, ref_ATK, ref_DEF, ref_HP, SP, P = line.split(
+            ","
+        )
         while len(ATK) < 2:
             ATK = " " + ATK
         while len(DEF) < 2:
@@ -542,6 +600,19 @@ def create_rank_top10_table(message, league):
             HP = " " + HP
         while len(CP) < 4:
             CP += " "
-        msg += rank + "|" + str(ATK) + " |" + str(DEF) + " |" + str(HP) + " |" + str(CP) + " |" + str(LVL) + "\n"
+        msg += (
+            rank
+            + "|"
+            + str(ATK)
+            + " |"
+            + str(DEF)
+            + " |"
+            + str(HP)
+            + " |"
+            + str(CP)
+            + " |"
+            + str(LVL)
+            + "\n"
+        )
     msg += "```"
     return msg

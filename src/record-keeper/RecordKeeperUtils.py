@@ -6,13 +6,13 @@ import discord
 
 def message_parser(message):
     msg = {}
-    if re.findall('^![^ ]', message):
-        msg['cmd'] = re.findall('^!([^ ]+)', message)[0]
-        message = re.sub('^![^ ]+', '', message)
+    if re.findall("^![^ ]", message):
+        msg["cmd"] = re.findall("^!([^ ]+)", message)[0]
+        message = re.sub("^![^ ]+", "", message)
     else:
         return None
 
-    special = re.findall('\w*:\s?[^ ]+', message)
+    special = re.findall("\w*:\s?[^ ]+", message)
     for s in special:
         try:
             key, value = s.split(":")
@@ -20,14 +20,14 @@ def message_parser(message):
             return "spacing issue"
         if key not in value:
             msg[key.lower()] = value.lstrip(" ")
-        message = re.sub(s, '', message)
+        message = re.sub(s, "", message)
 
-    msg["args"] = re.findall('([^ ]+)', message)
+    msg["args"] = re.findall("([^ ]+)", message)
 
     if "date" in msg and "-" in msg["date"]:
         try:
             y, m, d = msg["date"].split("-")
-            msg["date"] = str(datetime.datetime(int(y), int(m), int(d)).isoformat(' '))
+            msg["date"] = str(datetime.datetime(int(y), int(m), int(d)).isoformat(" "))
         except:
             raise ValueError("not an accepted date format")
     else:
@@ -38,18 +38,19 @@ def message_parser(message):
 
 def get_discord_id(message, search_term):
     identifier = None
-    if '<@' in search_term:
+    if "<@" in search_term:
         identifier = str(search_term.lstrip("<@!").rstrip(">"))
     else:
         for guild in message["client"].guilds:
-            user = discord.utils.find(lambda m:
-                                      search_term.lower() in m.name.lower() or
-                                      (search_term.lower() in str(m.nick).lower() and m.nick) and
-                                      (message["raw_msg"].guild.id == guild.id),
-                                      guild.members)
+            user = discord.utils.find(
+                lambda m: search_term.lower() in m.name.lower()
+                or (search_term.lower() in str(m.nick).lower() and m.nick)
+                and (message["raw_msg"].guild.id == guild.id),
+                guild.members,
+            )
             if user:
-                    identifier = user.id
-                    break
+                identifier = user.id
+                break
 
     if not identifier:
         try:
@@ -72,9 +73,9 @@ def get_discord_name(server, message, identifier):
                 except:
                     msg_guild_id = "None"
                 if member.nick and msg_guild_id == guild.id:
-                    display_name = member.nick.encode('utf8').decode('utf8')
+                    display_name = member.nick.encode("utf8").decode("utf8")
                 else:
-                    display_name = member.name.encode('utf8').decode('utf8')
+                    display_name = member.name.encode("utf8").decode("utf8")
                 break
         if display_name:
             break

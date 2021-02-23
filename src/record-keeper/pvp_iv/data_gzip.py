@@ -30,5 +30,5 @@ for dir in dirs:
                 outfile = outpath + dir + "/" + clean_name + ".gz"
                 print(infile)
                 print(outfile)
-                with open(infile, 'rb') as f_in, gzip.open(outfile, 'wb') as f_out:
+                with open(infile, "rb") as f_in, gzip.open(outfile, "wb") as f_out:
                     shutil.copyfileobj(f_in, f_out)
