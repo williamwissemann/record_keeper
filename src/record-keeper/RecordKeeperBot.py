@@ -14,50 +14,49 @@ from RecordKeeperFunc import RecordKeeper
 from RecordKeeperUtils import message_parser
 from Storage import UserStats
 
-''' MOVE THIS '''
+# setup a logger
 FORMAT = '%(levelname)s %(filename)s:%(lineno)d %(message)s'
 logging.basicConfig(format=FORMAT)
 logging.root.level = logging.INFO
-''''''''''''''''''
 
+# discover some paths
+abs_path = os.path.abspath(__file__)
+rel_path = os.path.relpath(__file__)
+base_name = os.path.basename(__file__)
+config_file = base_name.replace('.py', '.json')
+exec_path = abs_path.replace(rel_path, '')
+
+# load data out of the configuration file
+config_file = os.path.join(exec_path, "config", config_file)
+with open(config_file) as f:
+    settings = json.load(f)
+    bot_settings = settings.get('bot_settings')
+    bot_environment = bot_settings['environment']
+    environment_settings = bot_settings[bot_environment]
+    dev_environment = bot_settings['development']
+
+# load sqlite3 database
 database_version = '1.0.2'
+database_file = environment_settings['database']
+db_path = os.path.join(exec_path, "database", database_file)
+keeper = RecordKeeper(db_path, database_version)
 
-abspath = os.path.abspath(__file__)
-basename = os.path.basename(__file__)
-relpath = os.path.relpath(__file__)
-execpath = abspath.replace(relpath, "")
-RecordKeeperBotJson = abspath.rstrip('.py')
-
+# load sqlite3 database
 intents = discord.Intents.default()
 intents.presences = True
 intents.members = True
-
-# Load in json file to initialize the bot
 client = discord.Client(max_messages=100000, intents=intents)
-with open(RecordKeeperBotJson + '.json') as f:
-    settings = json.load(f)
-    bot_environment = settings['bot_settings']['environment']
-    # this logic needs fixing (via admin activate/deactiviate)
-    environment = settings['bot_settings'][settings['bot_settings']['environment']]
-    dev_environment = settings['bot_settings']['development']
-
-database_file = settings['bot_settings'][bot_environment]['database']
-db_path = os.path.join(execpath, "database", database_file)
-logging.info(db_path)
-
-keeper = RecordKeeper(db_path, database_version)
 
 
 @client.event
 async def on_ready():
-    ''' bot is ready '''
+    ''' executed when discord client is connected '''
     try:
-        ''' print bot information '''
-        print('> signed in as: ' + client.user.name)
-        print('> with client id: ' + str(client.user.id))
-        print('> Discord.py Version: {}'.format(discord.__version__))
+        logging.info('signed in as: ' + client.user.name)
+        logging.info('with client id: ' + str(client.user.id))
+        logging.info('Discord.py Version: {}'.format(discord.__version__))
     except Exception as e:
-        print(e)
+        logging.error(e, exc_info=True)
 
 
 async def send_message(view, dm_message, user_msg, delete_time, edit=False):
