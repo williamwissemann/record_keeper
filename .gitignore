@@ -1,9 +1,9 @@
 database/*.db
-*.DS_Store
-src/record-keeper/RecordKeeperBot.json
-src/record-keeper/__pycache__ 
-src/record-keeper/scheduled/google-sheets-creds/*.json
+config/*.json
+config/google-sheets-creds/*.json
 src/record-keeper/pvp_iv/compressed_iv_data/*
+
+*.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

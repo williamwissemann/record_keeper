@@ -23,16 +23,23 @@ venv:
 	@/bin/bash -c "source venv/bin/activate && pip install pip --upgrade && pip install -r requirements.dev.txt && pip install -e ."
 	@echo "\nEnter virtual environment using: \n\t$ source venv/bin/activate\n"
 
-# help: clean                          - clean all files using .gitignore rules
+# help: clean                          - clean up the venv and python cache files
 .PHONY: clean
 clean:
-	@git clean -X -f -d
+	@rm -rf venv
+	@rm -rf .coverage
+	@rm -rf src/*.egg-info
+	@rm -rf htmlcov
+	@rm -rf docs/_build/
+	@rm -rf docs/build/
+	@rm -rf docs/source/api/
+	@find . -type f -name '*.pyc' -delete
+	@find . -empty -type d -delete
+	@echo "\nClean up based on .gitignore rules:\n"
+	@git clean -X -f -d -n
+	@echo "\n[OPTIONAL] Use 'git clean -X -f -d' to remove them \n"
 
-# help: scrub                          - clean all files, even untracked files
-.PHONY: scrub
-scrub:
-	@git clean -x -f -d
-
+	
 # help: test                           - run tests
 .PHONY: test 
 test: venv check-lint
