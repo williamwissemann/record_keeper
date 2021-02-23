@@ -1,6 +1,6 @@
 import gzip
-import shutil
 import os
+import shutil
 
 path = "/Users/wtw/Downloads/raw/"
 outpath = "/Users/wtw/Dropbox/docker/record-keeper/discord_bot/pvp_iv/compressed/"

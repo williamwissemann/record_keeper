@@ -1,22 +1,19 @@
 from __future__ import print_function
 
-from Storage import UserStats
-from RecordKeeperUtils import get_discord_name
-
-
-from googleapiclient.discovery import build
-from oauth2client import file, client, tools
-from datetime import datetime, date, timedelta
-from httplib2 import Http
-import discord
-
-import time
 # import requests
 import csv
-import sys
 import json
-
 import os
+import sys
+import time
+from datetime import date, datetime, timedelta
+
+import discord
+from googleapiclient.discovery import build
+from httplib2 import Http
+from oauth2client import client, file, tools
+from RecordKeeperUtils import get_discord_name
+from Storage import UserStats
 
 os.chdir(os.path.abspath(__file__).replace("toSheets.py", ""))
 

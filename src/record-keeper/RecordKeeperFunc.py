@@ -1,17 +1,16 @@
-from Storage import UserStats
-from RecordKeeperUtils import get_discord_id
-
-import RecordKeeperViews as bot_message
-
-import discord
 import asyncio
-import random
 import datetime
 import math
-import time
-import sys
 import os
+import random
 import re
+import sys
+import time
+
+import discord
+import RecordKeeperViews as bot_message
+from RecordKeeperUtils import get_discord_id
+from Storage import UserStats
 
 
 class RecordKeeper:

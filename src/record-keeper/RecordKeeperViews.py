@@ -1,15 +1,15 @@
-from Storage import UserStats
-from RecordKeeperUtils import get_discord_name
-from pvp_iv.pvp_iv_util import find_combo, find_top_5, get_csv_header
-
-import discord
 import asyncio
-import random
 import datetime
 import math
-import time
-import sys
 import os
+import random
+import sys
+import time
+
+import discord
+from pvp_iv.pvp_iv_util import find_combo, find_top_5, get_csv_header
+from RecordKeeperUtils import get_discord_name
+from Storage import UserStats
 
 
 def create_elo10(server, usdb, medal, message):  # noqa: C901

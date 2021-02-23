@@ -1,10 +1,11 @@
-from urllib.request import urlopen
+import gzip
 import json
-from itertools import product
-import numpy as np
 import math
 import os
-import gzip
+from itertools import product
+from urllib.request import urlopen
+
+import numpy as np
 
 cp_multiplier = {
     1: 0.094,

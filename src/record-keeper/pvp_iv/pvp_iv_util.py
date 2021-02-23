@@ -1,6 +1,6 @@
 import gzip
-import shutil
 import os
+import shutil
 
 
 def find_combo(pokemon, ATK_IV, DEF_IV, HP_IV, folder, league):

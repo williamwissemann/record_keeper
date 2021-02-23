@@ -1,11 +1,11 @@
 
-import sqlite3
 import datetime
-import uuid
 import json
 import os
-import shutil
 import re
+import shutil
+import sqlite3
+import uuid
 
 
 class UserStats:
