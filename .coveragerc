@@ -1,12 +1,12 @@
 [run]
 branch = True
 source =
-    record-keeper
+    record_keeper
 
 [paths]
 source =
-    src/record-keeper
-    **/site-packages/record-keeper
+    src/record_keeper
+    **/site-packages/record_keeper
 
 [report]
 exclude_lines =
@@ -21,5 +21,5 @@ exclude_lines =
 ignore_errors = True
 
 [html]
-title = record-keeper Coverage Test Report
+title = record_keeper Coverage Test Report
 directory = docs/source/_static/coverage

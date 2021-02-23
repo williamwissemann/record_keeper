@@ -8,9 +8,9 @@ import sys
 import time
 
 import discord
-import RecordKeeperViews as bot_message
-from RecordKeeperUtils import get_discord_id
-from Storage import UserStats
+import record_keeper.RecordKeeperViews as bot_message
+from record_keeper.RecordKeeperUtils import get_discord_id
+from record_keeper.Storage import UserStats
 
 
 class RecordKeeper:

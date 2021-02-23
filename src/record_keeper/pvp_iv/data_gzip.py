@@ -3,7 +3,7 @@ import os
 import shutil
 
 path = "/Users/wtw/Downloads/raw/"
-outpath = "/Users/wtw/Dropbox/docker/record-keeper/discord_bot/pvp_iv/compressed/"
+outpath = "/Users/wtw/Dropbox/docker/record_keeper/discord_bot/pvp_iv/compressed/"
 dirs = os.listdir(path)
 for dir in dirs:
     if "." not in dir:

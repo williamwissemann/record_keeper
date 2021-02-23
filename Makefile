@@ -61,7 +61,7 @@ test-verbose:
 		--cov-report term \
 		tests \
 		-r w \
-		--cov-fail-under 0 
+		--cov-fail-under 0 \
 		-vvs
 
 # help: coverage                       - perform test coverage checks

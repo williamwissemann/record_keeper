@@ -9,8 +9,8 @@ import sys
 import time
 
 import discord
-from RecordKeeperFunc import RecordKeeper
-from Storage import UserStats
+from record_keeper.RecordKeeperFunc import RecordKeeper
+from record_keeper.Storage import UserStats
 
 
 class BotSetup:
@@ -32,8 +32,8 @@ class BotSetup:
         with open(config_file) as f:
             settings = json.load(f)
             bot_settings = settings.get("bot_settings")
-            bot_environment = bot_settings["environment"]
-            environment_settings = bot_settings[bot_environment]
+            self.environment = bot_settings["environment"]
+            environment_settings = bot_settings[self.environment]
             dev_environment = bot_settings["development"]
             self.discord_token = environment_settings["discord_token"]
 

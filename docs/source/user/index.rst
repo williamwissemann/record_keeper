@@ -20,13 +20,13 @@ Install Guide
         $ source venv/bin/activate
         (myvenv) $
 
-The simplest way to install Record-Keeper is using Pip.
+The simplest way to install record_keeper is using Pip.
 
 .. code-block:: console
 
-    $ pip install record-keeper
+    $ pip install record_keeper
 
-This will install ``record-keeper`` and all of its dependencies.
+This will install ``record_keeper`` and all of its dependencies.
 
 
 .. _api-reference-label:
@@ -34,7 +34,7 @@ This will install ``record-keeper`` and all of its dependencies.
 API Reference
 =============
 
-The `API Reference <http://record-keeper.readthedocs.io>`_ provides API-level documentation.
+The `API Reference <http://record_keeper.readthedocs.io>`_ provides API-level documentation.
 
 
 .. include:: ../../../CHANGELOG.rst

@@ -9,16 +9,16 @@ import sys
 import time
 
 import discord
-import RecordKeeperViews as bot_message
-from bot.setup import BotSetup
-from RecordKeeperFunc import RecordKeeper
-from RecordKeeperUtils import message_parser
-from Storage import UserStats
+import record_keeper.RecordKeeperViews as bot_message
+from record_keeper.bot.setup import BotSetup
+from record_keeper.RecordKeeperFunc import RecordKeeper
+from record_keeper.RecordKeeperUtils import message_parser
+from record_keeper.Storage import UserStats
 
 ''' grabs all the bot settings'''
 bot = BotSetup()
 
-''' starts the bot when ready''' 
+
 @bot.client.event
 async def on_ready():
     """ executed when discord client is connected """
@@ -64,10 +64,10 @@ async def on_message(message):
     if "Direct Message" in str(message.channel):
         checkpoint_one = True
         direct_message = True
-    if bot_environment == "development" and "-testing" not in str(message.channel):
-        print("(dev) ignore message because of '-testing' flag")
-    elif bot_environment == "production" and "-testing" in str(message.channel):
-        print("(prod) ignore  message because of '-testing' flag")
+    if bot.environment == "development" and "-testing" not in str(message.channel):
+        logging.info("(dev) ignore message because of misisng '-testing' flag")
+    elif bot.environment == "production" and "-testing" in str(message.channel):
+        logging.info("(prod) ignore message because of '-testing' flag")
     else:
         checkpoint_one = True
 

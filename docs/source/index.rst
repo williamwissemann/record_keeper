@@ -1,4 +1,4 @@
-Record-Keeper
+record_keeper
 #############
 
 A description of the package.
@@ -16,17 +16,17 @@ A description of the package.
 Quick Start
 ===========
 
-Record-Keeper is available on PyPI and can be installed with `pip <https://pip.pypa.io>`_.
+record_keeper is available on PyPI and can be installed with `pip <https://pip.pypa.io>`_.
 
 .. code-block:: console
 
-    $ pip install record-keeper
+    $ pip install record_keeper
 
-After installing Record-Keeper you can use it like any other Python module.
+After installing record_keeper you can use it like any other Python module.
 
 Here is a simple example:
 
 .. code-block:: python
 
-    import record-keeper
+    import record_keeper
     # Fill this section in with the common use-case.

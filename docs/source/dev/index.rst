@@ -9,12 +9,12 @@ Developers Guide
 Testing
 =======
 
-The Record-Keeper project implements a regression
+The record_keeper project implements a regression
 test suite that improves developer productivity by identifying capability
 regressions early.
 
 Developers implementing fixes or enhancements must ensure that they have
-not broken existing functionality. The Record-Keeper
+not broken existing functionality. The record_keeper
 project provides some convenience tools so this testing step can be quickly
 performed.
 
@@ -22,30 +22,30 @@ Use the Makefile convenience rules to run the tests.
 
 .. code-block:: console
 
-    (record-keeper) $ make test
+    (record_keeper) $ make test
 
 To run tests verbosely use:
 
 .. code-block:: console
 
-    (record-keeper) $ make test-verbose
+    (record_keeper) $ make test-verbose
 
 Alternatively, you may want to run the test suite directly. The following
 steps assume you are running in a virtual environment in which the
-``record-keeper`` package has been installed. If this is
+``record_keeper`` package has been installed. If this is
 not the case then you will likely need to set the ``PYTHONPATH`` environment
-variable so that the ``record-keeper`` package can be found.
+variable so that the ``record_keeper`` package can be found.
 
 .. code-block:: console
 
-    (record-keeper) $ cd tests
-    (record-keeper) $ python -m unittest
+    (record_keeper) $ cd tests
+    (record_keeper) $ python -m unittest
 
 Individual unit tests can be run also.
 
 .. code-block:: console
 
-    (record-keeper) $ python -m test_version
+    (record_keeper) $ python -m test_version
 
 
 .. _test-coverage-label:
@@ -58,7 +58,7 @@ Makefile convenience rule to run the code coverage checks.
 
 .. code-block:: console
 
-    (record-keeper) $ make coverage
+    (record_keeper) $ make coverage
 
 The test code coverage report can be found `here <../_static/coverage/index.html>`_
 
@@ -74,7 +74,7 @@ to apply code style fixes.
 
 .. code-block:: console
 
-    (record-keeper) $ make style
+    (record_keeper) $ make style
 
 .. _format-label:
 
@@ -85,7 +85,7 @@ A Makefile convenience rule exists to perform just code format fixes.
 
 .. code-block:: console
 
-    (record-keeper) $ make format
+    (record_keeper) $ make format
 
 .. _import-sort-label:
 
@@ -96,7 +96,7 @@ A Makefile convenience rule exists to perform just module import sorting fixes.
 
 .. code-block:: console
 
-    (record-keeper) $ make sort-imports
+    (record_keeper) $ make sort-imports
 
 
 .. _static-analysis-label:
@@ -109,7 +109,7 @@ checks. This will perform linting and type annotations checks.
 
 .. code-block:: console
 
-    (record-keeper) $ make check-static-analysis
+    (record_keeper) $ make check-static-analysis
 
 
 .. _code-linting-label:
@@ -121,7 +121,7 @@ A Makefile convenience rule exists to perform code linting checks.
 
 .. code-block:: console
 
-    (record-keeper) $ make check-lint
+    (record_keeper) $ make check-lint
 
 
 .. _annotations-label:
@@ -135,7 +135,7 @@ no type annotations issues are reported.
 
 .. code-block:: console
 
-    (record-keeper) $ make check-types
+    (record_keeper) $ make check-types
 
 
 .. _documentation-label:
@@ -149,21 +149,21 @@ set of `sphinx <http://sphinx-doc.org/>`_ html content.
 
 .. code-block:: console
 
-    (record-keeper) $ make docs
+    (record_keeper) $ make docs
 
 To quickly check consistency of ReStructuredText files use the dummy run which
 does not actually generate HTML content.
 
 .. code-block:: console
 
-    (record-keeper) $ make check-docs
+    (record_keeper) $ make check-docs
 
 To quickly view the HTML rendered docs, start a simple web server and open a
 browser to http://127.0.0.1:8000/.
 
 .. code-block:: console
 
-    (record-keeper) $ make serve-docs
+    (record_keeper) $ make serve-docs
 
 
 .. _release-label:
@@ -192,14 +192,14 @@ environment.
 
     ::
 
-        https://github.com/{username}/record-keeper/releases/{tag}
+        https://github.com/{username}/record_keeper/releases/{tag}
 
 - Create the release distribution. This project produces an artefact called a
   pure Python wheel. The wheel file will be created in the ``dist`` directory.
 
   .. code-block:: console
 
-      (record-keeper) $ make dist
+      (record_keeper) $ make dist
 
 - Test the release distribution. This involves creating a virtual environment,
   installing the distribution into it and running project tests against the
@@ -208,12 +208,12 @@ environment.
 
   .. code-block:: console
 
-      (record-keeper) $ make dist-test
+      (record_keeper) $ make dist-test
 
 - Upload the release to PyPI using
 
   .. code-block:: console
 
-      (record-keeper) $ make dist-upload
+      (record_keeper) $ make dist-upload
 
-  The package should now be available at https://pypi.org/project/record-keeper/
+  The package should now be available at https://pypi.org/project/record_keeper/

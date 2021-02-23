@@ -7,8 +7,11 @@ black
 coverage
 isort
 mypy
+mock
 sphinx
 twine
 wheel
 pytest
 pytest-cov
+pytest-asyncio
+
