@@ -8,14 +8,13 @@ import sys
 import time
 
 import discord
+
 import record_keeper.RecordKeeperViews as bot_message
 from record_keeper.RecordKeeperUtils import get_discord_id
-from record_keeper.Storage import UserStats
 
 
 class RecordKeeper:
-    def __init__(self, database_name, version):
-        self.usdb = UserStats(database_name, version)
+    def __init__(self):
 
         self.admin_options = [
             "dice",
@@ -164,7 +163,7 @@ class RecordKeeper:
     CAT1: GENERAL Functionality
     """
 
-    def help(self, user_msg):  # noqa: C901
+    def help(self, user_msg):
         messages = []
         msg = "__**COMMAND LIST**__\n"
         msg += "DM the bot !help for a completed list of supported commands\n"
@@ -460,7 +459,7 @@ class RecordKeeper:
                 return accepted
         return None
 
-    def up(self, message):  # noqa: C901
+    def up(self, message):
         try:
             server = message["raw_msg"].guild.id
         except Exception:
@@ -506,7 +505,7 @@ class RecordKeeper:
             bm += bot_message.create_stats(server, self.usdb, medal, str(identifier))
             return bm
 
-    def ls(self, message):  # noqa: C901
+    def ls(self, message):
         try:
             server = message["raw_msg"].guild.id
         except Exception:
@@ -640,7 +639,7 @@ class RecordKeeper:
         except Exception:
             return "Bidoof, sorry, something went wrong, try !help for more info"
 
-    def pvp(self, message):  # noqa: C901
+    def pvp(self, message):
         try:
             server = message["raw_msg"].guild.id
         except Exception:

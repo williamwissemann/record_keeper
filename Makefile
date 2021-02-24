@@ -43,7 +43,7 @@ clean:
 	
 # help: test                           - run tests
 .PHONY: test 
-test: venv # check-lint
+test: venv 
 	@. venv/bin/activate; pytest \
 		--cov=src \
 		--cov-report html \

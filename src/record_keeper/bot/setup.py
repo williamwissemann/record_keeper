@@ -9,8 +9,8 @@ import sys
 import time
 
 import discord
-from record_keeper.RecordKeeperFunc import RecordKeeper
-from record_keeper.Storage import UserStats
+
+from record_keeper.utilities.sqlite3_wrapper import Sqlite3Wrapper
 
 
 class BotSetup:
@@ -40,10 +40,10 @@ class BotSetup:
         # load sqlite3 database
         self.database_version = "1.0.2"
         database_file = environment_settings["database"]
-        db_path = os.path.join(exec_path, "database", database_file)
-        self.keeper = RecordKeeper(db_path, self.database_version)
+        path_to_database = os.path.join(exec_path, "database", database_file)
+        self.database = Sqlite3Wrapper(path_to_database)
 
-        # load sqlite3 database
+        # create the discord client
         intents = discord.Intents.default()
         intents.presences = True
         intents.members = True

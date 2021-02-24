@@ -6,13 +6,15 @@ import shutil
 import sqlite3
 import uuid
 
+from record_keeper import BOT
+
 
 class UserStats:
     """
     Handles the database manipulation
     """
 
-    def __init__(self, database_name="test.db", version="0.0"):
+    def __init__(self):
         # setup table catagories
         print("loading_database...")
         self.accepted_tables = []
@@ -48,45 +50,14 @@ class UserStats:
             data["tables"]["raid_tables"]["table_names"][pokeclean + "N"] = pokemon
             data["tables"]["raid_tables"]["table_names"][pokeclean + "BB"] = pokemon
             data["tables"]["raid_tables"]["table_names"][pokeclean + "CB"] = pokemon
-        # load the DB
-        self.conn = sqlite3.connect(database_name)
-        self.c = self.conn.cursor()
 
-        # Check if we need to migrate database to a new format
-        if os.path.isfile(database_name) and version != "IGNORE_VERSION":
-            try:
-                cdbv = self.database_version()[0][0]
-            except Exception:
-                cdbv = "0.0"
-
-            if cdbv != version and version != "IGNORE_VERSION":
-                self.conn.close()
-                name = re.findall("/database/(.*).db", database_name)[0]
-                backup_name = "/database/{}_backup_{}.db".format(name, cdbv)
-                backup_name = re.sub("/database/(.*)", backup_name, database_name)
-                if not os.path.isfile(backup_name):
-                    shutil.copyfile(database_name, backup_name)
-                else:
-                    print("WARNING: database backup already exists!")
-                    raise Exception("WARNING: database backup already exists!")
-                os.remove(database_name)
-                self.conn = sqlite3.connect(database_name)
-                self.c = self.conn.cursor()
-                self.init_table(data["tables"])
-                self.migrate(backup_name, cdbv, version)
-                cdbv = self.database_version()[0][0]
-                print(str(cdbv), str(version))
-                assert str(cdbv) == str(version)
-            else:
-                self.init_table(data["tables"])
-        else:
-            self.init_table(data["tables"])
+        self.init_table(data["tables"])
 
         print("loading complete")
 
-    def init_table(self, tables):  # noqa: C901
+    def init_table(self, tables):
         """
-        Initilize a table if it doesn't already exist
+        Initialize a table if it doesn't already exist
         """
         for category in tables:
             for table_name in tables[category]["table_names"]:
@@ -112,57 +83,36 @@ class UserStats:
                         and "_ties" not in name
                     ):
                         self.pvp_leagues.append(name)
-                    self.c.execute("CREATE TABLE IF NOT EXISTS " + name + " " + sql)
 
-    def get_decorator(func):
-        """
-        The get decorator:
-            sql string -> database [SELECT] -> return array
-        """
+                    sql_str = f"CREATE TABLE IF NOT EXISTS {name} {sql}"
+                    self.create_table_if_not_exist(create_table_if_not_exist)
 
-        def wrapper(self, *args, **kwargs):
-            sql_string = func(self, *args, **kwargs)
-            recent = []
-            for row in self.c.execute(sql_string):
-                recent.append(row)
-            return recent
+    @BOT.database.update
+    def create_table_if_not_exist(self, str):
+        return "SELECT info FROM botinfo WHERE field = 'version'"
 
-        return wrapper
+    @BOT.database.get
+    def database_version(self) -> str:
+        return "SELECT info FROM botinfo WHERE field = 'version'"
 
-    def update_decorator(func):
-        """
-        The get decorator
-            sql string -> database [INSERT/REPLACE/UPDATE/DELETE]
-        """
-
-        def wrapper(self, *args, **kwargs):
-            sql_string = func(self, *args, **kwargs)
-            self.c.execute(sql_string)
-            self.conn.commit()
-
-        return wrapper
-
-    @get_decorator
-    def database_version(self):
-        return str("SELECT info FROM botinfo WHERE field = 'version'")
-
-    @get_decorator
-    def list_gamertag(self, server):
-        return str(
-            "SELECT * FROM gamertag WHERE server_id = '"
-            + str(server)
-            + "' ORDER BY gamertag"
+    @BOT.database.get
+    def list_gamertag(self, server: str) -> str:
+        server = str(server)
+        sql_query = (
+            f"SELECT * FROM gamertag WHERE server_id='{server}' ORDER BY gamertag"
         )
 
-    @get_decorator
-    def get_recent(self, server, table, user, limit=25, uuid=False):
-        sql = "SELECT * FROM " + str(table)
-        sql += " WHERE gamertag = '" + str(user) + "'"
+        return str(sql_query)
+
+    @BOT.database.get
+    def get_recent(
+        self, server: str, table: str, user: str, limit: int = 25, uuid: bool = False
+    ):
+        sql = f"SELECT * FROM {str(table)}"
+        sql += f" WHERE gamertag = f'{str(user)}'"
         if not server == "ViaDirectMessage":
             sql += (
-                " AND ( server_id = '"
-                + str(server)
-                + "' OR server_id = 'ViaDirectMessage')"
+                f" AND ( server_id = '{str(server)}' OR server_id = 'ViaDirectMessage')"
             )
         if uuid:
             sql += " AND update_at >= datetime('now', '-1 day') "
@@ -171,7 +121,7 @@ class UserStats:
         sql += " LIMIT " + str(limit)
         return sql
 
-    @get_decorator
+    @BOT.database.get
     def get_recent_pvp(self, server, table, user, limit=25, uuid=False):
         sql = "SELECT * FROM " + str(table)
         sql += " WHERE gamertag_winner = '" + str(user) + "'"
@@ -189,7 +139,7 @@ class UserStats:
         sql += " LIMIT " + (str(limit))
         return sql
 
-    @get_decorator
+    @BOT.database.get
     def get_recent_pvp_no_limit(self, server, table):
         sql = "SELECT * FROM " + str(table)
         if not server == "ViaDirectMessage":
@@ -201,13 +151,13 @@ class UserStats:
         sql += " ORDER BY update_at ASC"
         return sql
 
-    @get_decorator
+    @BOT.database.get
     def get_elo_leaders(self, server, table):
         sql = "SELECT * FROM " + str(table)
         sql += " ORDER BY elo DESC"
         return sql
 
-    @get_decorator
+    @BOT.database.get
     def get_trade_board_by_user(self, server, user, board):
         sql = f"SELECT * FROM {board}"
         sql += f" WHERE gamertag = '{str(user)}'"
@@ -220,7 +170,7 @@ class UserStats:
         sql += " ORDER BY number ASC"
         return sql
 
-    @get_decorator
+    @BOT.database.get
     def get_trade_board_by_pokemon(self, server, pokemon, board):
         sql = f"SELECT * FROM {board}"
         sql += " WHERE pokemon = '" + str(pokemon) + "'"
@@ -233,7 +183,7 @@ class UserStats:
         sql += " ORDER BY number ASC"
         return sql
 
-    @get_decorator
+    @BOT.database.get
     def get_leaders(self, server, table):
         if str(table) == "Stardust":
             sql = (
@@ -265,7 +215,7 @@ class UserStats:
             sql += " LIMIT 25"
         return sql
 
-    @update_decorator
+    @BOT.database.update
     def update_medal(self, server, table, gamertag, value, update_at, notes=""):
         float(value)
         update_at.replace(" ", "T")
@@ -295,7 +245,7 @@ class UserStats:
         )
         return sql
 
-    @update_decorator
+    @BOT.database.update
     def update_elo(
         self,
         server,
@@ -331,7 +281,7 @@ class UserStats:
         print(sql)
         return sql
 
-    @update_decorator
+    @BOT.database.update
     def update_elo_player(self, table, gamertag, elo):
         sql = str(
             "REPLACE INTO "
@@ -347,7 +297,7 @@ class UserStats:
         print(sql)
         return sql
 
-    @update_decorator
+    @BOT.database.update
     def update_pvp(
         self,
         server,
@@ -404,7 +354,7 @@ class UserStats:
         )
         return sql
 
-    @update_decorator
+    @BOT.database.update
     def update_trade_board(
         self, server, PokemonNumber, PokemonName, user, notes="", board=""
     ):
@@ -433,7 +383,7 @@ class UserStats:
         )
         return sql
 
-    @update_decorator
+    @BOT.database.update
     def delete_row(self, server, table, user, uuid):
         sql = "DELETE FROM " + str(table)
         sql += " WHERE gamertag = '" + str(user) + "'"
@@ -448,7 +398,7 @@ class UserStats:
         sql += " AND uuid = '" + str(uuid) + "'"
         return sql
 
-    @update_decorator
+    @BOT.database.update
     def delete_from_trade_board(self, server, PokemonName, user, board):
         sql = f"DELETE FROM {board}"
         sql += " WHERE gamertag = '" + str(user) + "'"
@@ -562,7 +512,7 @@ class UserStats:
             return float(sum(average_increase)) / day_diff
         return 0.0
 
-    @update_decorator
+    @BOT.database.update
     def update_friend_board(self, server, gamertag1, gamertag2):
         id = uuid.uuid4()
         sql = str(
@@ -583,14 +533,14 @@ class UserStats:
         )
         return sql
 
-    @update_decorator
+    @BOT.database.update
     def delete_from_friend_board(self, server, gamertag1, gamertag2):
         sql = "DELETE FROM FRIEND_BOARD"
         sql += " WHERE gamertag1 = '" + str(gamertag1) + "'"
         sql += " AND gamertag2 = '" + str(gamertag2) + "'"
         return sql
 
-    @get_decorator
+    @BOT.database.get
     def get_friends(self, server, gamertag, limit=1000):
         sql = "SELECT DISTINCT gamertag2, IFNULL(status, 'Offline') as status "
         sql += " FROM FRIEND_BOARD "
@@ -601,7 +551,7 @@ class UserStats:
         sql += " LIMIT " + str(limit)
         return sql
 
-    @get_decorator
+    @BOT.database.get
     def get_online_friends(self, server, gamertag, limit=1000):
         sql = "SELECT DISTINCT gamertag2, IFNULL(status, 'Offline') as status "
         sql += " FROM FRIEND_BOARD "
@@ -613,7 +563,7 @@ class UserStats:
         # sql += " LIMIT " + str(limit)
         return sql
 
-    @update_decorator
+    @BOT.database.update
     def update_active_board(self, server, gamertag, status):
         id = uuid.uuid4()
         sql = str(
@@ -631,7 +581,7 @@ class UserStats:
         )
         return sql
 
-    @get_decorator
+    @BOT.database.get
     def get_listeners(self, server, channel):
         sql = "SELECT * FROM listener "
         if not server == "ViaDirectMessage":
@@ -639,7 +589,7 @@ class UserStats:
             sql += " AND active_channel = '" + str(channel) + "'"
         return sql
 
-    @get_decorator
+    @BOT.database.get
     def has_listeners(self, server, channel, toggle):
         sql = str(
             "SELECT * FROM listener "
@@ -655,7 +605,7 @@ class UserStats:
         )
         return sql
 
-    @update_decorator
+    @BOT.database.update
     def update_listener(self, server, channel, toggle):
         id = uuid.uuid4()
         sql = str(
@@ -676,7 +626,7 @@ class UserStats:
         )
         return sql
 
-    @update_decorator
+    @BOT.database.update
     def remove_listener(self, server, channel, toggle):
         sql = str(
             "DELETE FROM listener "
@@ -691,55 +641,6 @@ class UserStats:
             + "'"
         )
         return sql
-
-    def migrate(self, backup_name, cdbv, version):
-        old_conn = sqlite3.connect(backup_name)
-        old_c = old_conn.cursor()
-
-        if str(version) == "0.0":
-            id = uuid.uuid4()
-            sql = str(
-                "INSERT OR REPLACE INTO botinfo"
-                + " VALUES( "
-                + "'"
-                + str(id)
-                + "',"
-                + "'version',"
-                + "'"
-                + str(version)
-                + "')"
-            )
-            self.c.execute(sql)
-            self.conn.commit()
-            return True
-        elif str(version) == "1.0.2" and (str(cdbv) == "1.0" or str(cdbv) == "1.0.1"):
-            pass
-        elif str(version) == str(cdbv):
-            print(f"VERSION: {str(version)}")
-            return True
-        else:
-            assert False
-
-        print(f"moving to {version}")
-        array = []
-        for table in old_c.execute("SELECT name FROM sqlite_master WHERE type='table'"):
-            array.append(table[0])
-
-        for table in array:
-            print(table)
-            for row in old_c.execute("SELECT * FROM " + table):
-                sql = str("INSERT INTO " + table + " values( ")
-                for eln in range(len(row)):
-                    sql += "'" + str(row[eln]) + "',"
-                sql = sql[0 : len(sql) - 2] + "')"
-                self.c.execute(sql)
-                self.conn.commit()
-
-        sql = str(
-            "UPDATE botinfo " + f" SET info = '{version}'" + " WHERE field == 'version'"
-        )
-        self.c.execute(sql)
-        self.conn.commit()
 
 
 if __name__ == "__main__":
