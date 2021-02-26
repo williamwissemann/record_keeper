@@ -3,33 +3,33 @@ import re
 
 
 def parser(message: str) -> dict:
-    """Message parser for messages coming from discord starting with `!`.
+    """Message parser, for discord commands which start with `!`.
 
     Args:
-        message (str): a command messages starting with !
+        message (str): a command starting with !
 
     Raises:
-        ValueError: when the special annotations causes a command to
-        be malformed.
+        ValueError: spacing issue or
 
     Returns:
-        dict: {"cmd": <!command>, "note": <a note>, "date": <data>,
-        "args": an array of command arguments}
+        dict: {'cmd': <!command>, 'note': <a note>, 'date': <data>,
+        'args': an array of command arguments}
     """
     msg = {}
     if re.findall("^![^ ]", message):
         msg["cmd"] = re.findall("^!([^ ]+)", message)[0]
         message = re.sub("^![^ ]+", "", message)
+        msg["cmd"] = msg["cmd"].lower()
     else:
         return None
 
     # find special annotations of the form word:value
-    special = re.findall("\w*:\s?[^ ]+", message)  # noqa: W605
+    special = re.findall(r"\w*:\s?[^ ]+", message)
     for s in special:
         try:
             key, value = s.split(":")
         except Exception:
-            return "spacing issue"
+            raise ValueError("malformed command")
         if key not in value:
             msg[key.lower()] = value.lstrip(" ")
         message = re.sub(s, "", message)

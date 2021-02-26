@@ -34,7 +34,7 @@ test_data.append(("!roll date:-02-24", "not an accepted date format"))
 test_ids.append(("malformed date"))
 
 # command with bad date
-test_data.append(("!roll note:a a:a:", "spacing issue"))
+test_data.append(("!roll note:a a:a:", "malformed command"))
 test_ids.append(("malformed command"))
 
 
