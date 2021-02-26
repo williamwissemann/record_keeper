@@ -4,7 +4,7 @@ from record_keeper import BOT
 
 
 @BOT.database.get
-def has_listeners(self, server: str, channel: str, toggle: str) -> str:
+def has_listeners(server: str, channel: str, toggle: str) -> str:
     return (
         "SELECT * FROM listener"
         f" WHERE server_id = '{server}'"
@@ -14,7 +14,7 @@ def has_listeners(self, server: str, channel: str, toggle: str) -> str:
 
 
 @BOT.database.get
-def get_listeners(self, server: str, channel: str) -> str:
+def get_listeners(server: str, channel: str) -> str:
     sql = "SELECT * FROM listener"
     if not server == "ViaDirectMessage":
         sql += f" WHERE server_id = '{server}'"
@@ -24,7 +24,7 @@ def get_listeners(self, server: str, channel: str) -> str:
 
 
 @BOT.database.update
-def update_listener(self, server: str, channel: str, toggle: str) -> str:
+def update_listener(server: str, channel: str, toggle: str) -> str:
     return (
         "INSERT or IGNORE INTO listener"
         f" values('{uuid4()}', '{server}', '{toggle}', '{channel}')"
@@ -32,7 +32,7 @@ def update_listener(self, server: str, channel: str, toggle: str) -> str:
 
 
 @BOT.database.update
-def remove_listener(self, server: str, channel: str, toggle: str) -> str:
+def remove_listener(server: str, channel: str, toggle: str) -> str:
     return (
         "DELETE FROM listener"
         f" WHERE server_id = {server}"

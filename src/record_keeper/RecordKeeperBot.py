@@ -13,6 +13,7 @@ import discord
 from record_keeper import BOT
 from record_keeper.bot.module.admin.relay import AdminRelay
 from record_keeper.utilities.message import parser
+from record_keeper.utilities.discord_helpers import send_message
 
 
 @BOT.client.event
@@ -24,30 +25,6 @@ async def on_ready():
         logging.info("Discord.py Version: {}".format(discord.__version__))
     except Exception as e:
         logging.error(e, exc_info=True)
-
-
-async def send_message(view, direct_message, cmd_msg, delete_time, edit=False):
-    if view:
-        if not isinstance(view, list):
-            view = [view]
-
-        cleanup = BOT.keeper.has_listener(cmd_msg, "message-cleanup")
-
-        for msg in view:
-            if edit:
-                update_message = await cmd_msg["raw_msg"].channel.send("updating...")
-                if cleanup and not direct_message:
-                    await update_message.edit(content=msg, delete_after=delete_time)
-                else:
-                    await update_message.edit(content=msg)
-            else:
-                if cleanup and not direct_message:
-                    await cmd_msg["raw_msg"].channel.send(msg, delete_after=delete_time)
-                else:
-                    await cmd_msg["raw_msg"].channel.send(msg)
-
-        if BOT.keeper.has_listener(cmd_msg, "message-cleanup") and not direct_message:
-            await cmd_msg["raw_msg"].delete()
 
 
 @BOT.client.event
@@ -67,7 +44,11 @@ async def on_message(message):
         checkpoint_one = True
 
     if checkpoint_one and not message.author.bot:
-        cmd_msg = parser(message.content)
+        try:
+            cmd_msg = parser(message.content)
+        except Exception as err:
+            await send_message(str(err), direct_message, message, 90)
+            return
 
         await AdminRelay().relay(message, cmd_msg, direct_message)
 

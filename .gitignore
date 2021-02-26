@@ -1,5 +1,7 @@
 database/*.db
-config/*.json
+config/credentials.json
+config/token.json
+config/setup.json
 config/google-sheets-creds/*.json
 src/record_keeper/pvp_iv/compressed_iv_data/*
 

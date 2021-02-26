@@ -159,44 +159,6 @@
                 }
             }
         },
-        "pvp_leagues": {
-            "table_names": {
-                "GL": "Great League",
-                "UL": "Ultra League",
-                "ML": "Master Lague",
-                "boulder": "Boulder Cup",
-                "tempest": "Tempest Cup",
-                "kingdom": "Kingdom Cup",
-                "twilight": "Twilight Cup",
-                "regionals": "Regionals",
-                "nightmare": "Nightmare Cup",
-                "rainbow": "Rainbow Cup",
-                "jungle": "Jungle Cup",
-                "worlds": "worlds",
-                "lvl1": "Level 1",
-                "Cliffhanger": "Cliffhanger",
-                "MontrealCup": "Montreal's Safari Cup"
-            },
-            "table": {
-                "init": {
-                    "sql": "(uuid text, server_id text, update_at text, gamertag text, gamertag_winner text, elo_winner real, elo_winner_change real, gamertag_loser text, elo_loser real, elo_loser_change real, tie integer, note text)",
-                    "accepted": false
-                },
-                "init_elo": {
-                    "sql": "(gamertag text, elo real, PRIMARY KEY(gamertag))",
-                    "accepted": false
-                }
-            }
-        },
-        "raid_tables": {
-            "table_names": {},
-            "table": {
-                "init": {
-                    "sql": "(uuid text, server_id text, update_at text, gamertag text, value real, note text)",
-                    "accepted": false
-                }
-            }
-        },
         "trade_board": {
             "table_names": {
                 "TRADE_BOARD": "TRADE_BOARD",
@@ -205,28 +167,6 @@
             "table": {
                 "init": {
                     "sql": "(uuid text, server_id text, gamertag text, pokemon text, number INTEGER, notes text, PRIMARY KEY (pokemon, gamertag) )",
-                    "accepted": false
-                }
-            }
-        },
-        "friend_board": {
-            "table_names": {
-                "FRIEND_BOARD": "FRIEND_BOARD"
-            },
-            "table": {
-                "init": {
-                    "sql": "(uuid text, server_id text, gamertag1 text, gamertag2 text, PRIMARY KEY (gamertag1, gamertag2, server_id) )",
-                    "accepted": false
-                }
-            }
-        },
-        "active_board": {
-            "table_names": {
-                "ACTIVE_BOARD": "ACTIVE_BOARD"
-            },
-            "table": {
-                "init": {
-                    "sql": "(uuid text, gamertag text, status text, PRIMARY KEY (gamertag) )",
                     "accepted": false
                 }
             }

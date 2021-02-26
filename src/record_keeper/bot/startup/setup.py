@@ -26,9 +26,11 @@ class BotSetup:
         base_name = os.path.basename(__file__)
         config_file = base_name.replace(".py", ".json")
         exec_path = abs_path.replace(rel_path, "")
+        logging.info(f"exec_path: {exec_path}")
 
         # load data out of the configuration file
         config_file = os.path.join(exec_path, "config", config_file)
+        logging.info(f"found config_file @ {config_file}")
         with open(config_file) as f:
             settings = json.load(f)
             bot_settings = settings.get("bot_settings")
@@ -37,13 +39,20 @@ class BotSetup:
             dev_environment = bot_settings["development"]
             self.discord_token = environment_settings["discord_token"]
 
+        # Load in json file to initialize the tables in the database
+        schema_path = os.path.join(exec_path, "config", "schema.json")
+        logging.info(f"found schema_path @ {schema_path}")
+        with open(schema_path) as f:
+            self.schema = json.load(f)
+
         # load sqlite3 database
-        self.database_version = "1.0.2"
         database_file = environment_settings["database"]
         path_to_database = os.path.join(exec_path, "database", database_file)
+        logging.info(f"loading the database @ {path_to_database}")
         self.database = Sqlite3Wrapper(path_to_database)
 
         # create the discord client
+        logging.info(f"logging in to discord {path_to_database}")
         intents = discord.Intents.default()
         intents.presences = True
         intents.members = True

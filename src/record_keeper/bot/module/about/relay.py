@@ -1,3 +1,4 @@
+# TODO fix this
 @BOT.database.get
 def get_database_version(self) -> str:
     return "SELECT info FROM botinfo WHERE field = 'version'"

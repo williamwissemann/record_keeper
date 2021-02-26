@@ -10,154 +10,12 @@ import time
 import discord
 
 import record_keeper.RecordKeeperViews as bot_message
-from record_keeper.RecordKeeperUtils import get_discord_id
+from record_keeper.utilities.discord_helpers import get_discord_id
 
 
 class RecordKeeper:
     def __init__(self):
-
-        self.admin_options = [
-            "dice",
-            "help",
-            "battle-keeper",
-            "record-keeper",
-            "trade-keeper",
-            "friend-keeper",
-            "iv-ranker",
-            "message-cleanup",
-            "training-wheels",
-            "deletable-data",
-        ]
-
-    """
-    CAT0: ADMIN Functionality
-    """
-
-    def activate(self, message):
-        if message["args"][0].lower() == "all":
-            for setting in self.admin_options:
-                self.usdb.update_listener(
-                    message["raw_msg"].guild.id,
-                    message["raw_msg"].channel.id,
-                    setting.lower(),
-                )
-            return "all valid listener are activated"
-        elif message["args"][0].lower() == "default":
-            for setting in ["help", "message-cleanup", "training-wheels"]:
-                self.usdb.update_listener(
-                    message["raw_msg"].guild.id,
-                    message["raw_msg"].channel.id,
-                    setting.lower(),
-                )
-            return "default listeners are activate"
-
-        if message["args"][0].lower() not in self.admin_options:
-            return "{} not a valid listener".format(message["args"][0])
-
-        try:
-            self.usdb.update_listener(
-                message["raw_msg"].guild.id,
-                message["raw_msg"].channel.id,
-                message["args"][0].lower(),
-            )
-        except Exception:
-            pass
-        return "listener ({}) was activated for this channel".format(message["args"][0])
-
-    def deactivate(self, message):
-        if message["args"][0].lower() not in self.admin_options:
-            self.usdb.remove_listener(
-                message["raw_msg"].guild.id,
-                message["raw_msg"].channel.id,
-                message["args"][0].lower(),
-            )
-            return "{} not a valid listener".format(message["args"][0])
-        self.usdb.remove_listener(
-            message["raw_msg"].guild.id,
-            message["raw_msg"].channel.id,
-            message["args"][0].lower(),
-        )
-        return "listener ({}) removed for this channel".format(message["args"][0])
-
-    def list_listener(self, message):
-        string = "```active listeners on this channel \n"
-        string += "\n"
-        string += "channel            | type \n"
-        string += "-------------------+------------\n"
-        for (uuid, server, toggle, channel) in self.usdb.get_listeners(
-            message["raw_msg"].guild.id, message["raw_msg"].channel.id
-        ):
-            string += "{} | {}".format(channel, toggle) + "\n"
-        string += "```"
-        return string
-
-    def has_listener(self, message, toggle):
-        if "Direct Message" in str(message["raw_msg"].channel):
-            return True
-        return (
-            len(
-                self.usdb.has_listeners(
-                    message["raw_msg"].guild.id, message["raw_msg"].channel.id, toggle
-                )
-            )
-            > 0
-        )
-
-    def setup(self, user_msg):
-        msg = "__**Setup**__\n"
-        msg += "*run these commands in channels you would like to modify*\n"
-        msg += "_**Add a listener to channel**_\n"
-        msg += "\t!activate <*listener*>\n"
-        msg += "_**Remove a listener from a channel**_\n"
-        msg += "\t!deactivate  <*listener*>\n"
-        msg += "_**View all listener for a channel**_\n"
-        msg += "\t!active\n"
-        msg += "_**available listeners**_\n"
-        msg += " - **help**: activiates !help\n"
-        msg += " - **training-wheels**: activiates error messages on bad commands\n"
-        msg += " - **record-keeper**: a record keeper for medals\n"
-        msg += " - **trade-keeper**: a trading want manager\n"
-        msg += " - **friend-keeper**: an ultra friends for pvp\n"
-        msg += " - **battle-keeper**: an elo based leaderbaord\n"
-        if (
-            str(user_msg["client"].user.id) == "588364227396239361"
-            or str(user_msg["client"].user.id) == "491321676835848203"
-        ):
-            msg += " - **iv-ranker**: a pokemon rater\n"
-        msg += " - **message-cleanup**: cleans up bot messages on a timer\n"
-        msg += " - **deletable-data**: activiates commands for delete bad entries\n"
-        msg += " - **dice**: activiates !roll <*sides*>\n"
-        msg += "**Note**: it is recommend to turn on *message-cleanup*, *training-wheels* and *help* \n"
-        msg += "in addition to any other listner (via `!activate default`)\n"
-        msg += "---------------------------------------------\n"
-        return msg
-
-    def stats(self, user_msg):
-        cnt = 0
-        for x in user_msg["client"].guilds:
-            cnt += 1
-        msg = "servers: {} \n".format(cnt)
-        members = {}
-        for x in user_msg["client"].get_all_members():
-            members[x] = None
-        for x in user_msg["client"].get_all_members():
-            members[x] = None
-        msg += "users: {} \n".format(len(members))
-        return msg
-
-    def servers(self, user_msg):
-        messages = []
-        msg = ""
-        servers = {}
-        for x in user_msg["client"].guilds:
-            servers[str(x)] = None
-        for x in sorted(servers.keys()):
-            if len(msg + str(x) + "\n") > 1900:
-                messages.append(msg)
-                msg = ""
-            msg += str(x) + "\n"
-        messages.append(msg)
-        return messages
+        pass
 
     """
     CAT1: GENERAL Functionality
@@ -301,7 +159,7 @@ class RecordKeeper:
         msg += "\t!unwant <*dex#*>\n"
         msg += "_**List trade board for a pokemon**_\n"
         msg += "\t!tbp <*pokemon or dex number*>\n"
-        msg += "_**List a user's trade prefrences**_\n"
+        msg += "_**List a user's trade preferences**_\n"
         msg += "\t!tbu <*discord_id*>\n"
         msg += "_**Prints a copyable version of a users search string**_\n"
         msg += "\t!tbs <*discord_id*>\n"
@@ -337,18 +195,6 @@ class RecordKeeper:
         msg += "**FILTERS:** wild (default), wb (weather boosted),\n"
         msg += "\tbest (best-friends), raid, lucky \n"
         msg += "---------------------------------------------\n"
-        return msg
-
-    def helpDonate(self):
-        msg = "__**Donate**__\n"
-        msg += "Looking to help support the bot use !donate\n"
-        msg += "---------------------------------------------\n"
-        return msg
-
-    def helpDonateLink(self):
-        msg = "paypal: https://paypal.me/aDyslexicPanda \n"
-        msg += "patreon: https://www.patreon.com/gostadium \n"
-        msg += "Keep hunting trainers!"
         return msg
 
     def medals(self):
