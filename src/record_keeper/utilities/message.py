@@ -1,13 +1,13 @@
 import datetime
 import logging
 import re
+from typing import Union
 
 from record_keeper import BOT
 from record_keeper.bot.module.admin.query import has_listener
 
-from typing import Union
 
-class BadCommand (Exception):
+class BadCommand(Exception):
     pass
 
 
@@ -87,6 +87,16 @@ class MessageWrapper:
 
         # parse remaining arguments now that the annotations have been removed
         self.arguments = map(str.lower, re.findall("([^ ]+)", content))
+
+        if self.arguments:
+            aliases = [
+                ("mmr", "gblelo"),
+                ("fisher", "fisherman"),
+                ("railstaff", "depotagent"),
+            ]
+            for current, alias in aliases:
+                if self.arguments[0] == current:
+                    self.arguments[0] = alias
 
     async def send_message(
         self,
