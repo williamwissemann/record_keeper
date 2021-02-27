@@ -4,7 +4,7 @@ from record_keeper import BOT
 
 
 @BOT.database.get
-def has_listeners(server: str, channel: str, toggle: str) -> str:
+def has_listener(server: str, channel: str, toggle: str) -> str:
     return (
         "SELECT * FROM listener"
         f" WHERE server_id = '{server}'"

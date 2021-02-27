@@ -1,6 +1,3 @@
-import datetime
-import re
-
 import discord
 
 from record_keeper import BOT
@@ -51,27 +48,3 @@ def get_discord_name(server, raw_msg, identifier):
         if display_name:
             break
     return display_name
-
-
-async def send_message(msg_list, direct_message, raw_msg, delete_time, edit=False):
-    if msg_list:
-        if not isinstance(msg_list, list):
-            msg_list = [msg_list]
-
-        cleanup = BOT.keeper.has_listener(cmd_msg, "message-cleanup")
-
-        for msg in msg_list:
-            if edit:
-                update_message = await raw_msg.channel.send("updating...")
-                if cleanup and not direct_message:
-                    await update_message.edit(content=msg, delete_after=delete_time)
-                else:
-                    await update_message.edit(content=msg)
-            else:
-                if cleanup and not direct_message:
-                    await raw_msg.channel.send(msg, delete_after=delete_time)
-                else:
-                    await raw_msg.channel.send(msg)
-
-        if cleanup and not direct_message:
-            await raw_msg.delete()

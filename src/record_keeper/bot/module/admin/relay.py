@@ -1,9 +1,10 @@
+from typing import Union
+from record_keeper.utilities.message import MessageWrapper
 from record_keeper.bot.module.admin.query import (
     get_listeners,
     remove_listener,
     update_listener,
 )
-
 
 class AdminRelay:
     def __init__(self):
@@ -23,39 +24,33 @@ class AdminRelay:
 
     async def relay(
         self,
-        raw_msg: object,
-        cmd_msg: dict,
-        direct_message: bool = False,
-    ) -> str:
+        msg: MessageWrapper,
+    ) -> Union[str, None]:
 
-        is_admin = raw_msg.author.guild_permissions.administrator
-        if direct_message or not is_admin:
+        if not msg.guild or not msg.from_admin:
             # incorrect scope or permission do not continue
             return None
 
-        if cmd_msg.get("cmd") == "setup":
+        if msg.cmd == "setup":
             response = self.setup()
-            await raw_msg.channel.send(response, delete_after=600)
-            return response
+            return await msg.send_message(response, delete_after=600)
 
-        elif cmd_msg.get("cmd") == "activate" and len(cmd_msg.get("args")):
-            response = self.activate(raw_msg, cmd_msg)
-            await raw_msg.channel.send(response, delete_after=60)
-            return response
+        elif msg.cmd == "activate" and msg.arguments:
+            response = self.activate(msg)
+            return await msg.send_message(response, delete_after=60)
 
-        elif cmd_msg.get("cmd") == "deactivate":
-            response = self.deactivate(raw_msg, cmd_msg)
-            await raw_msg.channel.send(response, delete_after=60)
-            return response
+        elif msg.cmd == "deactivate":
+            response = self.deactivate(msg)
+            return await msg.send_message(response, delete_after=60)
 
-        elif cmd_msg.get("cmd") == "active":
-            response = self.list_listener(raw_msg, cmd_msg)
-            await raw_msg.channel.send(response, delete_after=90)
-            return response
+        elif msg.cmd == "active":
+            response = self.list_listener(msg)
+            return await msg.send_message(response, delete_after=90)
 
         return None
 
     def setup(self):
+        # TODO remove unsupported things
         return (
             "__**Setup**__\n"
             "*run these commands in channels you would like to modify*\n"
@@ -82,67 +77,40 @@ class AdminRelay:
             "---------------------------------------------\n"
         )
 
-    def activate(self, raw_msg: object, cmd_msg: dict) -> str:
-        arg = cmd_msg.get("args")[0].lower()
-
-        if arg == "all":
-            for setting in self.admin_options:
-                update_listener(
-                    raw_msg.guild.id,
-                    raw_msg.channel.id,
-                    setting.lower(),
-                )
-            return "all valid listener are activated"
-        elif arg == "default":
-            for setting in ["help", "message-cleanup", "training-wheels"]:
-                update_listener(
-                    raw_msg.guild.id,
-                    raw_msg.channel.id,
-                    setting.lower(),
-                )
-            return "default listeners are activate"
-        elif arg not in self.admin_options:
-            return f"{arg} not a valid listener"
+    def activate(self, msg: MessageWrapper) -> str:
+        settings = []
+        if msg.arguments == "all":
+            settings = self.admin_options
+        elif msg.arguments == "default":
+            settings = ["help", "message-cleanup", "training-wheels"]
         else:
-            try:
-                update_listener(
-                    raw_msg.guild.id,
-                    raw_msg.channel.id,
-                    arg.lower(),
-                )
-            except Exception:
-                return f"{arg} not a valid listener"
-            return f"listener ({arg}) was activated for this channel"
+            settings.extend(msg.arguments)
 
-    def deactivate(self, raw_msg: object, cmd_msg: dict) -> str:
-        arg = cmd_msg.get("args")[0].lower()
+        for setting in settings:
+            if setting in self.admin_options:
+                update_listener(msg.guild_id, msg.channel_id, setting.lower())
 
-        if arg not in self.admin_options:
-            return f"{arg} not a valid listener"
+        return "Valid listener's status have activated for this channel!"
 
-        remove_listener(raw_msg.guild.id, raw_msg.channel.id, arg.lower())
-        return f"listener ({arg}) removed for this channel"
+    def deactivate(self, msg: MessageWrapper) -> str:
+        settings = []
+        settings.extend(msg.arguments)
 
-    def list_listener(self, raw_msg: object, cmd_msg: dict) -> str:
-        string = (
+        for setting in settings:
+            if setting in self.admin_options:
+                remove_listener(msg.guild_id, msg.channel_id, setting.lower())
+
+        return "Valid listener's status have deactivated for this channel!"
+
+    def list_listener(self, msg: MessageWrapper) -> str:
+        response = (
             "```active listeners on this channel \n\n"
             "channel            | type \n"
             "-------------------+------------\n"
         )
-        listeners = get_listeners(raw_msg.guild.id, raw_msg.channel.id)
+        listeners = get_listeners(msg.guild_id, msg.channel_id)
         for (uuid, server, toggle, channel) in listeners:
-            string += f"{channel} | {toggle} \n"
-        string += "```"
+            response += f"{channel} | {toggle} \n"
+        response += "```"
 
-        return string
-
-    """
-    def has_listener(self, raw_msg: object, cmd_msg: dict, toggle: str) -> str:
-        # XXX not sure where to put this
-        if "Direct Message" in str(raw_msg.channel):
-            return True
-
-        response = has_listeners(raw_msg.guild.id, raw_msg.channel.id, toggle)
-
-        return len(response)
-    """
+        return response

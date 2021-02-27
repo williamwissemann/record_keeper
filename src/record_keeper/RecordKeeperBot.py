@@ -1,19 +1,9 @@
-import asyncio
-import datetime
-import json
 import logging
-import math
-import os
-import random
-import sys
-import time
-
 import discord
 
 from record_keeper import BOT
 from record_keeper.bot.module.admin.relay import AdminRelay
-from record_keeper.utilities.message import parser
-from record_keeper.utilities.discord_helpers import send_message
+from record_keeper.utilities.message import MessageWrapper
 
 
 @BOT.client.event
@@ -29,17 +19,23 @@ async def on_ready():
 
 @BOT.client.event
 async def on_message(message):
+    # build context of the message
+    msg = MessageWrapper(message)
+
+    if msg.failure:
+        await msg.send_message(msg.failure, 600)
+        return
+    elif not msg.cmd:
+        return
+
+    await AdminRelay().relay(msg)
+
+
+
+    """
     checkpoint_one = False
     direct_message = False
 
-    if "Direct Message" in str(message.channel):
-        checkpoint_one = True
-        direct_message = True
-
-    if BOT.environment == "development" and "-testing" not in str(message.channel):
-        logging.info("(dev) ignore message because of misisng '-testing' flag")
-    elif BOT.environment == "production" and "-testing" in str(message.channel):
-        logging.info("(prod) ignore message because of '-testing' flag")
     else:
         checkpoint_one = True
 
@@ -50,10 +46,11 @@ async def on_message(message):
             await send_message(str(err), direct_message, message, 90)
             return
 
-        await AdminRelay().relay(message, cmd_msg, direct_message)
+        
+        #await RandomRelay().relay(message, cmd_msg, direct_message)
 
-        """
-        logging.info(cmd_msg)
+   
+        
 
         if cmd_msg:
             checkpoint_two = True
