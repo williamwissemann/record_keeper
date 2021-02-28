@@ -44,7 +44,7 @@ class mock_bot_setup():
 
 @pytest.mark.asyncio
 async def test___init__():
-    with mock.patch('record_keeper.bot.setup.BotSetup', mock_bot_setup):
+    with mock.patch('record_keeper.setup.BotSetup', mock_bot_setup):
 
         mock_discord_message = mock_message()
         mock_discord_message.channel = "fake-message-testing"

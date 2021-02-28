@@ -8,14 +8,14 @@ import sqlite3
 import uuid
 
 from record_keeper import BOT
-from record_keeper.bot.module.shared.helper import (
+from record_keeper.module.shared.helper import (
     create_table_if_not_exist,
     drop_tables,
     get_all_tables,
 )
 
 
-class Validator:
+class Storage:
     def __init__(self):
         self.table_names = []
         self.accepted_tables = []

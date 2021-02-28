@@ -3,7 +3,7 @@
 import importlib.metadata
 import logging
 
-from record_keeper.bot.startup.setup import BotSetup
+from record_keeper.startup.setup import BotSetup
 
 __version__ = importlib.metadata.version("record-keeper")
 
@@ -16,7 +16,8 @@ except Exception:
 
 # validate & fix the database so it has the correct structure
 try:
-    from record_keeper.bot.startup.validator import Validator
-    CHECK = Validator()
+    from record_keeper.startup.storage import Storage
+
+    STORAGE = Storage()
 except Exception:
     logging.error("failure run validator", stack_info=True)

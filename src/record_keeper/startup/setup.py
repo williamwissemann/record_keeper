@@ -1,12 +1,6 @@
-import asyncio
-import datetime
 import json
 import logging
-import math
 import os
-import random
-import sys
-import time
 
 import discord
 
@@ -16,8 +10,8 @@ from record_keeper.utilities.sqlite3_wrapper import Sqlite3Wrapper
 class BotSetup:
     def __init__(self):
         # setup a logger
-        FORMAT = "%(levelname)s %(filename)s:%(lineno)d %(message)s"
-        logging.basicConfig(format=FORMAT)
+        format_template = "%(levelname)s %(filename)s:%(lineno)d %(message)s"
+        logging.basicConfig(format=format_template)
         logging.root.level = logging.INFO
 
         # discover some paths
@@ -36,7 +30,6 @@ class BotSetup:
             bot_settings = settings.get("bot_settings")
             self.environment = bot_settings["environment"]
             environment_settings = bot_settings[self.environment]
-            dev_environment = bot_settings["development"]
             self.discord_token = environment_settings["discord_token"]
 
         # Load in json file to initialize the tables in the database

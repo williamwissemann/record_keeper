@@ -1,10 +1,9 @@
 import datetime
-import logging
 import re
 from typing import Union
 
 from record_keeper import BOT
-from record_keeper.bot.module.admin.query import has_listener
+from record_keeper.module.admin.query import has_listener
 
 
 class BadCommand(Exception):
@@ -15,11 +14,14 @@ class MessageWrapper:
     def __init__(self, message):
         self.failure = None
         self.raw_msg = message
+        self.cmd = None
 
         if not self.in_scope:
             return
+
         self.channel = self.raw_msg.channel
         self.channel_id = str(self.raw_msg.channel.id)
+        self.direct_message = False
 
         self.guild = self.raw_msg.guild
         self.guild_id = None
@@ -33,21 +35,26 @@ class MessageWrapper:
             self.can_manage_messages = permissions.manage_messages
             guild_permissions = self.raw_msg.author.guild_permissions
             self.from_admin = guild_permissions.administrator
+        else:
+            self.guild_id = "ViaDirectMessage"
+            self.direct_message = True
 
-        self.from_a_bot = message.author.bot
-
-        self.cmd = None
         self.date = datetime.datetime.now(datetime.timezone.utc).isoformat()
         self.annotations = {}
         self.arguments = []
+        self.response_sent = False
 
         try:
             self.__parse_message__()
+            self.__aliases_arguments__()
         except BadCommand as err:
             self.failure = str(err)
 
     @property
     def in_scope(self) -> bool:
+        if self.raw_msg.author.bot:
+            return False
+
         in_testing_channel = "-testing" in str(self.raw_msg.channel)
         if BOT.environment == "development":
             return True
@@ -62,6 +69,7 @@ class MessageWrapper:
 
         self.cmd = re.findall("^!([^ ]+)", content)[0]
         self.cmd = self.cmd.lower()
+        self.note = ""
 
         content = re.sub("^![^ ]+", "", content)
         # find special annotation of the form word:value
@@ -85,9 +93,13 @@ class MessageWrapper:
             except Exception:
                 raise BadCommand("Date format failed validation.")
 
-        # parse remaining arguments now that the annotations have been removed
-        self.arguments = map(str.lower, re.findall("([^ ]+)", content))
+        self.note = self.annotations.get("note", "")
 
+        # parse remaining arguments now that the annotations have been removed
+        self.arguments = re.findall("([^ ]+)", content)
+        self.arguments = [text.lower() for text in self.arguments]
+
+    def __aliases_arguments__(self) -> None:
         if self.arguments:
             aliases = [
                 ("mmr", "gblelo"),
@@ -125,8 +137,10 @@ class MessageWrapper:
         for msg in msg_list:
             if new_message:
                 bot_msg = await self.channel.send("updating...")
-                await bot_msg.edit(msg, delete_after=delete_after)
+                await bot_msg.edit(content=msg, delete_after=delete_after)
             else:
-                await self.channel.send(msg, delete_after=delete_after)
+                await self.channel.send(content=msg, delete_after=delete_after)
+
+        self.response_sent = True
 
         return msg_list

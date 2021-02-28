@@ -1,10 +1,12 @@
 from typing import Union
-from record_keeper.utilities.message import MessageWrapper
-from record_keeper.bot.module.admin.query import (
+
+from record_keeper.module.admin.query import (
     get_listeners,
     remove_listener,
     update_listener,
 )
+from record_keeper.utilities.message import MessageWrapper
+
 
 class AdminRelay:
     def __init__(self):
@@ -31,23 +33,26 @@ class AdminRelay:
             # incorrect scope or permission do not continue
             return None
 
+        response = None
+        delete_after = 120
+        # help prompts
         if msg.cmd == "setup":
             response = self.setup()
-            return await msg.send_message(response, delete_after=600)
-
+            delete_after = 600
+        # supported commands
         elif msg.cmd == "activate" and msg.arguments:
             response = self.activate(msg)
-            return await msg.send_message(response, delete_after=60)
-
         elif msg.cmd == "deactivate":
             response = self.deactivate(msg)
-            return await msg.send_message(response, delete_after=60)
-
         elif msg.cmd == "active":
             response = self.list_listener(msg)
-            return await msg.send_message(response, delete_after=90)
-
-        return None
+        # send the response to discord
+        if response:
+            return await msg.send_message(
+                response,
+                delete_after,
+                new_message=True,
+            )
 
     def setup(self):
         # TODO remove unsupported things
@@ -65,8 +70,6 @@ class AdminRelay:
             " - **training-wheels**: activates errors on bad commands\n"
             " - **record-keeper**: a record keeper for medals\n"
             " - **trade-keeper**: a trading want manager\n"
-            " - **friend-keeper**: an ultra friends for pvp\n"
-            " - **battle-keeper**: an elo based leaderboard\n"
             " - **iv-ranker**: a pokemon rater\n"
             " - **message-cleanup**: cleans up bot messages on a timer\n"
             " - **deletable-data**: activates ability to delete\n"
