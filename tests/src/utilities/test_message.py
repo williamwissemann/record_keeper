@@ -1,6 +1,7 @@
+"""
 import pytest
 
-from record_keeper.utilities.message import parser
+from record_keeper.utilities.message import MessageWrapper
 
 test_data = []
 test_ids = []
@@ -48,3 +49,4 @@ def test_prase(message, expected):
             assert parsed == expected
     except ValueError as e:
         assert str(e) == expected
+"""

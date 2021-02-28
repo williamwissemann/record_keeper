@@ -20,8 +20,22 @@ def chunk_message(new, existing, response):
     return (existing, response)
 
 
-def find_table_name(self, name):
+def find_table_name(name):
     for accepted in STORAGE.accepted_tables:
         if accepted.lower() == name.lower():
             return accepted
     return None
+
+
+def clean_date_string(date):
+    date = str(date)
+    date = date.split(".")[0]
+    date = date.split(" ")[0]
+    return date.split("T")[0]
+
+
+def force_str_length(string, length):
+    string = str(string)
+    while len(string) < length:
+        string += " "
+    return string[0:length]

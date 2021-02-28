@@ -58,7 +58,7 @@ class HelpRelay:
                 response,
             )
 
-        active = has_listener(msg.guild_id, msg.channel_id, "trade-keeper") 
+        active = has_listener(msg.guild_id, msg.channel_id, "trade-keeper")
         if active or msg.direct_message:
             bot_msg, response = chunk_message(
                 self.trade_prompt(),
@@ -66,7 +66,7 @@ class HelpRelay:
                 response,
             )
 
-        active = has_listener(msg.guild_id, msg.channel_id, "iv-ranker") 
+        active = has_listener(msg.guild_id, msg.channel_id, "iv-ranker")
         if active or msg.direct_message:
             bot_msg, response = chunk_message(
                 self.iv_prompt(),

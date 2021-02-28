@@ -2,6 +2,8 @@ import datetime
 import re
 from typing import Union
 
+import discord
+
 from record_keeper import BOT
 from record_keeper.module.admin.query import has_listener
 
@@ -25,9 +27,12 @@ class MessageWrapper:
 
         self.guild = self.raw_msg.guild
         self.guild_id = None
+        self.user = self.raw_msg.author
         self.permissions = None
         self.from_admin = None
         self.can_delete = False
+        self.find_by_slug = None
+        self.note = None
 
         if self.guild:
             self.guild_id = str(self.guild.id)
@@ -45,8 +50,9 @@ class MessageWrapper:
         self.response_sent = False
 
         try:
-            self.__parse_message__()
-            self.__aliases_arguments__()
+            self.__parse_message__
+            self.__grab_annotations__
+            self.__apply_aliases__
         except BadCommand as err:
             self.failure = str(err)
 
@@ -62,6 +68,7 @@ class MessageWrapper:
             return True
         return False
 
+    @property
     def __parse_message__(self) -> None:
         content = self.raw_msg.content
         if not re.findall("^![^ ]", content):
@@ -89,17 +96,27 @@ class MessageWrapper:
                 year, month, day = self.annotations.get("date").split("-")
                 date_str = datetime.datetime(int(year), int(month), int(day))
                 self.date = str(date_str.isoformat(" "))
+                self.date = self.date.replace(" ", "T")
                 del self.annotations["date"]
             except Exception:
                 raise BadCommand("Date format failed validation.")
-
-        self.note = self.annotations.get("note", "")
 
         # parse remaining arguments now that the annotations have been removed
         self.arguments = re.findall("([^ ]+)", content)
         self.arguments = [text.lower() for text in self.arguments]
 
-    def __aliases_arguments__(self) -> None:
+    @property
+    def __grab_annotations__(self) -> None:
+        self.note = self.annotations.get("note", "")
+        if "note" in self.annotations:
+            del self.annotations["note"]
+
+        self.find_by_slug = self.annotations.get("user")
+        if "user" in self.annotations:
+            del self.annotations["user"]
+
+    @property
+    def __apply_aliases__(self) -> None:
         if self.arguments:
             aliases = [
                 ("mmr", "gblelo"),
@@ -144,3 +161,45 @@ class MessageWrapper:
         self.response_sent = True
 
         return msg_list
+
+    def get_discord_id(self, search_term):
+        identifier = None
+        if "<@" in search_term:
+            identifier = str(search_term.lstrip("<@!").rstrip(">"))
+        else:
+            for guild in BOT.client.guilds:
+                user = discord.utils.find(
+                    lambda m: search_term.lower() in m.name.lower()
+                    or (search_term.lower() in str(m.nick).lower() and m.nick)  # noqa
+                    and (self.guild_id == guild.id),  # noqa
+                    guild.members,
+                )
+                if user:
+                    identifier = user.id
+
+        if not identifier:
+            try:
+                # TODO: find a better the cast as in and throw
+                int(search_term)
+                return search_term
+            except Exception:
+                pass
+
+        return None
+
+    def get_discord_name(self, member_id: str) -> str:
+        display_name = None
+
+        for guild in BOT.client.guilds:
+            if guild.id != self.guild_id and not self.direct_message:
+                continue
+            for member in guild.members:
+                if str(member_id) == str(member.id):
+                    if member.nick and self.guild_id == guild.id:
+                        display_name = member.nick
+                    else:
+                        display_name = member.name
+                    break
+            if display_name:
+                break
+        return display_name.encode("utf8").decode("utf8")

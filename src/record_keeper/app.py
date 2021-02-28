@@ -11,7 +11,7 @@ from record_keeper.utilities.message import MessageWrapper
 
 @BOT.client.event
 async def on_ready():
-    """ executed when discord client is connected """
+    """Executed when discord client is connected"""
     try:
         logging.info("signed in as: " + BOT.client.user.name)
         logging.info("with client id: " + str(BOT.client.user.id))
@@ -40,12 +40,21 @@ async def on_message(message):
     if await RecordRelay().relay(msg):
         return
 
-    # if await TradeRelay().relay(msg):
-    #    return
+    """
+    if await TradeRelay().relay(msg):
+        return
+
+    if await IVRelay().relay(msg):
+        return
+
+    if await RandomRelay().relay(msg):
+        return       
 
     # await TradeRelay().relay(msg)
     # await IVRelay().relay(msg)
     # await RandomRelay().relay(msg)
+    """
+
 
 if __name__ == "__main__":
     BOT.client.run(BOT.discord_token)
