@@ -85,3 +85,16 @@ def get_uuid_recent(
     sql += " ORDER BY update_at DESC"
     sql += f" LIMIT {limit}"
     return sql
+
+
+@BOT.database.update
+def delete_medal(server, table, user, uuid):
+    sql = f"DELETE FROM {table}"
+    sql += f" WHERE gamertag = '{user}'"
+    if not server == "ViaDirectMessage":
+        sql += f" AND ( server_id = '{server}'"
+        sql += "OR server_id = 'ViaDirectMessage')"
+    sql += " AND update_at >= datetime('now', '-1 day') "
+    sql += " AND update_at <= datetime('now','+1 day') "
+    sql += f" AND uuid = '{uuid}'"
+    return sql

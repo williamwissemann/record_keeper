@@ -2,11 +2,12 @@ from typing import Union
 
 from record_keeper.module.admin.query import has_listener
 from record_keeper.module.record_keeper.query import (
+    delete_medal,
     get_avg_per_day,
     get_leaderboard,
     get_recent,
-    update_medal,
     get_uuid_recent,
+    update_medal,
 )
 from record_keeper.utilities.helpers import (
     clean_date_string,
@@ -238,8 +239,7 @@ class RecordRelay:
         else:
             return "Bidoof, nothing to see here"
 
-"""
-   def delete(self, msg):
+    def delete(self, msg):
         user = msg.user.id
         if msg.find_by_slug:
             user = msg.get_discord_id(msg.find_by_slug)
@@ -250,26 +250,19 @@ class RecordRelay:
             medal = get_medal(msg)
             if not medal:
                 return f"Bidoof, {msg.arguments[0]} can not be found"
-
-            value = msg.arguments[1]
-            value = value.replace(",", "")
+            uuid = msg.arguments[1]
         except Exception:
             return "Bidoof, something went wrong, try !help for more info"
 
         try:
-            delete_medal(server, medal, identifier, value)
-
-            update_medal(
+            delete_medal(
                 msg.guild_id,
                 medal,
                 user,
-                value,
-                msg.date,
-                msg.note,
+                uuid,
             )
-
         except Exception:
-            return f"Bidoof, {value} is invalid for {medal}"
+            return f"Bidoof, {uuid} is invalid for {medal}"
 
         if str(user) != str(msg.user.id):
             return f"<@!{user}>" "stats were updated by" f"<@!{msg.user.id}>"
@@ -277,9 +270,3 @@ class RecordRelay:
             bm = self.create_recent(msg, medal, msg.user.id)
             bm += self.create_stats(msg, medal, msg.user.id)
             return bm
-"""
-
-
-
-        
-
