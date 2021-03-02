@@ -27,6 +27,13 @@ def find_table_name(name):
     return None
 
 
+def get_medal(msg):
+    medal = find_table_name(msg.arguments[0])
+    if medal not in STORAGE.accepted_tables:
+        return None
+    return medal
+
+
 def clean_date_string(date):
     date = str(date)
     date = date.split(".")[0]

@@ -189,9 +189,8 @@ class MessageWrapper:
 
     def get_discord_name(self, member_id: str) -> str:
         display_name = None
-
         for guild in BOT.client.guilds:
-            if guild.id != self.guild_id and not self.direct_message:
+            if str(guild.id) != self.guild_id and not self.direct_message:
                 continue
             for member in guild.members:
                 if str(member_id) == str(member.id):
@@ -199,7 +198,9 @@ class MessageWrapper:
                         display_name = member.nick
                     else:
                         display_name = member.name
-                    break
             if display_name:
                 break
-        return display_name.encode("utf8").decode("utf8")
+        if display_name:
+            return display_name.encode("utf8").decode("utf8")
+        else:
+            return "bidoof"

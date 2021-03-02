@@ -5,7 +5,7 @@ import discord
 from record_keeper import BOT
 from record_keeper.module.admin.relay import AdminRelay
 from record_keeper.module.help.relay import HelpRelay
-from record_keeper.module.record.relay import RecordRelay
+from record_keeper.module.record_keeper.relay import RecordRelay
 from record_keeper.utilities.message import MessageWrapper
 
 

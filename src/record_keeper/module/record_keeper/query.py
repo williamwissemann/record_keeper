@@ -31,7 +31,8 @@ def get_recent(
     limit: int = 25,
     uuid: bool = False,
 ) -> list:
-    sql = f"SELECT * FROM {str(table)} WHERE gamertag = '{str(user)}'"
+    sql = f"SELECT update_at, value, note"
+    sql += f" FROM {str(table)} WHERE gamertag = '{str(user)}'"
     if not server == "ViaDirectMessage":
         sql += f" AND ( server_id = '{str(server)}'"
         sql += " OR server_id = 'ViaDirectMessage')"
@@ -45,7 +46,6 @@ def get_recent(
 
 @BOT.database.get
 def get_avg_per_day(server: str, table: str, user: str, days: int) -> list:
-
     return (
         f"SELECT AVG(VALUE) FROM {table}"
         f" WHERE gamertag = '{user}'"
@@ -53,17 +53,20 @@ def get_avg_per_day(server: str, table: str, user: str, days: int) -> list:
     )
 
 
-@BOT.database.update
-def delete_row(self, server, table, user, uuid):
-    sql = "DELETE FROM " + str(table)
-    sql += " WHERE gamertag = '" + str(user) + "'"
+@BOT.database.get
+def get_leaderboard(
+    server: str,
+    table: str,
+    limit: int = 25,
+):
+    if table.lower() in ["stardust"]:
+        sql = f"SELECT update_at, gamertag, value, note FROM {table}"
+    else:
+        sql = f"SELECT update_at, gamertag, MAX(value), note FROM {table}"
     if not server == "ViaDirectMessage":
-        sql += (
-            " AND ( server_id = '"
-            + str(server)
-            + "' OR server_id = 'ViaDirectMessage')"
-        )
-    sql += " AND update_at >= datetime('now', '-1 day') "
-    sql += " AND update_at <= datetime('now','+1 day') "
-    sql += " AND uuid = '" + str(uuid) + "'"
+        sql += f" WHERE (server_id = '{server}'"
+        sql += " OR server_id = 'ViaDirectMessage')"
+    sql += " GROUP BY gamertag"
+    sql += " ORDER BY value DESC, update_at ASC"
+    sql += " LIMIT 25"
     return sql

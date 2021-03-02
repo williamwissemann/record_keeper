@@ -17,15 +17,14 @@ class HelpRelay:
 
         response = None
         delete_after = 120
-        # help prompts
-        help_active = has_listener(msg.guild_id, msg.channel_id, "help")
-        if help_active or msg.direct_message:
+
+        listening = has_listener(msg.guild_id, msg.channel_id, "help")
+        if listening or msg.direct_message:
             if msg.cmd == "help":
                 response = self.help_prompt(msg)
             elif msg.cmd == "medals":
                 response = self.medals_prompt()
 
-        # send the response to discord
         if response:
             return await msg.send_message(
                 response,
