@@ -6,6 +6,7 @@ from record_keeper.module.record_keeper.query import (
     get_leaderboard,
     get_recent,
     update_medal,
+    get_uuid_recent,
 )
 from record_keeper.utilities.helpers import (
     clean_date_string,
@@ -27,8 +28,8 @@ class RecordRelay:
         response = None
         delete_after = 120
 
-        listening = has_listener(msg.guild_id, msg.channel_id, "record-keeper")
-        if listening or msg.direct_message:
+        active = has_listener(msg.guild_id, msg.channel_id, "record-keeper")
+        if active or msg.direct_message:
             if msg.cmd == "up":
                 response = self.up(msg)
             elif msg.cmd == "ls":
@@ -36,12 +37,19 @@ class RecordRelay:
             elif msg.cmd == "lb":
                 response = self.lb(msg)
 
-            if response:
-                return await msg.send_message(
-                    response,
-                    delete_after,
-                    new_message=True,
-                )
+        active = has_listener(msg.guild_id, msg.channel_id, "deletable-data")
+        if active or msg.direct_message:
+            if msg.cmd == "uuid":
+                response = self.uuid(msg)
+            elif msg.cmd == "del":
+                response = self.delete(msg)
+
+        if response:
+            return await msg.send_message(
+                response,
+                delete_after,
+                new_message=True,
+            )
 
         return None
 
@@ -190,3 +198,88 @@ class RecordRelay:
             return bm
         else:
             return "Bidoof, nothing to see here"
+
+    def uuid(self, msg):
+        user = msg.user.id
+        if msg.find_by_slug:
+            user = msg.get_discord_id(msg.find_by_slug)
+            if not user:
+                return "Bidoof, cannot find user"
+
+        try:
+            medal = get_medal(msg)
+            if not medal:
+                return f"Bidoof, {msg.arguments[0]} can not be found"
+        except Exception:
+            return "Bidoof, something went wrong try !help for more info"
+
+        bm = self.create_uuid_table(msg, medal, user)
+
+        return bm
+
+    def create_uuid_table(self, msg, medal, user):
+        """
+        Creates a most recent 5 for a medal, gamertag with uuid
+        """
+        uuid_list = get_uuid_recent(msg.guild_id, medal, user, limit=5)
+        if len(uuid_list) > 0:
+            msg = f"<@!{user}>'s last 5 entries for {medal}\n```"
+            msg += " uuid                                | value     \n"
+            msg += "-------------------------------------+-----------\n"
+            for el in uuid_list:
+                uuid, value = el
+
+                value = str(value).split(".")[0]
+                value = force_str_length(value, length=9)
+
+                msg += f"{uuid} | {value} \n"
+            msg += "```"
+            return msg
+        else:
+            return "Bidoof, nothing to see here"
+
+"""
+   def delete(self, msg):
+        user = msg.user.id
+        if msg.find_by_slug:
+            user = msg.get_discord_id(msg.find_by_slug)
+            if not user:
+                return "Bidoof, cannot find user"
+
+        try:
+            medal = get_medal(msg)
+            if not medal:
+                return f"Bidoof, {msg.arguments[0]} can not be found"
+
+            value = msg.arguments[1]
+            value = value.replace(",", "")
+        except Exception:
+            return "Bidoof, something went wrong, try !help for more info"
+
+        try:
+            delete_medal(server, medal, identifier, value)
+
+            update_medal(
+                msg.guild_id,
+                medal,
+                user,
+                value,
+                msg.date,
+                msg.note,
+            )
+
+        except Exception:
+            return f"Bidoof, {value} is invalid for {medal}"
+
+        if str(user) != str(msg.user.id):
+            return f"<@!{user}>" "stats were updated by" f"<@!{msg.user.id}>"
+        else:
+            bm = self.create_recent(msg, medal, msg.user.id)
+            bm += self.create_stats(msg, medal, msg.user.id)
+            return bm
+"""
+
+
+
+        
+

@@ -18,7 +18,7 @@ def update_medal(
 
     return (
         f"INSERT INTO {table} "
-        f"values('{uuid4}','{server}','{update_at}','{user_id}',{value},"
+        f"values('{uuid4()}','{server}','{update_at}','{user_id}',{value},"
         f"'{notes}')"
     )
 
@@ -29,16 +29,12 @@ def get_recent(
     table: str,
     user: str,
     limit: int = 25,
-    uuid: bool = False,
 ) -> list:
-    sql = f"SELECT update_at, value, note"
-    sql += f" FROM {str(table)} WHERE gamertag = '{str(user)}'"
+    sql = "SELECT update_at, value, note"
+    sql += f" FROM {table} WHERE gamertag = '{user}'"
     if not server == "ViaDirectMessage":
-        sql += f" AND ( server_id = '{str(server)}'"
+        sql += f" AND ( server_id = '{server}'"
         sql += " OR server_id = 'ViaDirectMessage')"
-    if uuid:
-        sql += " AND update_at >= datetime('now', '-1 day') "
-        sql += " AND update_at <= datetime('now', '+1 day') "
     sql += " ORDER BY update_at DESC"
     sql += f" LIMIT {limit}"
     return sql
@@ -69,4 +65,23 @@ def get_leaderboard(
     sql += " GROUP BY gamertag"
     sql += " ORDER BY value DESC, update_at ASC"
     sql += " LIMIT 25"
+    return sql
+
+
+@BOT.database.get
+def get_uuid_recent(
+    server: str,
+    table: str,
+    user: str,
+    limit: int = 25,
+) -> list:
+    sql = "SELECT uuid, value"
+    sql += f" FROM {table} WHERE gamertag = '{user}'"
+    if not server == "ViaDirectMessage":
+        sql += f" AND ( server_id = '{server}'"
+        sql += " OR server_id = 'ViaDirectMessage')"
+    sql += " AND update_at >= datetime('now', '-1 day') "
+    sql += " AND update_at <= datetime('now', '+1 day') "
+    sql += " ORDER BY update_at DESC"
+    sql += f" LIMIT {limit}"
     return sql
