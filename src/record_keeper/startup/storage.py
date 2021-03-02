@@ -1,14 +1,7 @@
-import datetime
-import json
 import logging
-import os
-import re
-import shutil
-import sqlite3
-import uuid
 
 from record_keeper import BOT
-from record_keeper.module.shared.helper import (
+from record_keeper.startup.query import (
     create_table_if_not_exist,
     drop_tables,
     get_all_tables,
@@ -67,6 +60,7 @@ class Storage:
                         self.custom_tables.append(name)
 
                     logging.info(f"create_table_if_not_exist {name}")
+                    create_table_if_not_exist(name, sql)
 
         # drop tables that are not being used
         for name in get_all_tables():

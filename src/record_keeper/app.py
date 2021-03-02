@@ -48,13 +48,18 @@ async def on_message(message):
         return
 
     if await RandomRelay().relay(msg):
-        return       
+        return
 
     # await TradeRelay().relay(msg)
     # await IVRelay().relay(msg)
     # await RandomRelay().relay(msg)
     """
 
+    """
+    if (BOT.keeper.has_listener(cmd_msg, "training-wheels"):
+    view = "Bidoof, something went wrong, try !help for more info"
+    await send_message(view, direct_message, cmd_msg, 30)
+    """
 
 if __name__ == "__main__":
     BOT.client.run(BOT.discord_token)

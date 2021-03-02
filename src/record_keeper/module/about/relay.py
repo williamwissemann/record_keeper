@@ -1,3 +1,20 @@
+"""
+elif (
+    cmd_msg["cmd"].lower() == "stats"
+    and str(cmd_msg["raw_msg"].author.id) == "204058877317218304"
+):
+    checkpoint_two = False
+    view = BOT.keeper.stats(cmd_msg)
+    await send_message(view, direct_message, cmd_msg, 300)
+elif (
+    cmd_msg["cmd"].lower() == "servers"
+    and str(cmd_msg["raw_msg"].author.id) == "204058877317218304"
+):
+    checkpoint_two = False
+    view = BOT.keeper.servers(cmd_msg)
+    await send_message(view, direct_message, cmd_msg, 300)
+"""
+
 # TODO fix this
 @BOT.database.get
 def get_database_version(self) -> str:
