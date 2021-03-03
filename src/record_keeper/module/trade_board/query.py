@@ -55,6 +55,7 @@ def update_trade_board(
     )
     return sql
 
+
 @BOT.database.update
 def delete_from_trade_board(self, server, PokemonName, user, board):
     sql = f"DELETE FROM {board}"

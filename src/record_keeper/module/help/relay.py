@@ -7,9 +7,6 @@ from record_keeper.utilities.message import MessageWrapper
 
 
 class HelpRelay:
-    def __init__(self):
-        pass
-
     async def relay(
         self,
         msg: MessageWrapper,

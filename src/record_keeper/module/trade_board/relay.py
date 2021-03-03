@@ -5,9 +5,6 @@ from record_keeper.utilities.message import MessageWrapper
 
 
 class RecordRelay:
-    def __init__(self):
-        pass
-
     async def relay(
         self,
         msg: MessageWrapper,
@@ -47,7 +44,6 @@ class RecordRelay:
 
         return None
 
-
     def create_search_string(server, usdb, gamertag, board):
         """
         Creates a most recent 5 for a medal, gamertag
@@ -80,7 +76,6 @@ class RecordRelay:
             return msg
         else:
             return "Bidoof, nothing to see here"
-
 
     def create_search_string_table(server, usdb, gamertag, board):
         """
@@ -117,7 +112,6 @@ class RecordRelay:
         else:
             return "Bidoof, nothing to see here"
 
-
     def create_pokemon_trade_table(server, usdb, gamertag, board):
         """
         Creates a most recent 5 for a medal, gamertag
@@ -146,7 +140,6 @@ class RecordRelay:
         else:
             return "Bidoof, nothing to see here"
 
-
     def create_per_pokemon_trade_table(server, usdb, pokemon, message, board):
         """
         Creates a most recent 5 for a medal, gamertag
@@ -174,7 +167,6 @@ class RecordRelay:
             return msg
         else:
             return "Bidoof, nothing to see here"
-
 
     def want(self, message, board="TRADE_BOARD"):
         try:
