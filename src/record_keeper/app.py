@@ -7,6 +7,7 @@ from record_keeper.module.admin.relay import AdminRelay
 from record_keeper.module.help.relay import HelpRelay
 from record_keeper.module.random.relay import RandomRelay
 from record_keeper.module.record_keeper.relay import RecordRelay
+from record_keeper.module.trade_keeper.relay import TradeRelay
 from record_keeper.module.training_wheels.relay import TrainingWheels
 from record_keeper.utilities.message import MessageWrapper
 
@@ -47,7 +48,7 @@ async def on_message(message):
         HelpRelay(),
         AdminRelay(),
         RecordRelay(),
-        # TradeRelay(),
+        TradeRelay(),
         # IVRelay(),
         RandomRelay(),
         TrainingWheels(),

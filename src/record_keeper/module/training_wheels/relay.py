@@ -14,7 +14,7 @@ class TrainingWheels:
         delete_after = 120
 
         active = has_listener(msg.guild_id, msg.channel_id, "training-wheels")
-        if active or msg.direct_message:
+        if (active or msg.direct_message) and msg.cmd:
             response = "Bidoof, something went wrong, try !help for more info"
 
         if response:

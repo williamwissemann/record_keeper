@@ -46,3 +46,46 @@ def force_str_length(string, length):
     while len(string) < length:
         string += " "
     return string[0:length]
+
+
+def resolve_pokemon(pokemon_info: str) -> tuple:
+    pokemon_name = None
+    pokemon_number = None
+    for idx in STORAGE.pokemonByNumber:
+        if idx.lower() == pokemon_info:
+            pokemon_number = idx
+            pokemon_name = STORAGE.pokemonByNumber[idx]
+            break
+    for idx in STORAGE.pokemonByName:
+        if idx.lower() == pokemon_info.lower():
+            pokemon_name = idx
+            pokemon_number = STORAGE.pokemonByName[idx]
+            break
+    return (pokemon_name, pokemon_number)
+
+
+def list_compression(list_to_compress: str) -> tuple:
+    array = []
+    search = ""
+    current = -1
+    streak = False
+
+    for el in list_to_compress:
+        num = el[0]
+        if current + 1 == num:
+            current = num
+            streak = True
+        else:
+            if streak:
+                streak = False
+                search += "-" + str(array[len(array) - 1])
+            if len(search) == 0:
+                search += str(num)
+            else:
+                search += "," + str(num)
+            current = num
+        array.append(num)
+    if streak:
+        search += "-" + str(array[len(array) - 1])
+
+    return search
