@@ -19,6 +19,7 @@ def update(
         f" '{notes}')"
     )
 
+
 @BOT.database.update
 def delete(
     server,
@@ -32,6 +33,7 @@ def delete(
         sql += " OR server_id = 'ViaDirectMessage')"
     sql += f"AND pokemon = '{pokemon_name}'"
     return sql
+
 
 @BOT.database.get
 def get_trade_string(
@@ -48,6 +50,7 @@ def get_trade_string(
     sql += " ORDER BY number ASC"
     return sql
 
+
 @BOT.database.get
 def get_by_user(
     server,
@@ -61,6 +64,7 @@ def get_by_user(
         sql += " OR server_id = 'ViaDirectMessage')"
     sql += " ORDER BY number ASC"
     return sql
+
 
 @BOT.database.get
 def get_by_pokemon(
