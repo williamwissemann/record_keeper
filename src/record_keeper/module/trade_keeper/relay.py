@@ -2,12 +2,11 @@ from typing import Union
 
 from record_keeper.module.admin.query import has_listener
 from record_keeper.module.trade_keeper.query import (
-    update,
     delete,
-    get_by_user,
     get_by_pokemon,
+    get_by_user,
     get_trade_string,
-
+    update,
 )
 from record_keeper.utilities.helpers import (
     force_str_length,
@@ -39,6 +38,8 @@ class TradeRelay:
                 response = self.tbs(msg, board="TRADE_BOARD")
             elif msg.cmd == "tbp":
                 response = self.tbp(msg, board="TRADE_BOARD")
+            elif msg.cmd == "tts":
+                response = self.tts(msg, board="TRADE_BOARD")
             elif msg.cmd == "special":
                 response = self.want(msg, board="SPECIAL_TRADE_BOARD")
             elif msg.cmd == "unspecial":
@@ -124,8 +125,9 @@ class TradeRelay:
                 pokemon, number, note = el
                 if len(note) == 0:
                     continue
+                pokemon = force_str_length(pokemon, length=12)
                 note = force_str_length(note, length=10)
-                number = force_str_length(number, length=4)
+                number = force_str_length(number, length=3)
                 msg += f"{pokemon} | {number} | {note} \n"
             msg += "```"
             return msg
@@ -155,55 +157,51 @@ class TradeRelay:
 
         return "Bidoof, nothing to see here"
 
-    def tbp(self, message, board="TRADE_BOARD"):
-        try:
-            server = message["raw_msg"].guild.id
-        except Exception:
-            server = "ViaDirectMessage"
+    def tts(self, msg, board="TRADE_BOARD"):
+        user = msg.user.id
+        if msg.arguments:
+            user = msg.get_discord_id(msg.arguments[0])
+            if not user:
+                return "Bidoof, cannot find user"
 
+        trade_string = get_trade_string(msg.guild_id, None, board)
+
+        if len(trade_string) > 0:
+            trash = [(el,) for el in range(1, 2000)]
+            for num in trade_string:
+                trash.remove(num)
+            return list_compression(trash)
+
+        return "Bidoof, nothing to see here"
+
+    def tbp(self, msg, board="TRADE_BOARD"):
         try:
-            PokemonName = None
-            for x in self.usdb.pokemonByNumber:
-                if x.lower() == message["args"][0].lower():
-                    PokemonName = self.usdb.pokemonByNumber[x]
-                    break
-            for x in self.usdb.pokemonByName:
-                if x.lower() == message["args"][0].lower():
-                    PokemonName = x
-                    break
+            pokemon_name, pokemon_number = resolve_pokemon(msg.arguments[0])
+            if not pokemon_name:
+                return f"There was an issue adding {msg.arguments[0]}"
         except Exception:
             return "Bidoof, something went wrong, try !help for more info"
 
-        if not PokemonName:
-            return "There was an issue finding " + message["args"][0]
-
-        bm = bot_message.create_per_pokemon_trade_table(
-            server, self.usdb, PokemonName, message, board
-        )
+        bm = self.create_per_pokemon_trade_table(msg, pokemon_name, board)
         return bm
 
-    def create_per_pokemon_trade_table(server, usdb, pokemon, message, board):
+    def create_per_pokemon_trade_table(self, msg, pokemon, board):
+        wants = get_by_pokemon(msg.guild_id, pokemon, board)
+        if wants:
+            bm = "```"
+            bm += "Want         |Note\n"
+            bm += "-------------+-------------\n"
+            for el in wants:
+                user, note = el
 
-        list = get_trade_board_by_pokemon(server, pokemon, board)
-        if len(list) > 0:
-            msg = "```"
-            msg += "Want         |Note   \n"
-            msg += "-------------+-------------\n"
-            for el in list:
-                u, s, g, p, num, n = el
-                n = n[0:10]
-                while len(n) < 12:
-                    n += " "
-                try:
-                    g = get_discord_name(server, message, g)
-                    assert g
-                except Exception:
-                    g = "bidoof"
-                g = g.split("#")[0][0:12]
-                while len(g) < 12:
-                    g += " "
-                msg += str(g) + " | " + str(n) + "\n"
-            msg += "```"
-            return msg
+                discord_name = msg.get_discord_name(user)
+                discord_name = discord_name.split("#")[0]
+                discord_name = force_str_length(discord_name, length=12)
+
+                note = force_str_length(note, length=12)
+
+                bm += f"{discord_name} | {note} \n"
+            bm += "```"
+            return bm
         else:
             return "Bidoof, nothing to see here"

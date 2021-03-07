@@ -40,7 +40,8 @@ def get_trade_string(
     board: str = "TRADE_BOARD",
 ):
     sql = f"SELECT number FROM {board}"
-    sql += f" WHERE gamertag = '{user}'"
+    if user:
+        sql += f" WHERE gamertag = '{user}'"
     if not server == "ViaDirectMessage":
         sql += f" AND ( server_id = '{server}'"
         sql += " OR server_id = 'ViaDirectMessage')"
@@ -61,16 +62,14 @@ def get_by_user(
     sql += " ORDER BY number ASC"
     return sql
 
-
-### WORK IN PROGRESS
 @BOT.database.get
 def get_by_pokemon(
     server,
-    user,
+    pokemon,
     board: str = "TRADE_BOARD",
 ):
-    sql = f"SELECT pokemon, number, notes FROM {board}"
-    sql += f" WHERE gamertag = '{user}'"
+    sql = f"SELECT gamertag, notes FROM {board}"
+    sql += f" WHERE pokemon = '{pokemon}'"
     if not server == "ViaDirectMessage":
         sql += f" AND ( server_id = '{server}'"
         sql += " OR server_id = 'ViaDirectMessage')"

@@ -169,7 +169,7 @@ class MessageWrapper:
             for guild in BOT.client.guilds:
                 user = discord.utils.find(
                     lambda m: search_term.lower() in m.name.lower()
-                    or (search_term.lower() in str(m.nick).lower() and m.nick) 
+                    or (search_term.lower() in str(m.nick).lower() and m.nick)
                     and (self.guild_id == guild.id),
                     guild.members,
                 )
