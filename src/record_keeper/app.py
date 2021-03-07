@@ -3,6 +3,7 @@ import logging
 import discord
 
 from record_keeper import BOT
+from record_keeper.module.about.relay import BotInfo
 from record_keeper.module.admin.relay import AdminRelay
 from record_keeper.module.help.relay import HelpRelay
 from record_keeper.module.pvp_iv.relay import IVRelay
@@ -46,6 +47,7 @@ async def on_message(message):
         return
 
     relays = [
+        BotInfo(),
         HelpRelay(),
         AdminRelay(),
         RecordRelay(),
