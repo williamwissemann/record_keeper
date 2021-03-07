@@ -3,8 +3,7 @@ config/credentials.json
 config/token.json
 config/setup.json
 config/google-sheets-creds/*.json
-src/record_keeper/pvp_iv/compressed_iv_data/*
-
+src/record_keeper/module/pvp_iv/compressed_iv_data/*
 *.DS_Store
 
 # Byte-compiled / optimized / DLL files
@@ -76,6 +75,8 @@ instance/
 docs/_build/
 docs/build/
 docs/source/api/
+docs/source/_static/*
+docs/source/_static/coverage/*
 
 # PyBuilder
 target/
