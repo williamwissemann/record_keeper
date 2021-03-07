@@ -1,10 +1,12 @@
 from typing import Union
 
 from record_keeper.module.admin.query import has_listener
+from record_keeper.module.pvp_iv.query import find_combo, find_top_5, get_csv_header
+from record_keeper.utilities.helpers import force_str_length, resolve_pokemon
 from record_keeper.utilities.message import MessageWrapper
 
 
-class RecordRelay:
+class IVRelay:
     def __init__(self):
         pass
 
@@ -16,67 +18,14 @@ class RecordRelay:
         response = None
         delete_after = 120
 
-        active = has_listener(msg.guild_id, msg.channel_id, "dice")
+        active = has_listener(msg.guild_id, msg.channel_id, "iv-ranker")
         if active or msg.direct_message:
-
-        ## XXX ????
-        """ def rank(self, message, league):
-        try:
-        int(message["args"][0])
-        PokemonName = None
-        for x in self.usdb.pokemonByNumber:
-            if x.lower() == message["args"][0].lower():
-                PokemonName = self.usdb.pokemonByNumber[x]
-                break
-        for x in self.usdb.pokemonByName:
-            if x.lower() == message["args"][0].lower():
-                PokemonName = x
-                break
-        message["args"][0] = PokemonName
-
-
-        (
-        cmd_msg["cmd"].lower() == "rankgreat"
-        or cmd_msg["cmd"].lower() == "rank"
-        or cmd_msg["cmd"].lower() == "rankg"
-        )
-        and BOT.keeper.has_listener(cmd_msg, "iv-ranker")
-        and (
-        str(BOT.client.user.id) == "588364227396239361"
-        or str(BOT.client.user.id) == "491321676835848203"
-        )
-        ):
-        view = BOT.keeper.rank(cmd_msg, "great")
-        await send_message(view, direct_message, cmd_msg, 120)
-        elif (
-        (
-        cmd_msg["cmd"].lower() == "rankultra"
-        or cmd_msg["cmd"].lower() == "ranku"
-        )
-        and BOT.keeper.has_listener(cmd_msg, "iv-ranker")
-        and (
-        str(BOT.client.user.id) == "588364227396239361"
-        or str(BOT.client.user.id) == "491321676835848203"
-        )
-        ):
-        view = BOT.keeper.rank(cmd_msg, "ultra")
-        await send_message(view, direct_message, cmd_msg, 120)
-        elif (
-        (
-        cmd_msg["cmd"].lower() == "rankmaster"
-        or cmd_msg["cmd"].lower() == "rankm"
-        )
-        and BOT.keeper.has_listener(cmd_msg, "iv-ranker")
-        and (
-        str(BOT.client.user.id) == "588364227396239361"
-        or str(BOT.client.user.id) == "491321676835848203"
-        )
-        ):
-        view = BOT.keeper.rank(cmd_msg, "master")
-        await send_message(view, direct_message, cmd_msg, 120)
-        """
-
-        ## XXX ???
+            if msg.cmd in ["rankgreat", "rank", "rankg"]:
+                response = self.rank(msg, "great")
+            if msg.cmd in ["rankultra", "ranku"]:
+                response = self.rank(msg, "ultra")
+            if msg.cmd in ["rankmaster", "rankm"]:
+                response = self.rank(msg, "great")
 
         if response:
             return await msg.send_message(
@@ -87,106 +36,103 @@ class RecordRelay:
 
         return None
 
-def create_rank_header(message, league):
-    if len(message["args"]) == 5:
-        folder = message["args"][4]
-    elif len(message["args"]) == 2:
-        folder = message["args"][1].lower()
-    else:
-        folder = "wild"
-    return "%s filtered by *%s*  in *%s*\n" % (
-        str(get_csv_header(message["args"][0], folder, league)),
-        folder,
-        league,
-    )
+    def rank(self, msg, league):
+        try:
+            pokemon_name, pokemon_number = resolve_pokemon(msg.arguments[0])
+            if msg.arguments[0].isdigit():
+                msg.arguments[0] = pokemon_name
+            else:
+                pokemon_name = msg.arguments[0]
+        except Exception:
+            return "Bidoof, something went wrong, try !help for more info"
 
+        try:
+            if len(msg.arguments) > 3:
+                bm = self.create_rank_header(msg, league)
+                bm += self.create_rank_table(msg, league)
+                bm += self.create_rank_top5table(msg, league)
+                return bm
+            else:
+                bm = self.create_rank_header(msg, league)
+                bm += self.create_rank_top5table(msg, league)
+                return bm
+        except Exception:
+            return "Bidoof, something went wrong, double check your IVs"
 
-def create_rank_table(message, league):
-    if len(message["args"]) == 5:
-        folder = message["args"][4]
-    else:
-        folder = "wild"
-    result, perfect = find_combo(
-        message["args"][0],
-        message["args"][1],
-        message["args"][2],
-        message["args"][3],
-        folder,
-        league,
-    )
-    result = result.replace("\r\n", " ").split(",")
-    perfect = perfect.replace("\r\n", " ").split(",")
+    def create_rank_header(self, msg, league):
+        if len(msg.arguments) == 5:
+            folder = msg.arguments[4]
+        elif len(msg.arguments) == 2:
+            folder = msg.arguments[1].lower()
+        else:
+            folder = "wild"
 
-    outstring = "```"
-    outstring += "RANK:  " + result[0] + " (" + result[11] + ")\n"
-    outstring += "CP:    " + result[5] + "\n"
-    outstring += (
-        "LVL:   "
-        + result[6]
-        + "  ("
-        + str(round(float(result[6]) - float(perfect[6]), 2))
-        + ") \n"
-    )
-    outstring += (
-        "ATK:   "
-        + result[7]
-        + " ("
-        + str(round(float(result[7]) - float(perfect[7]), 2))
-        + ") \n"
-    )
-    outstring += (
-        "DEF:   "
-        + result[8]
-        + " ("
-        + str(round(float(result[8]) - float(perfect[8]), 2))
-        + ") \n"
-    )
-    outstring += (
-        "HP:    "
-        + result[9]
-        + " ("
-        + str(round(float(result[9]) - float(perfect[9]), 2))
-        + ")```"
-    )
+        header_slug = get_csv_header(msg.arguments[0].lower(), folder, league)
 
-    return outstring
+        return f"{header_slug} filtered by *{folder}*  in *{league}*\n"
 
+    def create_rank_table(self, msg, league):
+        if len(msg.arguments) == 5:
+            folder = msg.arguments[4]
+        else:
+            folder = "wild"
 
-def create_rank_top10_table(message, league):
-    if len(message["args"]) == 5:
-        folder = message["args"][4]
-    elif len(message["args"]) == 2:
-        folder = message["args"][1].lower()
-    else:
-        folder = "wild"
-    msg = "```"
-    msg += " |ATK|DEF|HP |CP   |LVL  \n"
-    msg += "-+---+---+---+-----+-----\n"
-    for line in find_top_5(message["args"][0], folder, league):
-        rank, ATK, DEF, HP, IV_P, CP, LVL, ref_ATK, ref_DEF, ref_HP, SP, P = line.split(
-            ","
+        result, perfect = find_combo(
+            msg.arguments[0].lower(),
+            msg.arguments[1],
+            msg.arguments[2],
+            msg.arguments[3],
+            folder,
+            league,
         )
-        while len(ATK) < 2:
-            ATK = " " + ATK
-        while len(DEF) < 2:
-            DEF = " " + DEF
-        while len(HP) < 2:
-            HP = " " + HP
-        while len(CP) < 4:
-            CP += " "
-        msg += (
-            rank
-            + "|"
-            + str(ATK)
-            + " |"
-            + str(DEF)
-            + " |"
-            + str(HP)
-            + " |"
-            + str(CP)
-            + " |"
-            + str(LVL)
-            + "\n"
-        )
-    msg += "```"
-    return msg
+        result = result.replace("\r\n", " ").split(",")
+        perfect = perfect.replace("\r\n", " ").split(",")
+
+        outstring = "```"
+        outstring += "RANK:  " + result[0] + " (" + result[11] + ")\n"
+        outstring += "CP:    " + result[5] + "\n"
+
+        diff = str(round(float(result[6]) - float(perfect[6]), 2))
+        outstring += f"LVL:   {result[6]}  ({diff})  \n"
+
+        diff = str(round(float(result[7]) - float(perfect[7]), 2))
+        outstring += f"ATK:   {result[7]}  ({diff})  \n"
+
+        diff = str(round(float(result[8]) - float(perfect[8]), 2))
+        outstring += f"DEF:   {result[8]}  ({diff})  \n"
+
+        diff = str(round(float(result[9]) - float(perfect[9]), 2))
+        outstring += f"HP:   {result[9]}  ({diff})"
+
+        outstring += "```"
+        return outstring
+
+    def create_rank_top5table(self, msg, league):
+        if len(msg.arguments) == 5:
+            folder = msg.arguments[4]
+        elif len(msg.arguments) == 2:
+            folder = msg.arguments[1].lower()
+        else:
+            folder = "wild"
+
+        bm = "```"
+        bm += " |ATK|DEF|HP |CP   |LVL  \n"
+        bm += "-+---+---+---+-----+-----\n"
+        for line in find_top_5(msg.arguments[0].lower(), folder, league):
+            row = line.split(",")
+
+            rank = row[0]
+            atk = row[1]
+            defs = row[2]
+            hp = row[3]
+            cp = row[5]
+            lvl = row[6]
+
+            atk = force_str_length(atk, length=3)
+            defs = force_str_length(defs, length=3)
+            hp = force_str_length(hp, length=3)
+            cp = force_str_length(cp, length=5)
+
+            bm += f"{rank}|{atk}|{defs}|{hp}|{cp}|{lvl}\n"
+        bm += "```"
+        return bm
