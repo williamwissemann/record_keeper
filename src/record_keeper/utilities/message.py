@@ -163,27 +163,18 @@ class MessageWrapper:
         return msg_list
 
     def get_discord_id(self, search_term):
-        identifier = None
         if "<@" in search_term:
-            identifier = str(search_term.lstrip("<@!").rstrip(">"))
+            return str(search_term.lstrip("<@!").rstrip(">"))
         else:
             for guild in BOT.client.guilds:
                 user = discord.utils.find(
                     lambda m: search_term.lower() in m.name.lower()
-                    or (search_term.lower() in str(m.nick).lower() and m.nick)  # noqa
-                    and (self.guild_id == guild.id),  # noqa
+                    or (search_term.lower() in str(m.nick).lower() and m.nick) 
+                    and (self.guild_id == guild.id),
                     guild.members,
                 )
                 if user:
-                    identifier = user.id
-
-        if not identifier:
-            try:
-                # TODO: find a better the cast as in and throw
-                int(search_term)
-                return search_term
-            except Exception:
-                pass
+                    return user.id
 
         return None
 

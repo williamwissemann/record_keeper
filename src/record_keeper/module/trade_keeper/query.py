@@ -4,7 +4,7 @@ from record_keeper import BOT
 
 
 @BOT.database.update
-def update_trade_board(
+def update(
     server: str,
     pokemon_number: str,
     pokemon_name: str,
@@ -19,9 +19,36 @@ def update_trade_board(
         f" '{notes}')"
     )
 
+@BOT.database.update
+def delete(
+    server,
+    pokemon_name,
+    user,
+    board: str = "TRADE_BOARD",
+):
+    sql = f"DELETE FROM {board} WHERE gamertag = '{user}'"
+    if not server == "ViaDirectMessage":
+        sql += f" AND ( server_id = '{server}'"
+        sql += " OR server_id = 'ViaDirectMessage')"
+    sql += f"AND pokemon = '{pokemon_name}'"
+    return sql
 
 @BOT.database.get
-def get_trade_board_by_user(
+def get_trade_string(
+    server,
+    user,
+    board: str = "TRADE_BOARD",
+):
+    sql = f"SELECT number FROM {board}"
+    sql += f" WHERE gamertag = '{user}'"
+    if not server == "ViaDirectMessage":
+        sql += f" AND ( server_id = '{server}'"
+        sql += " OR server_id = 'ViaDirectMessage')"
+    sql += " ORDER BY number ASC"
+    return sql
+
+@BOT.database.get
+def get_by_user(
     server,
     user,
     board: str = "TRADE_BOARD",
@@ -35,31 +62,17 @@ def get_trade_board_by_user(
     return sql
 
 
+### WORK IN PROGRESS
 @BOT.database.get
-def get_raw_trade_string(
+def get_by_pokemon(
     server,
     user,
     board: str = "TRADE_BOARD",
 ):
-    sql = f"SELECT number FROM {board}"
+    sql = f"SELECT pokemon, number, notes FROM {board}"
     sql += f" WHERE gamertag = '{user}'"
     if not server == "ViaDirectMessage":
         sql += f" AND ( server_id = '{server}'"
         sql += " OR server_id = 'ViaDirectMessage')"
     sql += " ORDER BY number ASC"
-    return sql
-
-
-@BOT.database.update
-def delete_from_trade_board(
-    server,
-    pokemon_name,
-    user,
-    board: str = "TRADE_BOARD",
-):
-    sql = f"DELETE FROM {board} WHERE gamertag = '{user}'"
-    if not server == "ViaDirectMessage":
-        sql += f" AND ( server_id = '{server}'"
-        sql += " OR server_id = 'ViaDirectMessage')"
-    sql += f"AND pokemon = '{pokemon_name}'"
     return sql

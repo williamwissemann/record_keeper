@@ -81,7 +81,7 @@ class RecordRelay:
             return f"Bidoof, {value} is invalid for {medal}"
 
         if str(user) != str(msg.user.id):
-            return f"<@!{user}>" "stats were updated by" f"<@!{msg.user.id}>"
+            return f"<@!{user}> stats were updated by <@!{msg.user.id}>"
         else:
             bm = self.create_recent(msg, medal, msg.user.id)
             bm += self.create_stats(msg, medal, msg.user.id)
@@ -89,8 +89,8 @@ class RecordRelay:
 
     def ls(self, msg):
         user = msg.user.id
-        if msg.find_by_slug:
-            user = msg.get_discord_id(msg.find_by_slug)
+        if len(msg.arguments) > 1:
+            user = msg.get_discord_id(msg.arguments[1])
             if not user:
                 return "Bidoof, cannot find user"
 

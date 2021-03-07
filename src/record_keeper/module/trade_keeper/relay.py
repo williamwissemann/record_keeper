@@ -2,10 +2,12 @@ from typing import Union
 
 from record_keeper.module.admin.query import has_listener
 from record_keeper.module.trade_keeper.query import (
-    delete_from_trade_board,
-    get_raw_trade_string,
-    get_trade_board_by_user,
-    update_trade_board,
+    update,
+    delete,
+    get_by_user,
+    get_by_pokemon,
+    get_trade_string,
+
 )
 from record_keeper.utilities.helpers import (
     force_str_length,
@@ -58,12 +60,6 @@ class TradeRelay:
         return None
 
     def want(self, msg: MessageWrapper, board: str = "TRADE_BOARD"):
-        user = msg.user.id
-        if msg.find_by_slug:
-            user = msg.get_discord_id(msg.find_by_slug)
-            if not user:
-                return "Bidoof, cannot find user"
-
         try:
             pokemon_name, pokemon_number = resolve_pokemon(msg.arguments[0])
             if not pokemon_name:
@@ -71,18 +67,18 @@ class TradeRelay:
         except Exception:
             return "Bidoof, something went wrong, try !help for more info"
 
-        update_trade_board(
+        update(
             msg.guild_id,
             pokemon_number,
             pokemon_name,
-            str(msg.raw_msg.author.id),
+            str(msg.user.id),
             notes=msg.note,
             board=board,
         )
 
-        bm = f"Added {pokemon_name} ({pokemon_number}) to the {board}!"
-        bm += self.create_pokemon_trade_table(msg, user, board)
-        bm += self.create_search_string_table(msg, user, board)
+        bm = f"Added {pokemon_name} ({pokemon_number}) to the {board}!\n"
+        bm += self.create_pokemon_trade_table(msg, msg.user.id, board)
+        bm += self.create_search_string_table(msg, msg.user.id, board)
 
         return bm
 
@@ -94,22 +90,33 @@ class TradeRelay:
         except Exception:
             return "Bidoof, something went wrong, try !help for more info"
 
-        delete_from_trade_board(
+        delete(
             msg.guild_id,
             pokemon_name,
-            str(msg.raw_msg.author.id),
+            str(msg.user.id),
             board=board,
         )
 
         bm = f"Removed {pokemon_name} ({pokemon_number}) to the {board}!"
         return bm
 
+    def tbu(self, msg, board="TRADE_BOARD"):
+        user = msg.user.id
+        if msg.arguments:
+            user = msg.get_discord_id(msg.arguments[0])
+            if not user:
+                return "Bidoof, cannot find user"
+
+        bm = self.create_pokemon_trade_table(msg, user, board)
+        bm += self.create_search_string_table(msg, user, board)
+        return bm
+
     def create_pokemon_trade_table(self, msg, user, board):
-        wants = get_trade_board_by_user(msg.guild_id, user, board)
+        wants = get_by_user(msg.guild_id, user, board)
 
         if wants:
             msg = (
-                "```"
+                f"<@!{user}>'s trade list \n```"
                 "Pokemon      |#    |Note   \n"
                 "-------------+-----+-------------\n"
             )
@@ -123,10 +130,10 @@ class TradeRelay:
             msg += "```"
             return msg
         else:
-            return "Bidoof, nothing to see here"
+            return f"Bidoof, nothing found for {user}to see here"
 
     def create_search_string_table(self, msg, user, board):
-        trade_string = get_raw_trade_string(msg.guild_id, user, board)
+        trade_string = get_trade_string(msg.guild_id, user, board)
 
         if len(trade_string) > 0:
             lc = list_compression(trade_string)
@@ -136,66 +143,17 @@ class TradeRelay:
 
     def tbs(self, msg, board="TRADE_BOARD"):
         user = msg.user.id
-        if msg.find_by_slug:
-            user = msg.get_discord_id(msg.find_by_slug)
+        if msg.arguments:
+            user = msg.get_discord_id(msg.arguments[0])
             if not user:
                 return "Bidoof, cannot find user"
 
-        trade_string = get_raw_trade_string(msg.guild_id, user, board)
+        trade_string = get_trade_string(msg.guild_id, user, board)
 
         if len(trade_string) > 0:
             return list_compression(trade_string)
 
         return "Bidoof, nothing to see here"
-
-    def create_per_pokemon_trade_table(server, usdb, pokemon, message, board):
-
-        list = get_trade_board_by_pokemon(server, pokemon, board)
-        if len(list) > 0:
-            msg = "```"
-            msg += "Want         |Note   \n"
-            msg += "-------------+-------------\n"
-            for el in list:
-                u, s, g, p, num, n = el
-                n = n[0:10]
-                while len(n) < 12:
-                    n += " "
-                try:
-                    g = get_discord_name(server, message, g)
-                    assert g
-                except Exception:
-                    g = "bidoof"
-                g = g.split("#")[0][0:12]
-                while len(g) < 12:
-                    g += " "
-                msg += str(g) + " | " + str(n) + "\n"
-            msg += "```"
-            return msg
-        else:
-            return "Bidoof, nothing to see here"
-
-    def tbu(self, message, board="TRADE_BOARD"):
-        try:
-            server = message["raw_msg"].guild.id
-        except Exception:
-            server = "ViaDirectMessage"
-
-        if len(message["args"]) > 0:
-            search_term = message["args"][0]
-            identifier = get_discord_id(message, search_term)
-        else:
-            identifier = message["raw_msg"].author.id
-        if not identifier:
-            return "Bidoof, cannot find user"
-
-        bm = bot_message.create_pokemon_trade_table(
-            server, self.usdb, identifier, board
-        )
-        if "Bidoof" not in bm:
-            bm += bot_message.create_search_string_table(
-                server, self.usdb, identifier, board
-            )
-        return bm
 
     def tbp(self, message, board="TRADE_BOARD"):
         try:
@@ -223,3 +181,29 @@ class TradeRelay:
             server, self.usdb, PokemonName, message, board
         )
         return bm
+
+    def create_per_pokemon_trade_table(server, usdb, pokemon, message, board):
+
+        list = get_trade_board_by_pokemon(server, pokemon, board)
+        if len(list) > 0:
+            msg = "```"
+            msg += "Want         |Note   \n"
+            msg += "-------------+-------------\n"
+            for el in list:
+                u, s, g, p, num, n = el
+                n = n[0:10]
+                while len(n) < 12:
+                    n += " "
+                try:
+                    g = get_discord_name(server, message, g)
+                    assert g
+                except Exception:
+                    g = "bidoof"
+                g = g.split("#")[0][0:12]
+                while len(g) < 12:
+                    g += " "
+                msg += str(g) + " | " + str(n) + "\n"
+            msg += "```"
+            return msg
+        else:
+            return "Bidoof, nothing to see here"
