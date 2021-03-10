@@ -42,9 +42,9 @@ async def on_message(message):
 
     if msg.failure:
         await msg.send_message(msg.failure, 600)
-        return
+        return None
     elif not msg.in_scope:
-        return
+        return None
 
     relays = [
         BotInfo(),
@@ -58,8 +58,11 @@ async def on_message(message):
     ]
 
     for relay in relays:
-        if await relay.relay(msg):
-            return
+        response = await relay.relay(msg)
+        if response:
+            return response
+
+    return None
 
 
 if __name__ == "__main__":

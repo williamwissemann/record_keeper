@@ -1,5 +1,6 @@
 from typing import Union
 
+from record_keeper import BOT
 from record_keeper.module.admin.query import has_listener
 from record_keeper.module.record_keeper.query import (
     delete_medal,
@@ -66,7 +67,7 @@ class RecordRelay:
             value = msg.arguments[1]
             value = value.replace(",", "")
         except Exception:
-            return "Bidoof, something went wrong, try !help for more info"
+            return BOT.HELP_PROMPT
 
         try:
             update_medal(
@@ -249,7 +250,7 @@ class RecordRelay:
                 return f"Bidoof, {msg.arguments[0]} can not be found"
             uuid = msg.arguments[1]
         except Exception:
-            return "Bidoof, something went wrong, try !help for more info"
+            return BOT.HELP_PROMPT
 
         try:
             delete_medal(

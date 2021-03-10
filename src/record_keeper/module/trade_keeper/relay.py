@@ -66,7 +66,7 @@ class TradeRelay:
             if not pokemon_name:
                 return f"There was an issue adding {msg.arguments[0]}"
         except Exception:
-            return "Bidoof, something went wrong, try !help for more info"
+            return BOT.HELP_PROMPT
 
         update(
             msg.guild_id,
@@ -89,7 +89,7 @@ class TradeRelay:
             if not pokemon_name:
                 return f"There was an issue adding {msg.arguments[0]}"
         except Exception:
-            return "Bidoof, something went wrong, try !help for more info"
+            return BOT.HELP_PROMPT
 
         delete(
             msg.guild_id,
@@ -180,7 +180,7 @@ class TradeRelay:
             if not pokemon_name:
                 return f"There was an issue adding {msg.arguments[0]}"
         except Exception:
-            return "Bidoof, something went wrong, try !help for more info"
+            return BOT.HELP_PROMPT
 
         bm = self.create_per_pokemon_trade_table(msg, pokemon_name, board)
         return bm

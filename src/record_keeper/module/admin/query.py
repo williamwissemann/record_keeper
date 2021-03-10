@@ -35,7 +35,7 @@ def update_listener(server: str, channel: str, toggle: str) -> str:
 def remove_listener(server: str, channel: str, toggle: str) -> str:
     return (
         "DELETE FROM listener"
-        f" WHERE server_id = {server}"
+        f" WHERE server_id = '{server}'"
         f" AND active_channel = '{channel}'"
         f" AND toggle = '{toggle}'"
     )

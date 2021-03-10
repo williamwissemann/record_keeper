@@ -1,5 +1,6 @@
 from typing import Union
 
+from record_keeper import BOT
 from record_keeper.module.admin.query import has_listener
 from record_keeper.utilities.message import MessageWrapper
 
@@ -15,7 +16,7 @@ class TrainingWheels:
 
         active = has_listener(msg.guild_id, msg.channel_id, "training-wheels")
         if (active or msg.direct_message) and msg.cmd:
-            response = "Bidoof, something went wrong, try !help for more info"
+            response = BOT.HELP_PROMPT
 
         if response:
             return await msg.send_message(

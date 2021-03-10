@@ -1,5 +1,6 @@
 from typing import Union
 
+from record_keeper import BOT
 from record_keeper.module.admin.query import has_listener
 from record_keeper.module.pvp_iv.query import find_combo, find_top_5, get_csv_header
 from record_keeper.utilities.helpers import force_str_length, resolve_pokemon
@@ -44,7 +45,7 @@ class IVRelay:
             else:
                 pokemon_name = msg.arguments[0]
         except Exception:
-            return "Bidoof, something went wrong, try !help for more info"
+            return BOT.HELP_PROMPT
 
         try:
             if len(msg.arguments) > 3:

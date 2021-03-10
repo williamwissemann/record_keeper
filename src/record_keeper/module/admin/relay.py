@@ -82,9 +82,9 @@ class AdminRelay:
 
     def activate(self, msg: MessageWrapper) -> str:
         settings = []
-        if msg.arguments == "all":
+        if msg.arguments[0] == "all":
             settings = self.admin_options
-        elif msg.arguments == "default":
+        elif msg.arguments[0] == "default":
             settings = ["help", "message-cleanup", "training-wheels"]
         else:
             settings.extend(msg.arguments)

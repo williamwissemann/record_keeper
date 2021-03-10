@@ -9,6 +9,9 @@ from record_keeper.utilities.sqlite3_wrapper import Sqlite3Wrapper
 
 class BotSetup:
     def __init__(self):
+        # CONSTANT for help messages
+        self.HELP_PROMPT = "Bidoof, something went wrong, try !help for info"
+
         # setup a logger
         format_template = "%(levelname)s %(filename)s:%(lineno)d %(message)s"
         logging.basicConfig(format=format_template)
