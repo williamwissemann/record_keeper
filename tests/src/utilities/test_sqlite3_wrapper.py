@@ -1,7 +1,5 @@
 import os
 
-import pytest
-
 from record_keeper.utilities.sqlite3_wrapper import Sqlite3Wrapper
 
 database_name = "Sqlite3Wrapper_test.db"
@@ -20,7 +18,7 @@ def insert_data(uuid, field, info):
 
 @database.get
 def get_data(uuid, field, info):
-    return f"SELECT * FROM TEST_TABLE"
+    return "SELECT * FROM TEST_TABLE"
 
 
 def test_Sqlite3Wrapper_test():

@@ -62,7 +62,7 @@ class MessageWrapper:
             return False
 
         in_testing_channel = "-testing" in str(self.raw_msg.channel)
-        if BOT.environment == "development":
+        if BOT.environment in ["development", "testing"]:
             return True
         elif BOT.environment == "production" and not in_testing_channel:
             return True

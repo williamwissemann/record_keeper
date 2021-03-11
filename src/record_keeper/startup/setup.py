@@ -5,7 +5,8 @@ import os
 import discord
 
 from record_keeper.utilities.sqlite3_wrapper import Sqlite3Wrapper
-
+from record_keeper.utilities.bypass import DecoratorBypass
+import sys
 
 class BotSetup:
     def __init__(self):
@@ -25,6 +26,19 @@ class BotSetup:
         exec_path = abs_path.replace(rel_path, "")
         logging.info(f"exec_path: {exec_path}")
 
+        # Load in json file to initialize the tables in the database
+        schema_path = os.path.join(exec_path, "config", "schema.json")
+        logging.info(f"found schema_path @ {schema_path}")
+        with open(schema_path) as f:
+            self.schema = json.load(f)
+
+        test_mode = ("pytest" in sys.argv[0])
+        if test_mode:
+            self.environment = "testing"
+            self.database = Sqlite3Wrapper("test.db")
+            self.client = DecoratorBypass()
+            return
+
         # load data out of the configuration file
         config_file = os.path.join(exec_path, "config", config_file)
         logging.info(f"found config_file @ {config_file}")
@@ -34,12 +48,6 @@ class BotSetup:
             self.environment = bot_settings["environment"]
             environment_settings = bot_settings[self.environment]
             self.discord_token = environment_settings["discord_token"]
-
-        # Load in json file to initialize the tables in the database
-        schema_path = os.path.join(exec_path, "config", "schema.json")
-        logging.info(f"found schema_path @ {schema_path}")
-        with open(schema_path) as f:
-            self.schema = json.load(f)
 
         # load sqlite3 database
         database_file = environment_settings["database"]

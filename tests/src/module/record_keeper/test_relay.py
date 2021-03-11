@@ -23,7 +23,7 @@ async def test_when_off():
 @pytest.mark.asyncio
 async def test_up():
     MM = MockMessage()
-    MM.content = "!activate re"
+    MM.content = "!activate record-keeper"
     assert await on_message(MM) == [
         "Valid listener's status have activated for this channel!"
     ]
