@@ -1,5 +1,7 @@
 # Record-Keeper
 
+![coverage](coverage.svg)
+
 A discord bot to keep track of Pokemon Go medals, types, best raid times, pvp (win/lose, elo) and trade preferences etc.
 
 ## Installing

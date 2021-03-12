@@ -19,3 +19,5 @@ flake8-mock
 flake8-pytest
 flake8-bandit
 Dlint
+
+coverage-badge
