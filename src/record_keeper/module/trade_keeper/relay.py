@@ -79,8 +79,9 @@ class TradeRelay:
 
         bm = f"Added {pokemon_name} ({pokemon_number}) to the {board}!\n"
         bm += self.create_pokemon_trade_table(msg, msg.user.id, board)
-        bm += self.create_search_string_table(msg, msg.user.id, board)
-
+        search_str = self.create_search_string_table(msg, msg.user.id, board)
+        if search_str:
+            bm += search_str
         return bm
 
     def unwant(self, msg, board="TRADE_BOARD"):
@@ -109,7 +110,9 @@ class TradeRelay:
                 return "Bidoof, cannot find user"
 
         bm = self.create_pokemon_trade_table(msg, user, board)
-        bm += self.create_search_string_table(msg, user, board)
+        search_str = self.create_search_string_table(msg, user, board)
+        if search_str:
+            bm += search_str
         return bm
 
     def create_pokemon_trade_table(self, msg, user, board):
@@ -132,7 +135,7 @@ class TradeRelay:
             msg += "```"
             return msg
         else:
-            return f"Bidoof, nothing found for {user}to see here"
+            return f"Bidoof, nothing found for {user} to see here"
 
     def create_search_string_table(self, msg, user, board):
         trade_string = get_trade_string(msg.guild_id, user, board)

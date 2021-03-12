@@ -1,12 +1,13 @@
 import json
 import logging
 import os
+import sys
 
 import discord
 
-from record_keeper.utilities.sqlite3_wrapper import Sqlite3Wrapper
 from record_keeper.utilities.bypass import DecoratorBypass
-import sys
+from record_keeper.utilities.sqlite3_wrapper import Sqlite3Wrapper
+
 
 class BotSetup:
     def __init__(self):
@@ -32,10 +33,14 @@ class BotSetup:
         with open(schema_path) as f:
             self.schema = json.load(f)
 
-        test_mode = ("pytest" in sys.argv[0])
+        # when initialize via pytest skip client creation
+        test_mode = "pytest" in sys.argv[0]
         if test_mode:
+            test_file = "test.db"
+            if os.path.isfile(test_file):
+                os.remove(test_file)
             self.environment = "testing"
-            self.database = Sqlite3Wrapper("test.db")
+            self.database = Sqlite3Wrapper(test_file)
             self.client = DecoratorBypass()
             return
 

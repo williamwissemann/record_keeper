@@ -87,7 +87,7 @@ class MessageWrapper:
             except Exception:
                 raise BadCommand("Malformed command failed validation.")
             if key not in value:
-                self.annotation[key.lower()] = value.lstrip(" ")
+                self.annotations[key.lower()] = value.lstrip(" ")
             content = re.sub(s, "", content)
 
         # converts data into a datetime value
@@ -167,6 +167,7 @@ class MessageWrapper:
             return str(search_term.lstrip("<@!").rstrip(">"))
         else:
             for guild in BOT.client.guilds:
+
                 user = discord.utils.find(
                     lambda m: search_term.lower() in m.name.lower()
                     or (search_term.lower() in str(m.nick).lower() and m.nick)

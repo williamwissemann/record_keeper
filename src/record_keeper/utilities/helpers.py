@@ -1,4 +1,4 @@
-from record_keeper import BOT, STORAGE
+from record_keeper import STORAGE
 
 
 def list_to_list(in_list: list) -> str:

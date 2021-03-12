@@ -1,6 +1,6 @@
-"""
 import pytest
 
+"""
 from record_keeper.utilities.message import MessageWrapper
 
 test_data = []
@@ -41,12 +41,5 @@ test_ids.append(("malformed command"))
 
 @pytest.mark.parametrize("message, expected", test_data, ids=test_ids)
 def test_prase(message, expected):
-    try:
-        parsed = parser(message)
-        if expected and isinstance(expected, dict):
-            assert parsed.get("cmd") == expected.get("cmd")
-        else:
-            assert parsed == expected
-    except ValueError as e:
-        assert str(e) == expected
+    M = MessageWrapper()
 """

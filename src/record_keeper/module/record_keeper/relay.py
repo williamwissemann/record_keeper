@@ -100,14 +100,11 @@ class RecordRelay:
             if not medal:
                 return f"Bidoof, {msg.arguments[0]} can not be found"
         except Exception:
-            return "Bidoof, something went wrong try !help for more info"
+            return BOT.HELP_PROMPT
 
-        if str(user) != str(msg.user.id):
-            return f"<@!{user}>" "stats were updated by" f"<@!{msg.user.id}>"
-        else:
-            bm = self.create_recent(msg, medal, msg.user.id)
-            bm += self.create_stats(msg, medal, msg.user.id)
-            return bm
+        bm = self.create_recent(msg, medal, user)
+        bm += self.create_stats(msg, medal, user)
+        return bm
 
     def create_recent(self, msg, medal, user):
         """Creates a most recent 5 for a medal, gamertag"""
@@ -142,12 +139,15 @@ class RecordRelay:
         )
 
         day7 = get_avg_per_day(server, medal, user, 7)[0][0]
+        day7 = day7 if day7 else 0
         day7 = force_str_length(round(day7, 2), 10)
 
         day30 = get_avg_per_day(server, medal, user, 30)[0][0]
+        day30 = day30 if day30 else 0
         day30 = force_str_length(round(day30, 2), 9)
 
         day90 = get_avg_per_day(server, medal, user, 90)[0][0]
+        day90 = day90 if day90 else 0
         day90 = force_str_length(round(day90, 2), 9)
 
         msg += f"{day7} | {str(day30)} | {str(day90) }\n```"
@@ -159,7 +159,7 @@ class RecordRelay:
             if not medal:
                 return f"Bidoof, {msg.arguments[0]} can not be found"
         except Exception:
-            return "Bidoof, something went wrong try !help for more info"
+            return BOT.HELP_PROMPT
 
         bm = self.create_leaderboard(msg, medal)
 
@@ -210,7 +210,7 @@ class RecordRelay:
             if not medal:
                 return f"Bidoof, {msg.arguments[0]} can not be found"
         except Exception:
-            return "Bidoof, something went wrong try !help for more info"
+            return BOT.HELP_PROMPT
 
         bm = self.create_uuid_table(msg, medal, user)
 
@@ -263,7 +263,7 @@ class RecordRelay:
             return f"Bidoof, {uuid} is invalid for {medal}"
 
         if str(user) != str(msg.user.id):
-            return f"<@!{user}>" "stats were updated by" f"<@!{msg.user.id}>"
+            return f"<@!{user}> stats were updated by <@!{msg.user.id}>"
         else:
             bm = self.create_recent(msg, medal, msg.user.id)
             bm += self.create_stats(msg, medal, msg.user.id)

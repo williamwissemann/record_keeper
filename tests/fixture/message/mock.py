@@ -43,6 +43,7 @@ class MockMessage:
         self.author = MockAuthor()
         self.author.bot = False
         self.author.id = "mock_author_id"
+        self.author.name = "mock_author_name"
         self.author.guild_permissions.administrator = True
 
         self.channel = MockChannel()
@@ -59,29 +60,3 @@ class MockMessage:
     @pytest.mark.asyncio
     async def delete(self, *args, **kargs):
         return MockMessage()
-
-
-"""
-class mock_bot_setup():
-    def __init__(self):
-        FORMAT = "%(levelname)s %(filename)s:%(lineno)d %(message)s"
-        logging.basicConfig(format=FORMAT)
-        logging.root.level = logging.INFO
-
-        self.environment = "development"
-
-@pytest.mark.asyncio
-async def test___init__():
-    with mock.patch('record_keeper.setup.BotSetup', mock_bot_setup):
-
-        mock_discord_message = mock_message()
-        mock_discord_message.channel = "fake-message-testing"
-        mock_discord_message.content = "!roll"
-        mock_discord_message.author.bot = False
-
-        try:
-            await on_message(mock_discord_message)
-        except:
-            ''' force pass '''
-            pass
-"""
