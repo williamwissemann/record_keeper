@@ -37,13 +37,9 @@ FROM BASE as FINAL
 ENV APPDIR /app
 WORKDIR ${APPDIR}
 
-ENV PATH="${APPDIR}/ven/bin:$PATH"
-
 COPY src/record_keeper/app.sh ${APPDIR}/app.sh
 COPY --from=STAGING ${APPDIR}/venv ${APPDIR}/venv
 COPY --from=STAGING ${APPDIR}/dist ${APPDIR}/dist
 
 RUN . venv/bin/activate; pip install dist/* \
     && rm -rf ${APPDIR}/dist
-
-CMD ["python3", "/app/venv/lib/python3.8/site-packages/record_keeper/app.py"]
