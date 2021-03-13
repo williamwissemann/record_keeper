@@ -51,7 +51,7 @@ test: venv
 		tests \
 		-r w \
 		--cov-fail-under 0
-	@. venv/bin/activate; coverage-badge -o coverage.svg
+	@. venv/bin/activate; coverage-badge -f -o coverage.svg
 
 # help: test-verbose                   - run tests [verbosely]
 .PHONY: test-verbose
@@ -64,7 +64,7 @@ test-verbose:
 		-r w \
 		--cov-fail-under 0 \
 		-vvs
-	@. venv/bin/activate; coverage-badge -o coverage.svg
+	@. venv/bin/activate; coverage-badge -f -o coverage.svg
 
 # help: coverage                       - perform test coverage checks
 .PHONY: coverage

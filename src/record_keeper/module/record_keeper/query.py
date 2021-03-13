@@ -11,7 +11,7 @@ def update_medal(
     value: float,
     update_at: str,
     notes: str = "",
-) -> list:
+) -> str:
 
     value = float(value)
     update_at.replace(" ", "T")
@@ -29,7 +29,7 @@ def get_recent(
     table: str,
     user: str,
     limit: int = 25,
-) -> list:
+) -> str:
     sql = "SELECT update_at, value, note"
     sql += f" FROM {table} WHERE gamertag = '{user}'"
     if not server == "ViaDirectMessage":
@@ -41,7 +41,12 @@ def get_recent(
 
 
 @BOT.database.get
-def get_avg_per_day(server: str, table: str, user: str, days: int) -> list:
+def get_avg_per_day(
+    server: str,
+    table: str,
+    user: str,
+    days: int,
+) -> str:
     return (
         f"SELECT AVG(VALUE) FROM {table}"
         f" WHERE gamertag = '{user}'"
@@ -74,7 +79,7 @@ def get_uuid_recent(
     table: str,
     user: str,
     limit: int = 25,
-) -> list:
+) -> str:
     sql = "SELECT uuid, value"
     sql += f" FROM {table} WHERE gamertag = '{user}'"
     if not server == "ViaDirectMessage":

@@ -10,7 +10,10 @@ from record_keeper.utilities.sqlite3_wrapper import Sqlite3Wrapper
 
 
 class BotSetup:
+    """A bot object used to wrap a discord.py client and Sqlite3 database."""
+
     def __init__(self):
+        """Set the state of the bot on app startup."""
         # CONSTANT for help messages
         self.HELP_PROMPT = "Bidoof, something went wrong, try !help for info"
 

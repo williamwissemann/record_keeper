@@ -53,6 +53,7 @@ class AdminRelay:
                 delete_after,
                 new_message=True,
             )
+        return None
 
     def setup(self):
         # TODO remove unsupported things

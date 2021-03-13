@@ -1,5 +1,5 @@
-import pytest
 import mock
+import pytest
 
 from record_keeper import BOT
 from record_keeper.app import on_message
@@ -39,7 +39,7 @@ async def test_up():
     mm.content = "!up xp 1990 date:1990-10-10"
     assert "1990-10-10" in (await on_message(mm))[0]
 
-    with mock.patch('record_keeper.BOT.client', Client()):
+    with mock.patch("record_keeper.BOT.client", Client()):
         mm.content = "!up xp 898901 date:1990-10-11 user:tester"
         assert "<@!tester>" in (await on_message(mm))[0]
 
@@ -52,19 +52,20 @@ async def test_ls():
     mm.content = "!ls xp"
     assert "898900" in (await on_message(mm))[0]
 
-    with mock.patch('record_keeper.BOT.client', Client()):
+    with mock.patch("record_keeper.BOT.client", Client()):
         mm.content = "!ls xp test"
         response = (await on_message(mm))[0]
         assert "tester" in response
         assert "1990-10-11" in response
         assert "898901" in response
 
+
 @pytest.mark.asyncio
 async def test_lb():
     mm.content = "!lb"
     assert await on_message(mm) == [BOT.HELP_PROMPT]
 
-    with mock.patch('record_keeper.BOT.client', Client()):
+    with mock.patch("record_keeper.BOT.client", Client()):
         mm.content = "!lb xp"
         response = (await on_message(mm))[0]
         assert "898900" in response
@@ -80,6 +81,7 @@ async def test_uuid():
     response = (await on_message(mm))[0]
     assert "898900" in response
     assert "123456" in response
+
 
 @pytest.mark.asyncio
 async def test_delete():

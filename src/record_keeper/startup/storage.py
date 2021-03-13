@@ -9,7 +9,10 @@ from record_keeper.startup.query import (
 
 
 class Storage:
+    """Validates the database is created with the expected tables"""
+
     def __init__(self):
+        """Initializes list to validate against"""
         self.table_names = []
         self.accepted_tables = []
         self.basic_tables = []
@@ -21,48 +24,54 @@ class Storage:
         self.pokemonByNumber = {}
         self.pokemonByName = {}
 
-        schema = BOT.schema
-        self.verify_database(schema["tables"])
+        self.__build_pokemon_list__
 
-        # deal with the pokemon
-        for pokemon in schema["pokemon"]["names"]:
+        self.__verify_database__
+        self.__delete_unused_tables__
+
+    @property
+    def __build_pokemon_list__(self):
+        """Creates  validation  with the pokemon"""
+        for pokemon in BOT.schema["pokemon"]["names"]:
             invalid_symbols = [".", " ", "_", "'"]
             pokeclean = pokemon
             for symbol in invalid_symbols:
                 pokeclean = pokeclean.replace(symbol, "")
-            number = schema["pokemon"]["names"][pokemon]
+            number = BOT.schema["pokemon"]["names"][pokemon]
             self.pokemonByNumber[number] = pokeclean
             self.pokemonByName[pokeclean] = number
 
-    def verify_database(self, tables):
-        """
-        Initialize a table if it doesn't already exist
-        """
+    @property
+    def __verify_database__(self):
+        """Creates any table found in the schema not in the database."""
+        tables = BOT.schema.get("tables")
         for category in tables:
             table_category = tables.get(category)
-            for table_name in table_category["table_names"]:
-                for init in table_category["table"]:
+            for table_name in table_category.get("table_names"):
+                for init in table_category.get("table"):
                     table_value = table_category["table"][init]
-                    sql = table_value["sql"]
-                    accepted = table_value["accepted"]
+                    sql = table_value.get("sql")
+                    accepted = table_value.get("accepted")
                     name = table_name + init.replace("init", "")
 
                     self.table_names.append(name)
                     if accepted:
                         self.accepted_tables.append(name)
-                    if category == "basic_tables":
+                    elif category == "basic_tables":
                         self.basic_tables.append(name)
-                    if category == "badge_tables":
+                    elif category == "badge_tables":
                         self.badge_tables.append(name)
-                    if category == "type_tables":
+                    elif category == "type_tables":
                         self.type_tables.append(name)
-                    if category == "custom_tables":
+                    elif category == "custom_tables":
                         self.custom_tables.append(name)
 
                     logging.info(f"create_table_if_not_exist {name}")
                     create_table_if_not_exist(name, sql)
 
-        # drop tables that are not being used
+    @property
+    def __delete_unused_tables__(self):
+        """Removes any table not found in the schema from the database."""
         for name in get_all_tables():
             name = name[0]
             if name not in self.table_names:

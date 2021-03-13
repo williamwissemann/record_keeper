@@ -27,17 +27,19 @@ async def on_ready():
 
 @BOT.client.event
 async def on_raw_reaction_add(payload):
+    """Executed on discord message reaction add event"""
     pass
 
 
 @BOT.client.event
 async def on_raw_reaction_remove(payload):
+    """Executed on discord message reaction remove event"""
     pass
 
 
 @BOT.client.event
 async def on_message(message):
-    # build context of the message
+    """Executed on discord message event"""
     msg = MessageWrapper(message)
 
     if msg.failure:

@@ -2,7 +2,7 @@ import sqlite3
 
 
 class Sqlite3Wrapper:
-    """A small wrapper for sqlite3 to replace some repetitive.
+    """A small wrapper for sqlite3 to replace some repetition.
 
     Args:
         database_path (str, optional): Path to a sqlite3 file.

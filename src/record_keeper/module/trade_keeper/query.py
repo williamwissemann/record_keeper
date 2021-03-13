@@ -11,7 +11,7 @@ def update(
     user: str,
     notes: str = "",
     board: str = "TRADE_BOARD",
-) -> list:
+) -> str:
     return (
         f"INSERT OR REPLACE INTO {board}"
         f" values('{uuid4()}', '{server}', '{user}',"
@@ -26,7 +26,7 @@ def delete(
     pokemon_name,
     user,
     board: str = "TRADE_BOARD",
-):
+) -> str:
     sql = f"DELETE FROM {board} WHERE gamertag = '{user}'"
     if not server == "ViaDirectMessage":
         sql += f" AND ( server_id = '{server}'"
@@ -40,7 +40,7 @@ def get_trade_string(
     server,
     user,
     board: str = "TRADE_BOARD",
-):
+) -> str:
     sql = f"SELECT number FROM {board}"
     if user:
         sql += f" WHERE gamertag = '{user}'"
@@ -56,7 +56,7 @@ def get_by_user(
     server,
     user,
     board: str = "TRADE_BOARD",
-):
+) -> str:
     sql = f"SELECT pokemon, number, notes FROM {board}"
     sql += f" WHERE gamertag = '{user}'"
     if not server == "ViaDirectMessage":
@@ -71,7 +71,7 @@ def get_by_pokemon(
     server,
     pokemon,
     board: str = "TRADE_BOARD",
-):
+) -> str:
     sql = f"SELECT gamertag, notes FROM {board}"
     sql += f" WHERE pokemon = '{pokemon}'"
     if not server == "ViaDirectMessage":

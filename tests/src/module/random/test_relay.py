@@ -1,10 +1,11 @@
-import pytest
 import mock
+import pytest
 
 from record_keeper.app import on_message
 from tests.fixture.message.mock import MockMessage
 
 MM = MockMessage()
+
 
 @pytest.mark.asyncio
 async def test_roll():
@@ -14,6 +15,7 @@ async def test_roll():
 
         MM.content = "!roll 1000"
         assert "1000" in (await on_message(MM))[0]
+
 
 @pytest.mark.asyncio
 async def test_d20():

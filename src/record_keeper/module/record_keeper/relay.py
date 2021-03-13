@@ -161,11 +161,9 @@ class RecordRelay:
         except Exception:
             return BOT.HELP_PROMPT
 
-        bm = self.create_leaderboard(msg, medal)
+        return self.create_leaderboard(msg, medal)
 
-        return bm
-
-    def create_leaderboard(server, msg, medal):
+    def create_leaderboard(self, msg, medal):
         leaderboard = get_leaderboard(msg.guild_id, medal, limit=10)
         if len(leaderboard) > 0:
             bm = (
@@ -212,9 +210,7 @@ class RecordRelay:
         except Exception:
             return BOT.HELP_PROMPT
 
-        bm = self.create_uuid_table(msg, medal, user)
-
-        return bm
+        return self.create_uuid_table(msg, medal, user)
 
     def create_uuid_table(self, msg, medal, user):
         """

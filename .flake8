@@ -1,4 +1,3 @@
 [flake8]
 ignore = D100, D400, D401, S608, I900, S101 
-# TODO: add 103 back once code is cleaned up
 max-complexity = 10

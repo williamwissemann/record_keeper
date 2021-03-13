@@ -8,6 +8,9 @@ from record_keeper.utilities.message import MessageWrapper
 
 
 class RandomRelay:
+    def __init__(self):
+        self.sys_random = random.SystemRandom()
+
     async def relay(
         self,
         msg: MessageWrapper,
@@ -41,8 +44,16 @@ class RandomRelay:
 
         return None
 
-    def roll(self, msg, max_value=6):
+    def roll(self, msg: MessageWrapper, max_value: int = 6) -> str:
+        """Rolls a max_value sided die.
 
-        value = random.randint(1, max_value)
+        Args:
+            msg (MessageWrapper): A wrapped discord.py message object.
+            max_value (int, optional): The max the die can roll. Defaults to 6.
+
+        Returns:
+            str: The response message
+        """
+        value = self.sys_random.randint(1, max_value)
 
         return f"{msg.raw_msg.author.name} rolled a {value} on a d{max_value}"

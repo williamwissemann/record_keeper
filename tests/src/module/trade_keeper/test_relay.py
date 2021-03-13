@@ -1,7 +1,6 @@
-import pytest
 import mock
+import pytest
 
-from record_keeper import BOT
 from record_keeper.app import on_message
 from tests.fixture.client.mock import Client
 from tests.fixture.message.mock import MockMessage
@@ -24,7 +23,7 @@ async def test_want():
     assert await on_message(mm)
 
     mm.content = "!want 40"
-    assert '10-12,30,40' in (await on_message(mm))[0]
+    assert "10-12,30,40" in (await on_message(mm))[0]
 
 
 @pytest.mark.asyncio
@@ -36,21 +35,22 @@ async def test_unwant():
 @pytest.mark.asyncio
 async def test_tbs():
     mm.content = "!tbs"
-    assert '10,12,30,40' in (await on_message(mm))[0]
+    assert "10,12,30,40" in (await on_message(mm))[0]
 
 
 @pytest.mark.asyncio
 async def test_tbp():
-    with mock.patch('record_keeper.BOT.client', Client()):
+    with mock.patch("record_keeper.BOT.client", Client()):
         mm.content = "!tbp 10"
-        assert 'bidoof' in (await on_message(mm))[0]
+        assert "bidoof" in (await on_message(mm))[0]
 
 
 @pytest.mark.asyncio
 async def test_tbu():
-    with mock.patch('record_keeper.BOT.client', Client()):
+    with mock.patch("record_keeper.BOT.client", Client()):
         mm.content = "!tbu test"
-        assert 'Bidoof' in (await on_message(mm))[0]
+        assert "Bidoof" in (await on_message(mm))[0]
+
 
 @pytest.mark.asyncio
 async def test_special():
@@ -67,7 +67,7 @@ async def test_special():
     assert await on_message(mm)
 
     mm.content = "!special 40"
-    assert '10-12,30,40' in (await on_message(mm))[0]
+    assert "10-12,30,40" in (await on_message(mm))[0]
 
 
 @pytest.mark.asyncio
@@ -79,18 +79,18 @@ async def test_unspecial():
 @pytest.mark.asyncio
 async def test_stbs():
     mm.content = "!stbs"
-    assert '10,12,30,40' in (await on_message(mm))[0]
+    assert "10,12,30,40" in (await on_message(mm))[0]
 
 
 @pytest.mark.asyncio
 async def test_stbp():
-    with mock.patch('record_keeper.BOT.client', Client()):
+    with mock.patch("record_keeper.BOT.client", Client()):
         mm.content = "!stbp 10"
-        assert 'bidoof' in (await on_message(mm))[0]
+        assert "bidoof" in (await on_message(mm))[0]
 
 
 @pytest.mark.asyncio
 async def test_stbu():
-    with mock.patch('record_keeper.BOT.client', Client()):
+    with mock.patch("record_keeper.BOT.client", Client()):
         mm.content = "!stbu test"
-        assert 'Bidoof' in (await on_message(mm))[0]
+        assert "Bidoof" in (await on_message(mm))[0]

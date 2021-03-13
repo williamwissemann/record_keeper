@@ -1,5 +1,6 @@
 from typing import Union
 
+from record_keeper import BOT
 from record_keeper.module.admin.query import has_listener
 from record_keeper.module.trade_keeper.query import (
     delete,
@@ -99,8 +100,7 @@ class TradeRelay:
             board=board,
         )
 
-        bm = f"Removed {pokemon_name} ({pokemon_number}) to the {board}!"
-        return bm
+        return f"Removed {pokemon_name} ({pokemon_number}) to the {board}!"
 
     def tbu(self, msg, board="TRADE_BOARD"):
         user = msg.user.id
@@ -185,8 +185,7 @@ class TradeRelay:
         except Exception:
             return BOT.HELP_PROMPT
 
-        bm = self.create_per_pokemon_trade_table(msg, pokemon_name, board)
-        return bm
+        return self.create_per_pokemon_trade_table(msg, pokemon_name, board)
 
     def create_per_pokemon_trade_table(self, msg, pokemon, board):
         wants = get_by_pokemon(msg.guild_id, pokemon, board)
