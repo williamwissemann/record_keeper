@@ -9,11 +9,14 @@ from record_keeper.module.admin.query import has_listener
 
 
 class BadCommand(Exception):
+    """Raised if a command is not useable."""
     pass
 
 
 class MessageWrapper:
+    """Wraps a discord.py message."""
     def __init__(self, message):
+        """Initializes using a discord.py message object."""
         self.failure = None
         self.raw_msg = message
         self.cmd = None
@@ -58,6 +61,7 @@ class MessageWrapper:
 
     @property
     def in_scope(self) -> bool:
+        """Checks is the message is one the bot can see"""
         if self.raw_msg.author.bot:
             return False
 
@@ -70,6 +74,7 @@ class MessageWrapper:
 
     @property
     def __parse_message__(self) -> None:
+        """Converts a message to a useable command."""
         content = self.raw_msg.content
         if not re.findall("^![^ ]", content):
             return
@@ -107,6 +112,7 @@ class MessageWrapper:
 
     @property
     def __grab_annotations__(self) -> None:
+        """Parse any annotations on the end of the command."""
         self.note = self.annotations.get("note", "")
         if "note" in self.annotations:
             del self.annotations["note"]
@@ -117,6 +123,7 @@ class MessageWrapper:
 
     @property
     def __apply_aliases__(self) -> None:
+        """Applies aliases to commands."""
         if self.arguments:
             aliases = [
                 ("mmr", "gblelo"),
@@ -133,7 +140,7 @@ class MessageWrapper:
         delete_after: Union[int, None] = None,
         new_message: bool = False,
     ) -> list:
-
+        """Sends a message back to a discord channel."""
         msg_list = message
         if not isinstance(msg_list, list):
             msg_list = [msg_list]
@@ -163,6 +170,7 @@ class MessageWrapper:
         return msg_list
 
     def get_discord_id(self, search_term):
+        """Finds a discord id based on partical string."""
         if "<@" in search_term:
             return str(search_term.lstrip("<@!").rstrip(">"))
         else:
@@ -180,6 +188,7 @@ class MessageWrapper:
         return None
 
     def get_discord_name(self, member_id: str) -> str:
+        """Finds the discord name (or nickname) based on discord id."""
         display_name = None
         for guild in BOT.client.guilds:
             if str(guild.id) != self.guild_id and not self.direct_message:

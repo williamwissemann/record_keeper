@@ -3,28 +3,11 @@
 # exits on ctrl+c
 trap "echo Exited!; exit 0;" SIGINT
 
-PYTHONPATH="${PYTHONPATH}:/usr/src/RecordKeeperBot/discord_bot/"
-export PYTHONPATH
-
-# create crontab jobs
-echo "google sheets export scheduled"
-echo "0 */4 * * * /usr/src/RecordKeeperBot/discord_bot/scheduled/toSheets.sh" >> dynamic_cron
-
-# install new cron file
-crontab dynamic_cron
-rm dynamic_cron
-
-# list crontab file
-crontab -l
-
-# and reboot the process
-/etc/init.d/cron restart
-
 # keeps the discord bot runing forever  
 while true ; do
     echo "bot starting..."
-    pgrep -f RecordKeeperBot.py || /usr/bin/python3 /usr/src/RecordKeeperBot/discord_bot/RecordKeeperBot.py "${@}" 
-    echo "Failed Restarting!"
+    pgrep -f app.py || ./venv/bin/python3 /app/venv/lib/python3.8/site-packages/record_keeper/app.py
+    echo "failed restarting!"
     sleep 60
 done 
 

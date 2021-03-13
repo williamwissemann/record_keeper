@@ -56,7 +56,6 @@ class AdminRelay:
         return None
 
     def setup(self):
-        # TODO remove unsupported things
         return (
             "__**Setup**__\n"
             "*run these commands in channels you would like to modify*\n"

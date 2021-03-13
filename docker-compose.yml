@@ -6,4 +6,6 @@ services:
     image: "record_keeper:discord"
     restart: unless-stopped
     volumes: 
-      - "./database/:/usr/src/RecordKeeperBot/database/"
+      - "./database/:/app/database/"
+      - "./config/:/app/config/"
+      - "src/record_keeper/module/pvp_iv/compressed_iv_data"

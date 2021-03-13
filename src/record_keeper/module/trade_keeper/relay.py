@@ -18,7 +18,7 @@ from record_keeper.utilities.message import MessageWrapper
 
 
 class TradeRelay:
-    async def relay(
+    async def relay(  # noqa: C901
         self,
         msg: MessageWrapper,
     ) -> Union[str, None]:
@@ -28,7 +28,6 @@ class TradeRelay:
 
         active = has_listener(msg.guild_id, msg.channel_id, "trade-keeper")
         if active or msg.direct_message:
-
             if msg.cmd == "want":
                 response = self.want(msg, board="TRADE_BOARD")
             elif msg.cmd == "unwant":

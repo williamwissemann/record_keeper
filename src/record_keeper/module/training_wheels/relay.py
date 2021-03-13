@@ -6,11 +6,13 @@ from record_keeper.utilities.message import MessageWrapper
 
 
 class TrainingWheels:
+    """Catch relay class to respond with an error on bad input."""
+
     async def relay(
         self,
         msg: MessageWrapper,
     ) -> Union[str, None]:
-
+        """Relay logic for when to respond."""
         response = None
         delete_after = 120
 

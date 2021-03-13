@@ -1,36 +1,49 @@
-# --- BASE IMAGE ---------------------------------------------------------------
 
-FROM ubuntu:20.04
 
-# --- configure default environment --------------------------------------------
 
-ENV APPDIR /usr/src/RecordKeeperBot/discord_bot
+# --- BASE IMAGE ---------------------------------------
+
+FROM ubuntu:20.04 as BASE
 ENV DEBIAN_FRONTEND=noninteractive
-
-# --- configure dependencies --------------------------------------------
-
-RUN set -ex \
-    && apt-get update -y -q \   
+RUN apt-get update -y -q \   
     && apt-get upgrade -y -q \
     && apt-get install -y -q \
-        python3.8 python3.8-dev python3-pip \
-        cron \
-    # discord.py
-    && pip3 install discord.py==1.* \
-    # google api
-    && pip3 install --upgrade \
-        google-api-python-client \ 
-        oauth2client \
-    # cleanup
+    python3.8 python3-venv \
     && apt-get clean \
     && apt autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /root/.cache/pip/
 
-# --- copy over files ----------------------------------------------------------
-
+# --- stage the venv --------------------
+FROM BASE as STAGING
+ENV DEBIAN_FRONTEND=noninteractive
+ENV APPDIR /app
 WORKDIR ${APPDIR}
-COPY src ${APPDIR}
+COPY . ${APPDIR}
 
-# --- run script ---------------------------------------------------------------
-ENTRYPOINT ["./RecordKeeperBot.sh"]
+RUN apt-get update -y -q \   
+    && apt-get upgrade -y -q \
+    && apt-get install -y -q \
+        python3.8 \
+        python3.8-dev \
+        python3-pip \
+        python3-venv \
+        git \
+    && make install-dev dist \
+    && make clean install
+
+# --- build a image with bare minimum --------------------
+FROM BASE as FINAL
+ENV APPDIR /app
+WORKDIR ${APPDIR}
+
+ENV PATH="${APPDIR}/ven/bin:$PATH"
+
+COPY src/record_keeper/app.sh ${APPDIR}/app.sh
+COPY --from=STAGING ${APPDIR}/venv ${APPDIR}/venv
+COPY --from=STAGING ${APPDIR}/dist ${APPDIR}/dist
+
+RUN . venv/bin/activate; pip install dist/* \
+    && rm -rf ${APPDIR}/dist
+
+CMD ["python3", "/app/venv/lib/python3.8/site-packages/record_keeper/app.py"]

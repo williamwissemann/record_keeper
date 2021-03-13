@@ -12,6 +12,19 @@ def update(
     notes: str = "",
     board: str = "TRADE_BOARD",
 ) -> str:
+    """Updates the database for trade commands.
+
+    Args:
+        server (str): the server id
+        pokemon_number (str): a pokemon number
+        pokemon_name (str): a pokemon name
+        user (str): a user's discord id
+        notes (str, optional): a note about the want. Defaults to "".
+        board (str, optional): which board to update. Defaults to "TRADE_BOARD"
+
+    Returns:
+        str: an sql query
+    """
     return (
         f"INSERT OR REPLACE INTO {board}"
         f" values('{uuid4()}', '{server}', '{user}',"

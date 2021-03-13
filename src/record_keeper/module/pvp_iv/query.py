@@ -31,7 +31,7 @@ def find_combo(pokemon, atk_iv, def_iv, hp_iv, folder, league):
                             sp,
                             p,
                         ) = line.split(",")
-                    except Exception:
+                    except Exception: # noqa: S112
                         continue
 
                     if atk == atk_iv and defs == def_iv and hp == hp_iv:
@@ -53,6 +53,7 @@ def find_top_5(pokemon, folder, league):
                     line = line.decode().replace("\r\n", "")
                     array.append(line)
                 return array
+    return None
 
 
 def get_csv_header(pokemon, folder, league):

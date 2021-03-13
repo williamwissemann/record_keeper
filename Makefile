@@ -6,6 +6,9 @@ MAKEFLAGS += --no-print-directory
 
 PYTHON=python3.8
 
+PACKAGE=record_keeper
+TAG=discord
+
 # Do not remove this block. It is used by the 'help' rule when
 # constructing the help output.    
 # help:                                                                                             
@@ -17,11 +20,35 @@ PYTHON=python3.8
 help:
 	@grep "^# help\:" Makefile | grep -v grep | sed 's/\# help\: //' | sed 's/\# help\://'
 
-# help: venv                           - create a virtual environment for development
+
+# help:                               - installs the python package into the venv
+.PHONY: install
+install: venv deps
+	@echo "\nEnter virtual environment using: \n\t$ source venv/bin/activate\n"
+
+
+# help: install-dev                   - installs the python package into the venv + dev requirments
+.PHONY: install-dev
+install-dev: venv dev-deps deps
+	@echo "\nEnter virtual environment using: \n\t$ source venv/bin/activate\n"
+
+# help: venv                           - creates a base virtual environment 
 venv:
 	@$(PYTHON) -m venv venv
-	@/bin/bash -c "source venv/bin/activate && pip install pip --upgrade && pip install -r requirements.dev.txt && pip install -e ."
-	@echo "\nEnter virtual environment using: \n\t$ source venv/bin/activate\n"
+	@. venv/bin/activate; python -m pip install pip --upgrade
+
+
+# installs the dev dependencies defined
+.PHONY: dev-deps
+dev-deps:
+	@. venv/bin/activate; python -m pip install -r requirements.dev.txt
+
+
+# installs the dependencies defined by the package (setup.py) 
+.PHONY: deps
+deps:
+	@. venv/bin/activate; python -m pip install -e .
+
 
 # help: clean                          - clean up the venv and python cache files
 .PHONY: clean
@@ -40,7 +67,7 @@ clean:
 	@git clean -X -f -d -n
 	@echo "\n[OPTIONAL] Use 'git clean -X -f -d' to remove them \n"
 
-	
+
 # help: test                           - run tests
 .PHONY: test 
 test: venv 
@@ -52,6 +79,7 @@ test: venv
 		-r w \
 		--cov-fail-under 0
 	@. venv/bin/activate; coverage-badge -f -o coverage.svg
+
 
 # help: test-verbose                   - run tests [verbosely]
 .PHONY: test-verbose
@@ -66,6 +94,7 @@ test-verbose:
 		-vvs
 	@. venv/bin/activate; coverage-badge -f -o coverage.svg
 
+
 # help: coverage                       - perform test coverage checks
 .PHONY: coverage
 coverage:
@@ -73,6 +102,7 @@ coverage:
 	@. venv/bin/activate; PYTHONPATH=src coverage run -m unittest discover -s tests -v
 	@. venv/bin/activate; coverage html
 	@. venv/bin/activate; coverage report
+
 
 # help: format                         - perform code style format
 .PHONY: format
@@ -117,7 +147,7 @@ check-types:
 # help: check-lint                     - run static analysis checks
 .PHONY: check-lint
 check-lint:
-	. venv/bin/activate; $(PYTHON) -m flake8 src/
+	@. venv/bin/activate; $(PYTHON) -m flake8 src/
 
 
 # help: check-static-analysis          - check code style compliance
@@ -147,13 +177,27 @@ serve-docs:
 # help: dist                           - create a wheel distribution package
 .PHONY: dist
 dist:
-	@python setup.py bdist_wheel
+	@. venv/bin/activate; ${PYTHON} setup.py bdist_wheel
+
 
 # help: dist-upload                    - upload a wheel distribution package
 .PHONY: dist-upload
 dist-upload:
 	@twine upload dist/record_keeper-*-py3-none-any.whl
 
+
+# help: docker-build                   - builds a docker image
+docker-build: clean
+	@docker build -t ${PACKAGE}:${TAG} .
+	@docker system prune -f
+
+# help: docker-launch                  - launches the docker container
+docker-launch:
+	@ docker run \
+		-v ${PWD}/config/:/app/config/ \
+		-v ${PWD}/database/:/app/database/ \
+		-it record_keeper:discord \
+		./venv/bin/python3 /app/venv/lib/python3.8/site-packages/record_keeper/app.py
 
 # Keep these lines at the end of the file to retain nice help
 # output formatting.

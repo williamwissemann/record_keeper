@@ -7,6 +7,7 @@ from record_keeper.utilities.message import MessageWrapper
 
 
 class HelpRelay:
+    """Handles the help commands."""
     async def relay(
         self,
         msg: MessageWrapper,
@@ -32,6 +33,7 @@ class HelpRelay:
         return None
 
     def help_prompt(self, msg):
+        """Dynamically builds out active help prompts."""
         response = []
         bot_msg = (
             "__**COMMAND LIST**__\n"
@@ -75,6 +77,7 @@ class HelpRelay:
         return response
 
     def record_prompt(self):
+        """Help prompt the record-keeper commands."""
         return (
             "__**RECORD KEEPER**__\n"
             "_**Update a given medal**_\n"
@@ -92,6 +95,7 @@ class HelpRelay:
         )
 
     def medals_prompt(self):
+        """Help prompt the medal commands."""
         return (
             "__**Medal Names:**__\n"
             "Basics:"
@@ -105,6 +109,7 @@ class HelpRelay:
         )
 
     def delete_prompt(self):
+        """Help prompt the delete commands."""
         return (
             "__**DELETING**__\n"
             "_**Delete entry via UUID**_\n"
@@ -116,6 +121,7 @@ class HelpRelay:
         )
 
     def trade_prompt(self):
+        """Help prompt the trade commands."""
         return (
             "__**TRADE-BOARD**__\n"
             "_**Add a pokémon to the trade board**_\n"
@@ -150,6 +156,7 @@ class HelpRelay:
         )
 
     def iv_prompt(self):
+        """Help prompt the iv look commands."""
         return (
             "__**IV-RANKER**__\n"
             "_**Rank a pokemon for great league**_\n"

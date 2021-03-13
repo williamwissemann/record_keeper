@@ -108,7 +108,6 @@ class RecordRelay:
 
     def create_recent(self, msg, medal, user):
         """Creates a most recent 5 for a medal, gamertag"""
-
         recent_list = get_recent(msg.guild_id, medal, user, limit=5)
         if len(recent_list) > 0:
             msg = f"<@!{user}>'s last 5 entries for {medal}\n```"
@@ -213,9 +212,7 @@ class RecordRelay:
         return self.create_uuid_table(msg, medal, user)
 
     def create_uuid_table(self, msg, medal, user):
-        """
-        Creates a most recent 5 for a medal, gamertag with uuid
-        """
+        """Creates a most recent 5 for a medal, gamertag with uuid"""
         uuid_list = get_uuid_recent(msg.guild_id, medal, user, limit=5)
         if len(uuid_list) > 0:
             msg = f"<@!{user}>'s last 5 entries for {medal}\n```"
