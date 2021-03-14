@@ -21,13 +21,13 @@ help:
 	@grep "^# help\:" Makefile | grep -v grep | sed 's/\# help\: //' | sed 's/\# help\://'
 
 
-# help:                               - installs the python package into the venv
+# help: install                        - installs the python package into the venv
 .PHONY: install
 install: venv deps
 	@echo "\nEnter virtual environment using: \n\t$ source venv/bin/activate\n"
 
 
-# help: install-dev                   - installs the python package into the venv + dev requirments
+# help: install-dev                    - installs the python package into the venv + dev requirments
 .PHONY: install-dev
 install-dev: venv dev-deps deps
 	@echo "\nEnter virtual environment using: \n\t$ source venv/bin/activate\n"

@@ -10,11 +10,13 @@ from record_keeper.module.admin.query import has_listener
 
 class BadCommand(Exception):
     """Raised if a command is not useable."""
+
     pass
 
 
 class MessageWrapper:
     """Wraps a discord.py message."""
+
     def __init__(self, message):
         """Initializes using a discord.py message object."""
         self.failure = None

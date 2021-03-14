@@ -8,6 +8,7 @@ from record_keeper.utilities.message import MessageWrapper
 
 class HelpRelay:
     """Handles the help commands."""
+
     async def relay(
         self,
         msg: MessageWrapper,
@@ -137,6 +138,8 @@ class HelpRelay:
             "\t!tbu <*discord_id*>\n"
             "_**Prints a copyable version of a users search string**_\n"
             "\t!tbs <*discord_id*>\n"
+            "_**Print a copyable trash trade search string**_\n"
+            "\t!tts\n"
             "---------------------------------------------\n"
             "__**SPECIAL-TRADE-BOARD**__\n"
             "_**Add a pokémon to the trade board**_\n"

@@ -31,7 +31,7 @@ def find_combo(pokemon, atk_iv, def_iv, hp_iv, folder, league):
                             sp,
                             p,
                         ) = line.split(",")
-                    except Exception: # noqa: S112
+                    except Exception:  # noqa: S112
                         continue
 
                     if atk == atk_iv and defs == def_iv and hp == hp_iv:

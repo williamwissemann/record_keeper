@@ -58,9 +58,13 @@ def get_trade_string(
     if user:
         sql += f" WHERE gamertag = '{user}'"
     if not server == "ViaDirectMessage":
-        sql += f" AND ( server_id = '{server}'"
+        if user:
+            sql += " AND"
+        else:
+            sql += " WHERE"
+        sql += f" ( server_id = '{server}'"
         sql += " OR server_id = 'ViaDirectMessage')"
-    sql += " ORDER BY number ASC"
+    sql += " GROUP BY number ORDER BY number ASC "
     return sql
 
 

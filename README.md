@@ -155,6 +155,8 @@ Once inviting the the bot to a discord, the server admin needs to activaite a li
             !tbu <discord_id>
         Print a copyable version of a users search string
             !tbs <discord_id>
+        Print a copyable trash trade search string
+            !tts           
     ---------------------------------------------
     IV-RANKER
         Rank a pokemon for great league
