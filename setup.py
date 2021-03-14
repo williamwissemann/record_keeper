@@ -68,6 +68,7 @@ if __name__ == '__main__':
         keywords=['record_keeper'],
         package_dir={'': 'src'},
         packages=find_packages('src'),
+        include_package_data=True,
         zip_safe=False,
         classifiers=['Development Status :: 3 - Alpha',
                      'Intended Audience :: Developers',

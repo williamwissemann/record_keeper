@@ -194,10 +194,10 @@ docker-build: clean
 # help: docker-launch                  - launches the docker container
 docker-launch:
 	@ docker run \
+		--entrypoint /bin/bash \
 		-v ${PWD}/config/:/app/config/ \
 		-v ${PWD}/database/:/app/database/ \
-		-it record_keeper:discord \
-		./venv/bin/python3 /app/venv/lib/python3.8/site-packages/record_keeper/app.py
+		-it record_keeper:discord
 
 # Keep these lines at the end of the file to retain nice help
 # output formatting.
