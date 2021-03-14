@@ -45,4 +45,4 @@ COPY --from=STAGING ${APPDIR}/dist ${APPDIR}/dist
 RUN . venv/bin/activate; pip install dist/* \
     && rm -rf ${APPDIR}/dist
 
-ENTRYPOINT [ "python3",  "/usr/app/venv/lib/python3.8/site-packages/record_keeper/app.py"]
+ENTRYPOINT [ "python3",  "/app/venv/lib/python3.8/site-packages/record_keeper/app.py"]
