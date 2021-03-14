@@ -1,9 +1,6 @@
-
-
-
 # --- BASE IMAGE ---------------------------------------
 
-FROM ubuntu:20.04 as BASE
+FROM ubuntu:20.04 as base
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y -q \   
     && apt-get upgrade -y -q \
@@ -15,7 +12,7 @@ RUN apt-get update -y -q \
     && rm -rf /root/.cache/pip/
 
 # --- stage the venv --------------------
-FROM BASE as STAGING
+FROM base as stage
 ENV DEBIAN_FRONTEND=noninteractive
 ENV APPDIR /app
 WORKDIR ${APPDIR}
@@ -33,14 +30,14 @@ RUN apt-get update -y -q \
     && make clean install
 
 # --- build a image with bare minimum --------------------
-FROM BASE as FINAL
+FROM base as final
 ENV APPDIR /app
 WORKDIR ${APPDIR}
 
 ENV PATH="/app/venv/bin:$PATH"
 
-COPY --from=STAGING ${APPDIR}/venv ${APPDIR}/venv
-COPY --from=STAGING ${APPDIR}/dist ${APPDIR}/dist
+COPY --from=stage ${APPDIR}/venv ${APPDIR}/venv
+COPY --from=stage ${APPDIR}/dist ${APPDIR}/dist
 
 RUN . venv/bin/activate; pip install dist/* \
     && rm -rf ${APPDIR}/dist

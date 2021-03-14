@@ -3,6 +3,7 @@
 
 -r requirements.flake8.txt
 
+debugpy
 black
 coverage
 isort

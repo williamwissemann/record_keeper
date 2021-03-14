@@ -188,16 +188,16 @@ dist-upload:
 
 # help: docker-build                   - builds a docker image
 docker-build: clean
-	@docker build -t ${PACKAGE}:${TAG} .
+	@docker build --target final -t ${PACKAGE}:${TAG} .
 	@docker system prune -f
+
 
 # help: docker-launch                  - launches the docker container
 docker-launch:
 	@ docker run \
-		--entrypoint /bin/bash \
 		-v ${PWD}/config/:/app/config/ \
 		-v ${PWD}/database/:/app/database/ \
-		-it record_keeper:discord
+		-it ${PACKAGE}:${TAG}
 
 # Keep these lines at the end of the file to retain nice help
 # output formatting.

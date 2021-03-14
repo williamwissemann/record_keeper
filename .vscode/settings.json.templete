@@ -1,5 +1,4 @@
 {
-    "python.pythonPath": "${workspaceRoot}/venv/bin/python3.8",
     "python.analysis.logLevel": "Trace",
     "cSpell.logLevel": "Debug",
     "python.linting.flake8Enabled": true,
