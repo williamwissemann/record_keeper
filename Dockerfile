@@ -5,7 +5,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y -q \   
     && apt-get upgrade -y -q \
     && apt-get install -y -q \
-    python3.8 python3-venv \
+        python3.8 \
+        python3-venv \
     && apt-get clean \
     && apt autoremove -y \
     && rm -rf /var/lib/apt/lists/* \
@@ -22,7 +23,6 @@ RUN apt-get update -y -q \
     && apt-get upgrade -y -q \
     && apt-get install -y -q \
         python3.8 \
-        python3.8-dev \
         python3-pip \
         python3-venv \
         git \
