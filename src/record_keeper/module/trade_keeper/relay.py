@@ -201,6 +201,9 @@ class TradeRelay:
 
                 note = force_str_length(note, length=12)
 
+                if discord_name.startswith("bidoof  "):
+                    continue
+
                 bm += f"{discord_name} | {note} \n"
             bm += "```"
             return bm

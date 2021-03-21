@@ -41,9 +41,6 @@ def delete(
     board: str = "TRADE_BOARD",
 ) -> str:
     sql = f"DELETE FROM {board} WHERE gamertag = '{user}'"
-    if not server == "ViaDirectMessage":
-        sql += f" AND ( server_id = '{server}'"
-        sql += " OR server_id = 'ViaDirectMessage')"
     sql += f"AND pokemon = '{pokemon_name}'"
     return sql
 
@@ -57,13 +54,6 @@ def get_trade_string(
     sql = f"SELECT number FROM {board}"
     if user:
         sql += f" WHERE gamertag = '{user}'"
-    if not server == "ViaDirectMessage":
-        if user:
-            sql += " AND"
-        else:
-            sql += " WHERE"
-        sql += f" ( server_id = '{server}'"
-        sql += " OR server_id = 'ViaDirectMessage')"
     sql += " GROUP BY number ORDER BY number ASC "
     return sql
 
@@ -76,9 +66,6 @@ def get_by_user(
 ) -> str:
     sql = f"SELECT pokemon, number, notes FROM {board}"
     sql += f" WHERE gamertag = '{user}'"
-    if not server == "ViaDirectMessage":
-        sql += f" AND ( server_id = '{server}'"
-        sql += " OR server_id = 'ViaDirectMessage')"
     sql += " ORDER BY number ASC"
     return sql
 
@@ -91,8 +78,5 @@ def get_by_pokemon(
 ) -> str:
     sql = f"SELECT gamertag, notes FROM {board}"
     sql += f" WHERE pokemon = '{pokemon}'"
-    if not server == "ViaDirectMessage":
-        sql += f" AND ( server_id = '{server}'"
-        sql += " OR server_id = 'ViaDirectMessage')"
     sql += " ORDER BY number ASC"
     return sql
