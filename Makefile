@@ -14,5 +14,5 @@ PYTHON ?= python3.8
 PYTHON_PACKAGE=record_keeper
 
 # docker environment variable defaults
-DOCKER_IMAGE ?= PYTHON_PACKAGE
+DOCKER_IMAGE ?= ${PYTHON_PACKAGE}
 DOCKER_TAG ?= discord
