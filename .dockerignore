@@ -1,0 +1,6 @@
+!.gitignore
+database/*
+RaspberryPi/*
+tests
+venv
+docs

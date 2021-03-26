@@ -1,5 +1,11 @@
-# --- BASE IMAGE ---------------------------------------
+FROM foundation:artifact as art_box 
 
+FROM ubuntu:20.04 as test_box
+ARG DOCKER_ENTRYPOINT
+ENV DOCKER_ENTRYPOINT ${DOCKER_ENTRYPOINT}
+ENTRYPOINT echo ${DOCKER_ENTRYPOINT}
+
+## builds a base image for future steps to use
 FROM ubuntu:20.04 as base
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y -q \   
@@ -9,37 +15,44 @@ RUN apt-get update -y -q \
         python3-venv \
     && apt-get clean \
     && apt autoremove -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /root/.cache/pip/
+    && rm -rf /var/lib/apt/lists/* 
 
-# --- stage the venv --------------------
-FROM base as stage
+## creates an venv to build the distribution pacakge
+FROM base as dist_box
 ENV DEBIAN_FRONTEND=noninteractive
-ENV APPDIR /app
+ENV APPDIR /foundation/pkgs/pkg
 WORKDIR ${APPDIR}
+COPY --from=art_box /artifacts /foundation/artifacts
 COPY . ${APPDIR}
-
-RUN apt-get update -y -q \   
-    && apt-get upgrade -y -q \
+RUN apt-get update -y -q \
     && apt-get install -y -q \
-        python3.8 \
         python3-pip \
-        python3-venv \
-        git \
-    && make install-dev dist \
-    && make clean install
+        git
+RUN make python/install-dev python/dist
 
-# --- build a image with bare minimum --------------------
+## build a the vinal venv we are going too use
+FROM dist_box as venv_box
+WORKDIR /foundation/pkgs/pkg
+RUN make python/clean
+RUN make python/install-package
+
+## build a final image with just the bare minimum
 FROM base as final
-ENV APPDIR /app
-WORKDIR ${APPDIR}
+ARG DOCKER_ENTRYPOINT
+ENV DOCKER_ENTRYPOINT ${DOCKER_ENTRYPOINT}
+ARG DOCKER_WORKDIR
 
-ENV PATH="/app/venv/bin:$PATH"
+ENV PATH="${DOCKER_WORKDIR}/venv/bin:$PATH"
 
-COPY --from=stage ${APPDIR}/venv ${APPDIR}/venv
-COPY --from=stage ${APPDIR}/dist ${APPDIR}/dist
+WORKDIR ${DOCKER_WORKDIR}
 
-RUN . venv/bin/activate; pip install dist/* \
-    && rm -rf ${APPDIR}/dist
+COPY --from=venv_box /foundation/pkgs/pkg/venv ${DOCKER_WORKDIR}/venv
+COPY --from=dist_box /foundation/pkgs/pkg/dist ${DOCKER_WORKDIR}/dist
 
-ENTRYPOINT [ "python3",  "/app/venv/lib/python3.8/site-packages/record_keeper/app.py"]
+RUN useradd -ms /bin/bash basic \
+    && chown -R basic:basic ${DOCKER_WORKDIR}
+USER basic
+RUN . venv/bin/activate; python3 -m pip install dist/* \
+    && rm -rf dist
+
+ENTRYPOINT python3 ${DOCKER_ENTRYPOINT}
