@@ -16,5 +16,6 @@ PYTHON_PACKAGE=record_keeper
 # docker environment variable defaults
 DOCKER_IMAGE ?= ${PYTHON_PACKAGE}
 DOCKER_TAG ?= discord
+DOCKER_TARGET ?= final
 DOCKER_WORKDIR ?= /app
 DOCKER_ENTRYPOINT ?= ${DOCKER_WORKDIR}/venv/lib/${PYTHON}/site-packages/${PYTHON_PACKAGE}/app.py
