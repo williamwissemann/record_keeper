@@ -42,7 +42,7 @@ async def test_tbs():
 async def test_tbp():
     with mock.patch("record_keeper.BOT.client", Client()):
         mm.content = "!tbp 10"
-        assert "bidoof" in (await on_message(mm))[0]
+        assert "Want" in (await on_message(mm))[0]
 
 
 @pytest.mark.asyncio
@@ -86,7 +86,7 @@ async def test_stbs():
 async def test_stbp():
     with mock.patch("record_keeper.BOT.client", Client()):
         mm.content = "!stbp 10"
-        assert "bidoof" in (await on_message(mm))[0]
+        assert "Want" in (await on_message(mm))[0]
 
 
 @pytest.mark.asyncio

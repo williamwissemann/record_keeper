@@ -48,7 +48,7 @@ def get_avg_per_day(
     days: int,
 ) -> str:
     return (
-        f"SELECT AVG(VALUE) FROM {table}"
+        f"SELECT MAX(VALUE), MIN(VALUE) FROM {table}"
         f" WHERE gamertag = '{user}'"
         f" AND update_at > datetime('now','-{days} days')"
     )

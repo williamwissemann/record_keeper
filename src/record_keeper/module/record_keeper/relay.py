@@ -129,6 +129,17 @@ class RecordRelay:
         else:
             return "Bidoof, nothing to see here"
 
+    def calculate_avg_per_day(self, server, medal, user, days):
+        max_val, min_val = get_avg_per_day(server, medal, user, days)[0]
+
+        avg_val = 0
+        if max_val and min_val:
+            diff = (max_val - min_val)
+            avg_val = diff / days
+        avg_val = int(round(avg_val, 0))
+
+        return force_str_length(str(avg_val), length=9)
+
     def create_stats(self, server, medal, user):
         msg = (
             "averages per day\n"
@@ -136,20 +147,11 @@ class RecordRelay:
             "Past Week  |Past Month |Past 90 Days\n"
             "-----------+-----------+------------\n"
         )
+        day7 = self.calculate_avg_per_day(server, medal, user, 7)
+        day30 = self.calculate_avg_per_day(server, medal, user, 30)
+        day90 = self.calculate_avg_per_day(server, medal, user, 90)
 
-        day7 = get_avg_per_day(server, medal, user, 7)[0][0]
-        day7 = day7 if day7 else 0
-        day7 = force_str_length(round(day7, 2), 10)
-
-        day30 = get_avg_per_day(server, medal, user, 30)[0][0]
-        day30 = day30 if day30 else 0
-        day30 = force_str_length(round(day30, 2), 9)
-
-        day90 = get_avg_per_day(server, medal, user, 90)[0][0]
-        day90 = day90 if day90 else 0
-        day90 = force_str_length(round(day90, 2), 9)
-
-        msg += f"{day7} | {str(day30)} | {str(day90) }\n```"
+        msg += f" {str(day7)} | {str(day30)} | {str(day90) }\n```"
         return msg
 
     def lb(self, msg):
