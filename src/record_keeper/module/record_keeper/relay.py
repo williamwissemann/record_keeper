@@ -134,7 +134,7 @@ class RecordRelay:
 
         avg_val = 0
         if max_val and min_val:
-            diff = (max_val - min_val)
+            diff = max_val - min_val
             avg_val = diff / days
         avg_val = int(round(avg_val, 0))
 

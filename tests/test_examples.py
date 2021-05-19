@@ -60,7 +60,7 @@ class ExamplesTestCase(unittest.TestCase):
         return success
 
     def test_quickstart_example(self):
-        """ check quickstart example """
+        """check quickstart example"""
         self.assertTrue(self.run_in_venv(os.path.join("examples", "quickstart.py")))
 
 

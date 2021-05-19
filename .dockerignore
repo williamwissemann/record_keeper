@@ -1,6 +1,7 @@
 database/*
 RaspberryPi/*
 dist
+build
 tests
 venv
 docs
