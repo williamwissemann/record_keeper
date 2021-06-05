@@ -4,7 +4,7 @@
 # include Makefile artifacts from foundation
 ARTIFACTS ?= ../../../artifacts
 MAKE_MODULES = ${ARTIFACTS}/makefile/modules
-include $(MAKE_MODULES)/Makefile.*
+-include $(MAKE_MODULES)/Makefile.*
 
 # setup the scope of the make help
 HELP_FILTER = docker/|help|python/
