@@ -1,4 +1,5 @@
 import os
+import pathlib
 import re
 
 from setuptools import find_packages, setup
@@ -7,6 +8,15 @@ regexp = re.compile(r'.*__version__ = [\'\"](.*?)[\'\"]', re.S)
 
 base_package = 'record_keeper'
 base_path = os.path.dirname(__file__)
+
+with open('README.md', 'r', encoding='utf-8') as f:
+    readme = f.read()
+
+with open('CHANGELOG.md', 'r', encoding='utf-8') as f:
+    changes = f.read()
+
+with open('PACKAGE_VERSION') as f:
+    package_version = f.read().strip()
 
 
 def parse_requirements(filename):
@@ -41,15 +51,6 @@ def parse_requirements(filename):
 requirements = parse_requirements('requirements.local.txt')
 requirements.extend(parse_requirements('requirements.txt'))
 
-
-with open('README.md', 'r', encoding='utf-8') as f:
-    readme = f.read()
-
-with open('CHANGELOG.md', 'r', encoding='utf-8') as f:
-    changes = f.read()
-
-with open('PACKAGE_VERSION') as f:
-    package_version = f.read().strip()
 
 if __name__ == '__main__':
     setup(

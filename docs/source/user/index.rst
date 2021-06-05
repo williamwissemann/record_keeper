@@ -16,11 +16,11 @@ Install Guide
 
     .. code-block:: console
 
-        $ python -m venv venv --prompt myvenv
+        $ make python/venv
         $ source venv/bin/activate
         (myvenv) $
 
-The simplest way to install record_keeper is using Pip.
+The simplest way to install record-keeper is using Pip.
 
 .. code-block:: console
 

@@ -1,4 +1,4 @@
 # path to local packages
-# i.e ../../packages/package_folder <-- defaults to latest
+# i.e ../../python/package_folder <-- defaults to latest
 # version can be pinned by adding a comment
-# i.e ../../packages/package_folder # ==0.0.1
+# i.e ../../python/package_folder # ==0.0.1

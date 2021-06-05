@@ -9,25 +9,13 @@
 import os
 import re
 import sys
+import record_keeper
 
 from sphinx.ext import apidoc
 
-# sys.path.insert(0, os.path.abspath('.'))
-
-
-regexp = re.compile(r'.*__version__ = [\'\"](.*?)[\'\"]', re.S)
 repo_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 pkg_root = os.path.join(repo_root, 'src', 'record_keeper')
-init_file = os.path.join(pkg_root, '__init__.py')
-with open(init_file, 'r') as f:
-    module_content = f.read()
-    match = regexp.match(module_content)
-    if match:
-        version = match.group(1)
-    else:
-        raise RuntimeError(
-            'Cannot find __version__ in {}'.format(init_file))
-
+version = record_keeper.__version__
 
 # -- General configuration ------------------------------------------------
 
@@ -52,7 +40,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'record_keeper'
+project = 'record-keeper'
 copyright = '2021, William T. Wissemann'
 author = 'William T. Wissemann'
 
