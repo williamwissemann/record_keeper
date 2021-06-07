@@ -4,7 +4,8 @@
 # include Makefile artifacts from foundation
 ARTIFACTS ?= ../../../artifacts
 MAKE_MODULES = ${ARTIFACTS}/makefile/modules
--include $(MAKE_MODULES)/Makefile.*
+MAKE_INCLUDE = ${MAKE_MODULES}/Makefile.*
+-include ${MAKE_INCLUDE}
 
 # setup the scope of the make help
 HELP_FILTER = docker/|help|python/
@@ -20,9 +21,9 @@ DOCKER_TARGET ?= final
 DOCKER_WORKDIR ?= /app
 DOCKER_ENTRYPOINT ?= ${DOCKER_WORKDIR}/venv/lib/${PYTHON}/site-packages/${PYTHON_PACKAGE}
 
-# Adds a failback if the foundation artifacts are not in scope
+# A failback if the foundation artifacts are not in scope
 %:
-	@if test -d ${ARTIFACTS} || test -f ${ARTIFACTS}; then :; \
+	@if (test -d ${ARTIFACTS} || test -f ${ARTIFACTS}) || test "$@" = "${MAKE_INCLUDE}"; then :; \
 	else \
 	echo "\n" \
 	"This project has a missing dependency on the foundation project\n" \
