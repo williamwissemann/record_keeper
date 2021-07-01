@@ -2,7 +2,7 @@ import mock
 import pytest
 
 from record_keeper import BOT
-from record_keeper.app import on_message
+from record_keeper.__main__ import on_message
 from tests.fixture.client.mock import Client
 from tests.fixture.message.mock import MockMessage
 
