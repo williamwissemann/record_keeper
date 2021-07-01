@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            // requires running `make install-dev` first
+            // requires running `make python/install-dev` first
             "name": "[venv] launch and run",
             "type": "python",
             "request": "launch",

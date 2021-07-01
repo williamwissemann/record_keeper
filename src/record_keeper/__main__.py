@@ -2,16 +2,16 @@ import logging
 
 import discord
 
-from . import BOT
-from .module.about.relay import BotInfo
-from .module.admin.relay import AdminRelay
-from .module.help.relay import HelpRelay
-from .module.pvp_iv.relay import IVRelay
-from .module.random.relay import RandomRelay
-from .module.record_keeper.relay import RecordRelay
-from .module.trade_keeper.relay import TradeRelay
-from .module.training_wheels.relay import TrainingWheels
-from .utilities.message import MessageWrapper
+from record_keeper import BOT
+from record_keeper.module.about.relay import BotInfo
+from record_keeper.module.admin.relay import AdminRelay
+from record_keeper.module.help.relay import HelpRelay
+from record_keeper.module.pvp_iv.relay import IVRelay
+from record_keeper.module.random.relay import RandomRelay
+from record_keeper.module.record_keeper.relay import RecordRelay
+from record_keeper.module.trade_keeper.relay import TradeRelay
+from record_keeper.module.training_wheels.relay import TrainingWheels
+from record_keeper.utilities.message import MessageWrapper
 
 
 @BOT.client.event
