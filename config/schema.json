@@ -90,8 +90,9 @@
                 "RisingStar": "Rising Star",
                 "RisingStarDuo": "Rising Star Duo",
                 "Picnicker": "Picnicker",
-                "Kalos": "kalos",
-                "EliteCollector": "Elite Collector"
+                "Kalos": "Kalos",
+                "EliteCollector": "Elite Collector",
+                "RaidExpert": "Raid Expert"
             },
             "table": {
                 "init": {

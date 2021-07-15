@@ -57,7 +57,8 @@ class Storage:
                     self.table_names.append(name)
                     if accepted:
                         self.accepted_tables.append(name)
-                    elif category == "basic_tables":
+                    
+                    if category == "basic_tables":
                         self.basic_tables.append(name)
                     elif category == "badge_tables":
                         self.badge_tables.append(name)
