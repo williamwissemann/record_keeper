@@ -23,7 +23,7 @@ DOCKER_ENTRYPOINT ?= ${DOCKER_WORKDIR}/venv/lib/${PYTHON}/site-packages/${PYTHON
 
 # A failback if the foundation artifacts are not in scope
 %:
-	@if (test -d ${ARTIFACTS} || test -f ${ARTIFACTS}) || test "$@" = "${MAKE_INCLUDE}"; then echo "make: *** No rule to make target \`$@'.  Stop."; \
+	@if (test -d ${ARTIFACTS} || test -f ${ARTIFACTS}) || test "$@" != "${MAKE_INCLUDE}"; then echo "make: *** No rule to make target \`$@'.  Stop."; \
 	else \
 	echo "\n" \
 	"This project has a missing dependency on the foundation project\n" \
