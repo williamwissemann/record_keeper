@@ -10,6 +10,22 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceRoot}/src/record_keeper",
-        }
+        },
+        {
+            "name": "[docker] attach and debug",
+            "type": "python",
+            "request": "attach",
+            "justMyCode": false,
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/src/record_keeper/",
+                    "remoteRoot": "/app/venv/lib/python3.9/site-packages/record_keeper/"
+                }
+            ]
+        },
     ]
 }
