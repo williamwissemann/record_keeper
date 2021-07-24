@@ -3,7 +3,7 @@ version: '3.3'
 services:
   record_keeper:
     build: "."
-    image: "record_keeper:discord"
+    image: "record_keeper:dev"
     restart: unless-stopped
     volumes: 
       - "./database/:/app/database/"
