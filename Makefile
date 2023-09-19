@@ -1,22 +1,41 @@
+# path to the foundation/artifacts/makefile/modules
+# https://github.com/williamwissemann/foundation
 
-test: venv lint
-	. venv/bin/activate; python3 -m pip install -r requirements.txt
-	. venv/bin/activate; py.test --cov=source tests --capture=sys -r w --disable-pytest-warnings --cov-fail-under 9 -vv
+# include Makefile artifacts from foundation
+ARTIFACTS ?= ../../../artifacts
+MAKE_MODULES = ${ARTIFACTS}/makefile/modules
+MAKE_INCLUDE = ${MAKE_MODULES}/Makefile.*
+-include ${MAKE_INCLUDE}
 
-lint: venv
-	. venv/bin/activate; pip install flake8==3.3.0
-	. venv/bin/activate; python3.7 -m flake8 \
-		--ignore=F401,E266,E501,E731 \
-		--exclude .git,__pycache__,venv,old,build,dist \
-	    --max-complexity 10
+# setup the scope of the make help
+HELP_FILTER = docker/|help|python/
 
-coverage: venv test
-	. venv/bin/activate; coverage html
-	. venv/bin/activate; open htmlcov/index.html
+# python environment variable defaults
+PYTHON ?= python3.9
+PYTHON_PACKAGE = record_keeper
 
-setup:
-	python3 -m pip install virtualenv
+# docker environment variable defaults
+DOCKER_IMAGE ?= ${PYTHON_PACKAGE}
+DOCKER_TAG ?= dev
+DOCKER_TARGET ?= final
+DOCKER_WORKDIR ?= /app
+DOCKER_ENTRYPOINT ?= ${DOCKER_WORKDIR}/venv/lib/${PYTHON}/site-packages/${PYTHON_PACKAGE}
 
-venv: setup
-	rm -rf venv
-	virtualenv -p python3 venv
+# A failback if the foundation artifacts are not in scope
+%:
+	@if (test -d ${ARTIFACTS} || test -f ${ARTIFACTS}) || test "$@" != "${MAKE_INCLUDE}" ; then echo "make: ** No rule to make target \`$@'.  Stop."; \
+	else \
+	echo "\n" \
+	"This project has a missing dependency on the foundation project\n" \
+	"which can be found https://github.com/williamwissemann/foundation \n" \
+	"the expected file stucture should be: \n" \
+	"\n" \
+	"foundation \n" \
+	"├───artifacts \n" \
+	"├───packages \n" \
+	"│   └───python \n" \
+	"│       ├───backhoe \n" \
+	"│       ├───utility_belt \n" \
+	"|       └───>> ${PYTHON_PACKAGE} << \n" \
+	; \
+	fi

@@ -1,0 +1,3 @@
+[flake8]
+ignore = D100, D400, D401, S608, I900, S101, W503
+max-complexity = 10

@@ -1,0 +1,9 @@
+{
+    "python.pythonPath": "venv/bin/python",
+    "python.analysis.logLevel": "Trace",
+    "cSpell.logLevel": "Debug",
+    "python.linting.flake8Enabled": true,
+    "python.linting.pycodestyleEnabled": false,
+    "python.linting.enabled": true,
+    "python.formatting.provider": "black"
+}
