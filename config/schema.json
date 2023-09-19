@@ -92,7 +92,14 @@
                 "Picnicker": "Picnicker",
                 "Kalos": "Kalos",
                 "EliteCollector": "Elite Collector",
-                "RaidExpert": "Raid Expert"
+                "RaidExpert": "Raid Expert",
+                "TinyPokemonCollector": "Tiny Pokémon Collector",
+                "JumboPokemonCollector": "Jumbo Pokémon Collector",
+                "VivillonCollector": "Vivillon Collector",
+                "Paldea": "Paldea",
+                "Galar": "Galar",
+                "ShowcaseStar", "Showcase Star",
+                "Hisui", "Hisui"
             },
             "table": {
                 "init": {
@@ -120,7 +127,7 @@
                 "Skier": "Skier",
                 "DragonTamer": "Dragon Tamer",
                 "Delinquent": "Delinquent",
-                "FairyTaleGirl": "Fairy Tale Girl"
+                "FairyTaleGirl": "Fairy Tale Girl",
             },
             "table": {
                 "init": {
@@ -151,7 +158,8 @@
                 "LuckySpecialTrade": "Lucky Special Trade",
                 "GBLELO": "GO Battle League Elo",
                 "TrainerLevel": "Level",
-                "PlatinumBadges": "Platinum Badges"
+                "PlatinumBadges": "Platinum Badges",
+                "RouteGoldBadges": "Route Gold Badges"
             },
             "table": {
                 "init": {
