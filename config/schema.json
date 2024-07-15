@@ -99,7 +99,8 @@
                 "Paldea": "Paldea",
                 "Galar": "Galar",
                 "ShowcaseStar": "Showcase Star",
-                "Hisui": "Hisui"
+                "Hisui": "Hisui",
+                "ExpertNavigator": "Expert Navigator"
             },
             "table": {
                 "init": {
