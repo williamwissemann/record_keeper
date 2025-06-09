@@ -1,0 +1,13 @@
+default_context:
+  package_display_name: "record-keeper"
+  package_name: "record_keeper"
+  package_short_description: "A description of the package."
+  version: "0.0.1"
+  full_name: "William T. Wissemann"
+  email: "WilliamWissemann@gmail.com"
+  github_user_name: "williamwissemann"
+  github_repo_name: "foundation"
+  license: "Not open source"
+  year: "2021"
+  _extensions: "['jinja2_time.TimeExtension']"
+

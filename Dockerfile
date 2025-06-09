@@ -1,30 +1,40 @@
-# --- BASE IMAGE ---------------------------------------------------------------
+## creates an venv to build the distribution package
+FROM foundation:venv as dist
+ENV APPDIR /foundation/pkgs/python/pkg
+WORKDIR ${APPDIR}
+RUN cp -r /foundation/packages/python/backhoe/venv ${APPDIR}/venv
+COPY . ${APPDIR}
+RUN make python/install-dev python/dist
 
-FROM ubuntu:18.04
+## build a venv we are going to use in the final image
+FROM dist as venv
+RUN make python/clean python/install-package
 
-# --- configure default environment --------------------------------------------
+## build a final image with just the bare minimum
+FROM foundation:python as final
+ARG DOCKER_ENTRYPOINT
+ENV DOCKER_ENTRYPOINT ${DOCKER_ENTRYPOINT}
+ARG DOCKER_WORKDIR
 
-ENV DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
+ENV PATH="${DOCKER_WORKDIR}/venv/bin:$PATH"
 
-# --- configure dependencies --------------------------------------------
+WORKDIR ${DOCKER_WORKDIR}
 
-RUN set -ex \
-    && apt-get update -y -q \   
-    && apt-get upgrade -y -q \
-    && apt-get install python3-pip -y -q \
-    && apt-get install cron \
-    # discord.py
-    && pip3 install discord.py==1.* \
-    # google api
-    && pip3 install --upgrade google-api-python-client \
-    && pip3 install --upgrade oauth2client 
+COPY --from=venv /foundation/pkgs/python/pkg/venv ${DOCKER_WORKDIR}/venv
+COPY --from=dist /foundation/pkgs/python/pkg/dist ${DOCKER_WORKDIR}/dist
 
-# --- copy over files ----------------------------------------------------------
+COPY ./database/ /app/database/
+COPY ./config/ /app/config/
 
-COPY discord_bot /usr/src/RecordKeeperBot/discord_bot
-WORKDIR /usr/src/RecordKeeperBot/discord_bot
+RUN useradd -ms /bin/bash basic \
+    && chown -R basic:basic ${DOCKER_WORKDIR}
+USER basic
+RUN . venv/bin/activate; python3 -m pip install dist/* \
+    && rm -rf dist
 
-# --- run script ---------------------------------------------------------------
-ENTRYPOINT ["./RecordKeeperBot.sh"]
+ENTRYPOINT python3 ${DOCKER_ENTRYPOINT}
 
-
+FROM final as debugpy
+USER root
+RUN . venv/bin/activate; python3 -m pip install debugpy
+ENTRYPOINT . venv/bin/activate; python3 -m debugpy --listen 0.0.0.0:5678 --wait-for-client ${DOCKER_ENTRYPOINT}
